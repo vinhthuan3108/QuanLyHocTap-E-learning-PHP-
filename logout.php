@@ -24,12 +24,13 @@ setcookie("abc", "", time() - 3600);
     <div class="container mt-5">
         <div id="content">
             <h2>Bạn đã đăng xuất!</h2>
-            <p>Vui lòng <a href="login.php">đăng nhập</a> để tiếp tục.</p>
+            <p>Vui lòng <a href="login.php">Đăng nhập</a> để tiếp tục.</p>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <?php include('footer.php'); ?>
 </body>
+
 
 </html>
