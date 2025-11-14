@@ -1,26 +1,90 @@
 <?php
-include_once('layout.php');
+ob_start();
 session_start();
+require 'src/Exception.php';
+require 'src/PHPMailer.php';
+require 'src/SMTP.php';
+
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\SMTP;
+
+include_once('layout.php');
+
+include_once('./config/connect.php');
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $_SESSION['fullName'] = $_POST['fullName'];
-    $_SESSION['idCard'] = $_POST['idCard'];
-    $_SESSION['dob'] = $_POST['dob'];
-    $_SESSION['gender'] = $_POST['gender'];
-    $_SESSION['phoneNumber'] = $_POST['phoneNumber'];
-    $_SESSION['email'] = $_POST['email'];
-    $_SESSION['address'] = $_POST['address'];
-    $_SESSION['portrait'] = $_FILES['portrait']['name'];
-    $image = $_SESSION['portrait'];
+
+    $fullName = $_POST['fullName'];
+    $username = $_POST['username'];  
+    $password = $_POST['password'];  
+    $idCard = $_POST['idCard'];
+    $dob = $_POST['dob'];
+    $gender = $_POST['gender'];
+    $phoneNumber = $_POST['phoneNumber'];
+    $email = $_POST['email'];
+    $address = $_POST['address'];
+    $portrait = $_FILES['portrait']['name'];
     $image_tmp = $_FILES['portrait']['tmp_name'];
-    if (move_uploaded_file($image_tmp,'assets/images/'.$image)) {
-        echo 'Upload thành công';
-    } else {
-        echo 'Lỗi khi upload: ' . error_get_last()['message'];
-        exit;
+
+    $check_sql = "SELECT * FROM user_account WHERE username = '$username'";
+    $check_result = mysqli_query($dbconnect, $check_sql);
+    if (mysqli_num_rows($check_result) > 0) {
+        die("Username đã tồn tại!");
     }
-    header("location: choose_role.php");
+    
+    
+    if(!move_uploaded_file($image_tmp, 'assets/images/'.$portrait)) {
+        die("Upload ảnh thất bại");
+    }
+
+    $_SESSION['pending_username'] = $username;
+    $_SESSION['pending_password'] = $password; 
+
+    $verification_code = rand(100000, 999999);
+
+    $sql = "INSERT INTO user (full_name,citizen_id,date_of_birth,gender,phone,email,address,image,verification_code)
+            VALUES ('$fullName','$idCard','$dob','$gender','$phoneNumber','$email','$address','$portrait','$verification_code')";
+
+    if(!mysqli_query($dbconnect, $sql)) {
+        die("Lỗi: ".mysqli_error($dbconnect));
+    }
+
+    $app_password = 'qsyi hdos gdou twnh';   
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->SMTPDebug = SMTP::DEBUG_SERVER;
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = "xuannam1234zz@gmail.com";
+        $mail->Password = $app_password;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        
+        $mail->Port = 587;
+
+        $mail->setFrom('xuannam1234zz@gmail.com', 'Xuân Nam');
+        $mail->addAddress($email, $fullName);
+
+        $mail->isHTML(true);
+        $mail->Subject = 'Mã xác thực đăng ký';
+        $mail->Body = "Mã xác thực của bạn là: <b>$verification_code</b>";
+
+        $mail->send();
+
+       
+        header("Location: verify_email.php?email=" . urlencode($email));
+        exit();
+
+    } catch (Exception $e) {
+        echo "Gửi email thất bại: {$mail->ErrorInfo}";
+    }
 }
+ob_end_flush(); 
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -39,6 +103,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <form id="accountForm" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
             <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="username" class="form-label">Tên đăng nhập</label>
+                    <input type="text" class="form-control" id="username" name="username" required>
+                    <div class="invalid-feedback">Tên đăng nhập không được trống.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="password" class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                    <div class="invalid-feedback">Mật khẩu phải ít nhất 6 ký tự.</div>
+                </div>
+            </div>  
+        
+        <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="fullName" class="form-label">Họ và tên</label>
                     <input type="text" class="form-control" id="fullName" name="fullName" required>
