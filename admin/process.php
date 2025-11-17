@@ -11,6 +11,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["sbm_add"])) {
     $phone = $_POST['phone'];
     $email = $_POST['email'];
     $citizen_id = $_POST['citizen_id'];
+    $password = $_POST['password'];
     function createUsername($str, $dbconnect)
     {
         // Loại bỏ ký tự đặc biệt và dấu
@@ -58,7 +59,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["sbm_add"])) {
     }
 
     $user_id = mysqli_insert_id($dbconnect);
-    $sql_us = "INSERT INTO user_account(account_id, username, password, user_id) VALUES ('$user_id','$username','dododododo','$user_id')";
+    
+    // Sử dụng mật khẩu người dùng nhập, mã hóa trước khi lưu
+    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+    $sql_us = "INSERT INTO user_account(account_id, username, password, user_id) VALUES ('$user_id','$username','$hashed_password','$user_id')";
     $query_us = mysqli_query($dbconnect, $sql_us);
     if (!$query_us) {
         echo "Lỗi khi chèn dữ liệu vào bảng user_account: " . mysqli_error($dbconnect);
