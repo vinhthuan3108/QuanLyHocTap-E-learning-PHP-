@@ -13,7 +13,11 @@ if($role_id == 1){
     $role_fullName = "quản trị viên";
 }
 $id = $_GET['user_id'];
-$sql_edit = "SELECT * FROM user where user_id=$id";
+
+// Lấy thông tin user kèm username từ bảng user_account
+$sql_edit = "SELECT us.*, ua.username FROM user us
+             INNER JOIN user_account ua ON us.user_id = ua.user_id
+             WHERE us.user_id=$id";
 $query_update = mysqLi_query($dbconnect, $sql_edit);
 $row_update = mysqli_fetch_assoc($query_update);
 mysqli_close($dbconnect);
@@ -46,7 +50,7 @@ mysqli_close($dbconnect);
 
         <!-- Body - Registration Form -->
         <form action="process.php?id=<?php echo $_GET['user_id']; ?>" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate id="accountForm">
-        <div class="row mb-3">
+            <div class="row mb-3">
                 <div class="col-md-6">
                     <label for="fullName" class="form-label">Họ và tên</label>
                     <input type="text" class="form-control" id="fullName" name="full_name" required placeholder="Nhập họ tên" value="<?php echo $row_update['full_name']; ?>">
@@ -55,11 +59,27 @@ mysqli_close($dbconnect);
                     </div>
                 </div>
                 <div class="col-md-6">
+                    <label for="username" class="form-label">Tên tài khoản</label>
+                    <input type="text" class="form-control" id="username" name="username" required placeholder="Nhập tên tài khoản" value="<?php echo $row_update['username']; ?>">
+                    <div class="invalid-feedback">
+                        Tên tài khoản không được trống.
+                    </div>
+                    <div id="usernameFeedback" class="form-text"></div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-md-6">
                     <label for="idCard" class="form-label">Mã số căn cước công dân</label>
                     <input type="text" class="form-control" id="idCard" name="citizen_id" required placeholder="Nhập CCCD" value="<?php echo $row_update['citizen_id']; ?>">
                     <div class="invalid-feedback">
                         Mã số căn cước công dân không được trống.
                     </div>
+                </div>
+                <div class="col-md-6">
+                    <label for="newPassword" class="form-label">Mật khẩu mới (để trống nếu không đổi)</label>
+                    <input type="password" class="form-control" id="newPassword" name="new_password" placeholder="Nhập mật khẩu mới">
+                    <div class="form-text">Chỉ nhập nếu muốn thay đổi mật khẩu</div>
                 </div>
             </div>
 
@@ -108,24 +128,52 @@ mysqli_close($dbconnect);
         </form>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Enable Bootstrap form validation
         (function() {
             'use strict';
-
             var form = document.getElementById('accountForm');
-
             form.addEventListener('submit', function(event) {
                 if (!form.checkValidity()) {
                     event.preventDefault();
                     event.stopPropagation();
                 }
-
                 form.classList.add('was-validated');
             }, false);
         })();
-    </script>
-        <?php include("../footer.php"); ?>
-</body>
 
+        // Kiểm tra username trùng (trừ username hiện tại)
+        document.getElementById('username').addEventListener('blur', function() {
+            var username = this.value;
+            var currentUsername = '<?php echo $row_update['username']; ?>';
+            
+            if (username === currentUsername) {
+                document.getElementById('usernameFeedback').innerHTML = 'Tên tài khoản hiện tại';
+                document.getElementById('usernameFeedback').className = 'form-text text-success';
+                return;
+            }
+            
+            if (username.length < 3) {
+                document.getElementById('usernameFeedback').innerHTML = 'Tên tài khoản phải có ít nhất 3 ký tự';
+                document.getElementById('usernameFeedback').className = 'form-text text-danger';
+                return;
+            }
+            
+            fetch('check_username.php?username=' + encodeURIComponent(username) + '&current=' + encodeURIComponent(currentUsername))
+                .then(response => response.json())
+                .then(data => {
+                    const feedback = document.getElementById('usernameFeedback');
+                    if (data.available) {
+                        feedback.innerHTML = 'Tên tài khoản có thể sử dụng';
+                        feedback.className = 'form-text text-success';
+                    } else {
+                        feedback.innerHTML = 'Tên tài khoản đã tồn tại, vui lòng chọn tên khác';
+                        feedback.className = 'form-text text-danger';
+                    }
+                });
+        });
+    </script>
+    <?php include("../footer.php"); ?>
+</body>
 </html>

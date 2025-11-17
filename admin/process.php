@@ -12,47 +12,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["sbm_add"])) {
     $email = $_POST['email'];
     $citizen_id = $_POST['citizen_id'];
     $password = $_POST['password'];
-    function createUsername($str, $dbconnect)
-    {
-        // Loại bỏ ký tự đặc biệt và dấu
-        $cleanedStr = str_replace(
-            array('á', 'à', 'ả', 'ã', 'ạ', 'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ', 'ă', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ', 'đ', 'é', 'è', 'ẻ', 'ẽ', 'ẹ', 'ê', 'ế', 'ề', 'ể', 'ễ', 'ệ', 'í', 'ì', 'ỉ', 'ĩ', 'ị', 'ó', 'ò', 'ỏ', 'õ', 'ọ', 'ô', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ', 'ơ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ', 'ú', 'ù', 'ủ', 'ũ', 'ụ', 'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự', 'ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ', 'Á', 'À', 'Ả', 'Ã', 'Ạ', 'Â', 'Ấ', 'Ầ', 'Ẩ', 'Ẫ', 'Ậ', 'Ă', 'Ắ', 'Ằ', 'Ẳ', 'Ẵ', 'Ặ', 'Đ', 'É', 'È', 'Ẻ', 'Ẽ', 'Ẹ', 'Ê', 'Ế', 'Ề', 'Ể', 'Ễ', 'Ệ', 'Í', 'Ì', 'Ỉ', 'Ĩ', 'Ị', 'Ó', 'Ò', 'Ỏ', 'Õ', 'Ọ', 'Ô', 'Ố', 'Ồ', 'Ổ', 'Ỗ', 'Ộ', 'Ơ', 'Ớ', 'Ờ', 'Ở', 'Ỡ', 'Ợ', 'Ú', 'Ù', 'Ủ', 'Ũ', 'Ụ', 'Ư', 'Ứ', 'Ừ', 'Ử', 'Ữ', 'Ự', 'Ý', 'Ỳ', 'Ỷ', 'Ỹ', 'Ỵ'),
-            array('a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'd', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'i', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'y', 'y', 'y', 'y', 'y', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'd', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'i', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'y', 'y', 'y', 'y', 'y'),
-            $str
-        );
-        $username = preg_replace('/[^a-z0-9]/', '', strtolower($cleanedStr));
-        return $username;
-    }
-    function checkusername($username, $dbconnect)
-    {
-        $query_ac = "SELECT * FROM user_account WHERE username = '$username'";
-        $result = mysqli_query($dbconnect, $query_ac);
-        $row_ac = mysqli_fetch_assoc($result);
-        // Nếu đã tồn tại, thêm số vào username cho đến khi là duy nhất
-        if (!empty($row_ac['account_id'])) {
-            $i = 1;
-            $newUsername = "";
-            while (mysqli_num_rows($result) > 0) {
-                $newUsername = $username . $i;
-                $query_row = "SELECT * FROM user_account WHERE username = '$newUsername'";
-                $result = mysqli_query($dbconnect, $query_row);
-                $i++;
-            }
-            $username = $newUsername;
-        }
-        return $username;
-    }
+    $username = $_POST['username']; // Lấy username từ form
 
     $this_id = $_GET['id'];
-    $Tname = createUsername($name, $dbconnect);
-    $username = checkusername($Tname, $dbconnect);
+
+    // Kiểm tra username có tồn tại chưa
+    $check_sql = "SELECT * FROM user_account WHERE username = '$username'";
+    $check_result = mysqli_query($dbconnect, $check_sql);
+    
+    if (mysqli_num_rows($check_result) > 0) {
+        // Username đã tồn tại, quay lại form với thông báo lỗi
+        $_SESSION['error'] = "Tên tài khoản '$username' đã tồn tại. Vui lòng chọn tên khác.";
+        header("Location: add_account.php?role_id=$this_id&role_name=" . $_GET['role_name']);
+        exit;
+    }
+
+    // Xử lý upload ảnh
     $image = $username . '_' . $image_name;
     if (move_uploaded_file($image_tmp, '../assets/images/' . $image)) {
         echo 'Upload thành công';
     } else {
         echo 'Lỗi khi upload: ' . error_get_last()['message'];
     }
-    $sql = "INSERT INTO user (full_name, date_of_birth,gender,address,phone,email,citizen_id,image) VALUES ('$name','$birth','$gender','$address','$phone','$email','$citizen_id','$image')";
+
+    // Thêm vào bảng user
+    $sql = "INSERT INTO user (full_name, date_of_birth, gender, address, phone, email, citizen_id, image) 
+            VALUES ('$name','$birth','$gender','$address','$phone','$email','$citizen_id','$image')";
     $query = mysqli_query($dbconnect, $sql);
     if (!$query) {
         echo "Lỗi khi chèn dữ liệu vào bảng user: " . mysqli_error($dbconnect);
@@ -60,14 +45,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["sbm_add"])) {
 
     $user_id = mysqli_insert_id($dbconnect);
     
-    // Sử dụng mật khẩu người dùng nhập, mã hóa trước khi lưu
+    // Mã hóa mật khẩu và thêm vào user_account
     $hashed_password = password_hash($password, PASSWORD_DEFAULT);
-    $sql_us = "INSERT INTO user_account(account_id, username, password, user_id) VALUES ('$user_id','$username','$hashed_password','$user_id')";
+    $sql_us = "INSERT INTO user_account(account_id, username, password, user_id) 
+               VALUES ('$user_id','$username','$hashed_password','$user_id')";
     $query_us = mysqli_query($dbconnect, $sql_us);
     if (!$query_us) {
         echo "Lỗi khi chèn dữ liệu vào bảng user_account: " . mysqli_error($dbconnect);
     }
 
+    // Thêm role
     if ($this_id == 1) {
         $sql_role = "INSERT INTO user_role (user_id,role_id) VALUES ('$user_id','1')";
     } else if ($this_id == 2) {
@@ -77,11 +64,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["sbm_add"])) {
     } else {
         echo "Lỗi role không tồn tại: " . mysqli_error($dbconnect);
     }
+    
     $query_role = mysqli_query($dbconnect, $sql_role);
     if (!$query_role) {
         echo "Lỗi khi chèn dữ liệu vào bảng user_role: " . mysqli_error($dbconnect);
     }
+    
     mysqli_close($dbconnect);
+    
+    // Redirect về trang tương ứng
     if ($this_id == 1) {
         header('location: student.php');
     } else if ($this_id == 2) {
@@ -97,12 +88,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["sbm_add"])) {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["sbm_edit"])) {
     $id = $_GET['id'];
+    
+    // Lấy thông tin hiện tại để so sánh
     $sql_edit = "SELECT * FROM user us
     INNER JOIN user_role ur ON us.user_id = ur.user_id
     INNER JOIN user_account ua ON ua.user_id = us.user_id
     where us.user_id=$id";
     $query_update = mysqLi_query($dbconnect, $sql_edit);
     $row_update = mysqli_fetch_assoc($query_update);
+    
     $name = $_POST['full_name'];
     $image_name = $_FILES['image']['name'];
     $image_tmp = $_FILES['image']['tmp_name'];
@@ -112,59 +106,54 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["sbm_edit"])) {
     $phone = $_POST['phone'];
     $email = $_POST['email'];
     $citizen_id = $_POST['citizen_id'];
-    function createUsername($str, $dbconnect)
-    {
-        $cleanedStr = str_replace(
-            array('á', 'à', 'ả', 'ã', 'ạ', 'â', 'ấ', 'ầ', 'ẩ', 'ẫ', 'ậ', 'ă', 'ắ', 'ằ', 'ẳ', 'ẵ', 'ặ', 'đ', 'é', 'è', 'ẻ', 'ẽ', 'ẹ', 'ê', 'ế', 'ề', 'ể', 'ễ', 'ệ', 'í', 'ì', 'ỉ', 'ĩ', 'ị', 'ó', 'ò', 'ỏ', 'õ', 'ọ', 'ô', 'ố', 'ồ', 'ổ', 'ỗ', 'ộ', 'ơ', 'ớ', 'ờ', 'ở', 'ỡ', 'ợ', 'ú', 'ù', 'ủ', 'ũ', 'ụ', 'ư', 'ứ', 'ừ', 'ử', 'ữ', 'ự', 'ý', 'ỳ', 'ỷ', 'ỹ', 'ỵ', 'Á', 'À', 'Ả', 'Ã', 'Ạ', 'Â', 'Ấ', 'Ầ', 'Ẩ', 'Ẫ', 'Ậ', 'Ă', 'Ắ', 'Ằ', 'Ẳ', 'Ẵ', 'Ặ', 'Đ', 'É', 'È', 'Ẻ', 'Ẽ', 'Ẹ', 'Ê', 'Ế', 'Ề', 'Ể', 'Ễ', 'Ệ', 'Í', 'Ì', 'Ỉ', 'Ĩ', 'Ị', 'Ó', 'Ò', 'Ỏ', 'Õ', 'Ọ', 'Ô', 'Ố', 'Ồ', 'Ổ', 'Ỗ', 'Ộ', 'Ơ', 'Ớ', 'Ờ', 'Ở', 'Ỡ', 'Ợ', 'Ú', 'Ù', 'Ủ', 'Ũ', 'Ụ', 'Ư', 'Ứ', 'Ừ', 'Ử', 'Ữ', 'Ự', 'Ý', 'Ỳ', 'Ỷ', 'Ỹ', 'Ỵ'),
-            array('a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'd', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'i', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'y', 'y', 'y', 'y', 'y', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'd', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'i', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'u', 'y', 'y', 'y', 'y', 'y'),
-            $str
-        );
-        $username = preg_replace('/[^a-z0-9]/', '', strtolower($cleanedStr));
-        return $username;
-    }
-    function checkusername($username, $dbconnect)
-    {
-        $query_ac = "SELECT * FROM user_account WHERE username = '$username'";
-        $result = mysqli_query($dbconnect, $query_ac);
-        $row_ac = mysqli_fetch_assoc($result);
-        if (!empty($row_ac['account_id'])) {
-            $i = 1;
-            $newUsername = "";
-            while (mysqli_num_rows($result) > 0) {
-                $newUsername = $username . $i;
-                $query_row = "SELECT * FROM user_account WHERE username = '$newUsername'";
-                $result = mysqli_query($dbconnect, $query_row);
-                $i++;
-            }
-            $username = $newUsername;
+    $username = $_POST['username'];
+    $new_password = $_POST['new_password'];
+
+    // Kiểm tra username có bị trùng không (trừ username hiện tại)
+    if ($username != $row_update['username']) {
+        $check_sql = "SELECT * FROM user_account WHERE username = '$username' AND username != '" . $row_update['username'] . "'";
+        $check_result = mysqli_query($dbconnect, $check_sql);
+        
+        if (mysqli_num_rows($check_result) > 0) {
+            // Username đã tồn tại, quay lại form với thông báo lỗi
+            $_SESSION['error'] = "Tên tài khoản '$username' đã tồn tại. Vui lòng chọn tên khác.";
+            header("Location: edit_account.php?user_id=$id&role_id=" . $row_update['role_id'] . "&role_name=" . $_GET['role_name']);
+            exit;
         }
-        return $username;
     }
-    $Tname = createUsername($name, $dbconnect);
-    if ($row_update['full_name'] != $name) {
-        $username = checkusername($Tname, $dbconnect);
+
+    // Xử lý ảnh
+    if (!empty($image_name)) {
+        $image = $username . '_' . $image_name;
+        if (move_uploaded_file($image_tmp, '../assets/images/' . $image)) {
+            echo 'Upload thành công';
+        } else {
+            echo 'Lỗi khi upload: ' . error_get_last()['message'];
+        }
     } else {
-        $username = $Tname;
-    }
-    $image = $username . '_' . $image_name;
-    if (move_uploaded_file($image_tmp, '../assets/images/' . $image)) {
-        echo 'Upload thành công';
-    } else {
-        echo 'Lỗi khi upload: ' . error_get_last()['message'];
-    }
-    if ($image_name == NULL) {
         $image = $row_update['image'];
     }
+
+    // Cập nhật thông tin user
     $sql = "UPDATE user SET full_name='$name', date_of_birth = '$birth',gender ='$gender',
     address = '$address',phone = '$phone',email='$email',citizen_id = '$citizen_id',image='$image' WHERE user_id='$id';";
     $query = mysqli_query($dbconnect, $sql);
     if (!$query) {
         echo "Lỗi khi sửa dữ liệu vào bảng user: " . mysqli_error($dbconnect);
     }
-    $sql_ua = "UPDATE user_account SET username='$username' WHERE user_id='$id'";
+
+    // Cập nhật username và password (nếu có)
+    if (!empty($new_password)) {
+        // Mã hóa mật khẩu mới
+        $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
+        $sql_ua = "UPDATE user_account SET username='$username', password='$hashed_password' WHERE user_id='$id'";
+    } else {
+        $sql_ua = "UPDATE user_account SET username='$username' WHERE user_id='$id'";
+    }
+    
     $query_ua = mysqli_query($dbconnect, $sql_ua);
     if (!$query_ua) {
-        echo "Lỗi khi chèn dữ liệu vào bảng user_account: " . mysqli_error($dbconnect);
+        echo "Lỗi khi cập nhật dữ liệu vào bảng user_account: " . mysqli_error($dbconnect);
     }
 
     mysqli_close($dbconnect);
