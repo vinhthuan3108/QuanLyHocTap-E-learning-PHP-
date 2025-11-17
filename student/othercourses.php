@@ -12,17 +12,25 @@ if (isset($_SESSION['full_name'])) {
   if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
-        $tukhoa = $_POST['tukhoa'];
-        $keyword = strtolower(trim($tukhoa));
-        $keyword = str_replace(' ', '', $keyword);
-        $sql = "SELECT c.course_id, c.course_code, c.course_name, c.status
-        FROM course c
-        LEFT JOIN course_member cm ON c.course_id = cm.course_id AND cm.student_id = $user_id
-        WHERE cm.member_id IS NULL AND
-        (LOWER(REPLACE(REPLACE(REPLACE(REPLACE(c.course_name, ' ', ''), 'Đ', 'D'),'đ','d'), ' ', '')) LIKE '%$keyword%' OR c.course_name LIKE '%$tukhoa%')";
-      $result = mysqli_query($dbconnect, $sql);
+    $tukhoa = $_POST['tukhoa'];
+    $keyword = strtolower(trim($tukhoa));
+    $keyword = str_replace(' ', '', $keyword);
+    
+        $sql = "SELECT c.course_id, c.course_code, c.course_name, c.status, c.course_background
+                FROM course c
+                LEFT JOIN course_member cm ON c.course_id = cm.course_id AND cm.student_id = ?
+                WHERE cm.member_id IS NULL AND
+                (LOWER(REPLACE(REPLACE(REPLACE(REPLACE(c.course_name, ' ', ''), 'Đ', 'D'),'đ','d'), ' ', '')) LIKE ? OR c.course_name LIKE ?)";
+        
+        $stmt = mysqli_prepare($dbconnect, $sql);
+        $search_term = "%$keyword%";
+        $search_term2 = "%$tukhoa%";
+        mysqli_stmt_bind_param($stmt, "iss", $user_id, $search_term, $search_term2);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
     } else {
-        $sql = "SELECT c.course_id, c.course_code, c.course_name, c.status
+        // THÊM course_background VÀO ĐÂY
+        $sql = "SELECT c.course_id, c.course_code, c.course_name, c.status, c.course_background
         FROM course c
         LEFT JOIN course_member cm ON c.course_id = cm.course_id AND cm.student_id = $user_id
         WHERE cm.member_id IS NULL";
@@ -100,7 +108,7 @@ if (isset($_SESSION['full_name'])) {
         <div class="col-md-4 mb-4">
           <div class="card">
             <div class="custom-card">
-              <img src="../assets/images/course1.jpg" class="card-img-top" alt="Course 1 Image">
+              <img src=<?php echo "../assets/file/course_background/" . $row['course_background'] ?> class="card-img-top" alt="Course 1 Image">
             </div>
             <div class="card-body">
               <h5 class="card-title"><?php echo $row['course_name']; ?></h5>

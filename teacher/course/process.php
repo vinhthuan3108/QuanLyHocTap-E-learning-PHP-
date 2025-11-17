@@ -183,7 +183,7 @@ if (isset($_POST['create_post'])) {
 
     mysqli_query($dbconnect, $sql);
     mysqli_close($dbconnect);
-    header("Location: post.php");
+    header("Location: post/post.php");
     exit();
 }
 
@@ -255,7 +255,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["create_topic"])) {
     VALUES ('$title_topic','$course_id','$topicdescription',NULL,DEFAULT)";
     $resul = mysqli_query($dbconnect, $sql);
     mysqli_close($dbconnect);
-    header("location: content.php");
+    header("location: content/content.php");
 }
 
 
@@ -437,7 +437,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_topic"])) {
     $sql = "DELETE FROM topics where topic_id = $topic_id";
     $query = mysqli_query($dbconnect, $sql);
     mysqli_close($dbconnect);
-    header('location:content.php');
+    header('location: content/content.php');
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_content"])) {
     $content_id = $_GET['content_id'];

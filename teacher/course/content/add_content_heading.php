@@ -15,7 +15,7 @@ include("../layout.php");
 </head>
 
 <body>
-    <form action="process.php" method="post">
+    <form action="../process.php" method="post">
         <header class="container mt-4">
             <div class="row">
                 <div class="col-md-6">

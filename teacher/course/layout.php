@@ -52,16 +52,34 @@ if (isset($_SESSION['course_id'])) {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <style>
         body {
-            padding-top: 60px;
+            padding-top: 70px;
+            background-color: white;
         }
-        .navbar {
-            padding: 5px;
+
+        nav.navbar {
+            background-color: white !important;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .navbar-nav .nav-link {
+            color: #000 !important;
+            padding: 8px 14px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .dropdown-menu a.dropdown-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark fixed-top">
+    <nav class="navbar navbar-expand-sm navbar-light bg-white fixed-top">
         <div class="container-fluid">
             <a class="navbar-brand" href="#"><?php echo $row_layout['course_code'] . " - " . $row_layout['course_name'] ?></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -93,14 +111,13 @@ if (isset($_SESSION['course_id'])) {
                                 <span>
                                     <?php echo $username_now; ?>
                                 </span>
-                                <img src="<?php echo "../../" . $row_profile['image'] ?>" alt="Avatar" class="img-fluid rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
-                            </a>
+                                <img src="/assets/images/<?php echo $row_profile['image']; ?>" alt="Avatar" class="rounded-circle" width="30" height="30">
                         <?php endif; ?>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="../my.php">Trang cá nhân</a>
+                            <a class="dropdown-item" href="/teacher/my.php">Trang cá nhân</a>
                             <a class="dropdown-item" href="../index.php">Trang chủ</a>
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item" href="../../logout.php">Đăng xuất</a>
+                            <a class="dropdown-item" href="/logout.php">Đăng xuất</a>
                         </div>
                     </li>
                 </ul>

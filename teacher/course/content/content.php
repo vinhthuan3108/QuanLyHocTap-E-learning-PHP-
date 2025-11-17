@@ -25,8 +25,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nội dung khóa học</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
 </head>
 
 <body>
@@ -65,10 +65,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
                             <h4 class="card-title"><?php echo $row_topic['title_topic']; ?></h4>
                         </div>
                         <div class="col-md-6">
-
-                            <div><a type="button" class="btn btn-primary float-end" href="add_content_in_heading.php?topic_id=<?php echo $row_topic['topic_id']; ?>">+ Thêm nội dung mới</a></div>
-
-                            <div><a type="button" class="btn btn-primary float-end me-2" href="edit_content.php?topic_id=<?php echo $row_topic['topic_id']; ?>">+ Sửa nội dung <i class="fas fa-dungeon"></i></a><span>&nbsp;</span></div>
+                            <div>
+                                <a type="button" class="btn btn-primary float-end" href="add_content_in_heading.php?topic_id=<?php echo $row_topic['topic_id']; ?>">+ Thêm nội dung mới</a>
+                            </div>
+                            <div>
+                                <a type="button" class="btn btn-primary float-end me-2" href="edit_content.php?topic_id=<?php echo $row_topic['topic_id']; ?>">Sửa nội dung <i class="fas fa-dungeon"></i></a>
+                                <a href="#" class="btn btn-danger float-end me-2 delete-topic-btn" data-topicid="<?php echo $row_topic['topic_id']; ?>" data-bs-toggle="modal" data-bs-target="#deleteTopicModal">Xóa chủ đề</a>
+                            </div>
                         </div>
                     </div>
                     <p class="card-text"><?php echo $row_topic['description']; ?></p>
@@ -153,7 +156,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
             </div>
         <?php endwhile; ?>
     </div>
+    <!-- Modal xóa chủ đề -->
+<div class="modal fade" id="deleteTopicModal" tabindex="-1" aria-labelledby="deleteTopicModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteTopicModalLabel">Xác nhận xóa chủ đề</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa chủ đề này? Tất cả nội dung bên trong cũng sẽ bị xóa.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <form id="deleteTopicForm" method="post" action="">
+                    <button type="submit" class="btn btn-danger" name="delete_topic">Xóa</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
     <?php include("../../../footer.php"); ?>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const deleteTopicButtons = document.querySelectorAll('.delete-topic-btn');
+        deleteTopicButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const topicId = this.getAttribute('data-topicid');
+                const form = document.querySelector('#deleteTopicForm');
+                form.action = `../process.php?topic_id=${topicId}`;
+            });
+        });
+    });
+</script>
 </body>
 
 </html>

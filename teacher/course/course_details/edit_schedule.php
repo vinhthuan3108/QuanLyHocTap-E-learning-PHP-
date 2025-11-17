@@ -32,7 +32,7 @@ mysqli_close($dbconnect);
         <p>Cập nhật thông tin thời khóa biểu dưới đây</p>
     </header>
     <div class="container mt-5">
-        <form id="scheduleForm" action="process.php" method="post" class="needs-validation" novalidate>
+        <form id="scheduleForm" action="../process.php" method="post" class="needs-validation" novalidate>
             <input type="hidden" name="course_id" value="<?php echo $course_id; ?>">
             <div id="additionalTimes" class="mb-3 row">
                 <?php foreach ($data as $row): ?>
@@ -70,7 +70,7 @@ mysqli_close($dbconnect);
                 <div class="col-sm-12">
                     <button type="button" class="btn btn-primary" onclick="addTimeRow()">Thêm thời gian</button>
                     <button type="submit" class="btn btn-primary" name="update_schedule">Cập nhật thời khóa biểu</button>
-                    <a href="index.php" type="button" class="btn btn-secondary">Quay lại</a>
+                    <a href="../index.php" type="button" class="btn btn-secondary">Quay lại</a>
                 </div>
             </div>
         </form>
