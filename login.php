@@ -4,60 +4,61 @@ include_once('config/connect.php');
 include_once('layout.php');
 try {
     //Chạy tính năng auto dang nhap bằng cookie
-    if (isset($cookie_name)) {
-        if (isset($_COOKIE[$cookie_name]) == 1) {
-            $cookie_data = $_COOKIE[$cookie_name];
-            // tách cookie thành usr và hash
-            parse_str($cookie_data, $cookie_values);
+if (isset($cookie_name)) {
+    if (isset($_COOKIE[$cookie_name]) == 1) {
+        $cookie_data = $_COOKIE[$cookie_name];
+        // tách cookie thành usr và hash
+        parse_str($cookie_data, $cookie_values);
 
-            if (isset($cookie_values['usr']) && isset($cookie_values['hash'])) {
-                $t_username = $cookie_values['usr'];
-                $t_password = $cookie_values['hash'];
+        if (isset($cookie_values['usr']) && isset($cookie_values['hash'])) {
+            $t_username = $cookie_values['usr'];
+            $t_password_hash = $cookie_values['hash']; // Đây là mật khẩu đã mã hóa
 
-                $sql_us = "SELECT us.full_name, us.user_id FROM user us
-                INNER JOIN user_account ua ON us.user_id = ua.user_id
-                WHERE ua.username = '$t_username' ";
+            $sql_us = "SELECT us.full_name, us.user_id FROM user us
+            INNER JOIN user_account ua ON us.user_id = ua.user_id
+            WHERE ua.username = '$t_username' ";
 
-                $result_us = mysqli_query($dbconnect, $sql_us);
-                $row_us = mysqli_fetch_assoc($result_us);
-                $_SESSION['full_name'] = $row_us['full_name'];
-                $_SESSION['user_id'] = $row_us['user_id'];
+            $result_us = mysqli_query($dbconnect, $sql_us);
+            $row_us = mysqli_fetch_assoc($result_us);
+            $_SESSION['full_name'] = $row_us['full_name'];
+            $_SESSION['user_id'] = $row_us['user_id'];
 
-                $sql = "SELECT * FROM user_account WHERE username='$t_username' AND password='$t_password'";
-                $result = mysqli_query($dbconnect, $sql);
-                if ($result) {
-                    if ($row = mysqli_fetch_array($result)) {
-                        $sql_role = "SELECT r.role_name FROM user_account ua
-                        INNER JOIN user_role ur ON ua.user_id = ur.user_id
-                        INNER JOIN role r ON ur.role_id = r.role_id
-                        WHERE ua.username = '$t_username'";
+            // Chỉ cần kiểm tra username, không cần so sánh password hash
+            $sql = "SELECT * FROM user_account WHERE username='$t_username'";
+            $result = mysqli_query($dbconnect, $sql);
+            if ($result) {
+                if ($row = mysqli_fetch_array($result)) {
+                    $sql_role = "SELECT r.role_name FROM user_account ua
+                    INNER JOIN user_role ur ON ua.user_id = ur.user_id
+                    INNER JOIN role r ON ur.role_id = r.role_id
+                    WHERE ua.username = '$t_username'";
 
-                        $result_r = mysqli_query($dbconnect, $sql_role);
-                        if ($result_r) {
-                            if ($row_role = mysqli_fetch_assoc($result_r)) {
-                                switch ($row_role['role_name']) {
-                                    case "student":
-                                        header('location:student/index.php');
-                                        exit;
-                                    case "teacher":
-                                        header('location:teacher/index.php');
-                                        exit;
-                                    case "admin":
-                                        header('location:admin/index.php');
-                                        exit;
-                                    default:
-                                        exit;
-                                }
+                    $result_r = mysqli_query($dbconnect, $sql_role);
+                    if ($result_r) {
+                        if ($row_role = mysqli_fetch_assoc($result_r)) {
+                            switch ($row_role['role_name']) {
+                                case "student":
+                                    header('location:student/index.php');
+                                    exit;
+                                case "teacher":
+                                    header('location:teacher/index.php');
+                                    exit;
+                                case "admin":
+                                    header('location:admin/index.php');
+                                    exit;
+                                default:
+                                    exit;
                             }
-                        } else {
-                            echo "Lỗi câu truy vấn vai trò: " . mysqli_error($dbconnect);
-                            exit;
                         }
+                    } else {
+                        echo "Lỗi câu truy vấn vai trò: " . mysqli_error($dbconnect);
+                        exit;
                     }
                 }
             }
         }
     }
+}
     if (isset($_COOKIE['remember_credentials'])) {
         $remembered_credentials = $_COOKIE['remember_credentials'];
         parse_str($remembered_credentials, $credentials);
@@ -67,30 +68,38 @@ try {
         $remembered_username = '';
         $remembered_password = '';
     }
+
     if (isset($_POST['submit'])) {
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-        $remember = ((isset($_POST['remember']) != 0) ? 1 : "");
-        $remember_auto = ((isset($_POST['remember_auto']) != 0) ? 1 : "");
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $remember = ((isset($_POST['remember']) != 0) ? 1 : "");
+    $remember_auto = ((isset($_POST['remember_auto']) != 0) ? 1 : "");
 
-        if (empty($username) || empty($password)) {
-            $login_error_message = "Thông tin chưa đầy đủ. Vui lòng nhập đầy đủ thông tin.";
-        } else {
-            $sql = "SELECT * FROM user_account WHERE username=? AND password=?";
-            $stmt = mysqli_prepare($dbconnect, $sql);
-            mysqli_stmt_bind_param($stmt, "ss", $username, $password);
-            mysqli_stmt_execute($stmt);
-            $result = mysqli_stmt_get_result($stmt);
+    if (empty($username) || empty($password)) {
+        $login_error_message = "Thông tin chưa đầy đủ. Vui lòng nhập đầy đủ thông tin.";
+    } else {
+        // Sửa câu truy vấn: chỉ lấy username, không so sánh password trực tiếp
+        $sql = "SELECT * FROM user_account WHERE username=?";
+        $stmt = mysqli_prepare($dbconnect, $sql);
+        mysqli_stmt_bind_param($stmt, "s", $username);
+        mysqli_stmt_execute($stmt);
+        $result = mysqli_stmt_get_result($stmt);
 
-            if (!$result) {
-                throw new Exception("Lỗi câu truy vấn: " . mysqli_error($dbconnect));
-            }
+        if (!$result) {
+            throw new Exception("Lỗi câu truy vấn: " . mysqli_error($dbconnect));
+        }
 
-            $row = mysqli_fetch_array($result);
+        $row = mysqli_fetch_array($result);
 
-            if ($row) {
+        if ($row) {
+            // Lấy mật khẩu đã mã hóa từ database
+            $hashed_password = $row['password'];
+            
+            // Sử dụng password_verify để kiểm tra mật khẩu
+            if (password_verify($password, $hashed_password)) {
                 $f_user = $row['username'];
                 $f_pass = $row['password'];
+                
                 if ($remember_auto == 1) {
                     setcookie($cookie_name, 'usr=' . $f_user . '&hash=' . $f_pass, time() + $cookie_time);
                 }
@@ -153,8 +162,12 @@ try {
             } else {
                 $login_error_message = "Tên đăng nhập hoặc mật khẩu không chính xác";
             }
+        } else {
+            $login_error_message = "Tên đăng nhập hoặc mật khẩu không chính xác";
         }
     }
+}
+
 } catch (Exception $exp) {
     echo $exp->getMessage() . '<br>';
     echo 'File: ' . $exp->getFile() . '<br>';
@@ -260,5 +273,3 @@ try {
         }
     </script>
 </body>
-
-</html>
