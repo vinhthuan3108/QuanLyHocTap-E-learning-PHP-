@@ -90,8 +90,7 @@ $row_profile = mysqli_fetch_assoc($result_profile);
 
                             <?php echo $username_now; ?>
 
-                            <img src="../assets/images/course1.jpg"
-                                 class="rounded-circle" width="30" height="30">
+                            <img src="../assets/images/<?php echo $row_profile['image']; ?>" alt="Avatar" class="rounded-circle" width="30" height="30">
                         </a>
 
                         <ul class="dropdown-menu dropdown-menu-end">

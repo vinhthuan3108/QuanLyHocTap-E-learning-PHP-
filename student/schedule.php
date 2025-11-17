@@ -13,7 +13,19 @@ if (isset($_SESSION['full_name']))
     $sql = "SELECT * FROM course co
     INNER JOIN course_member cm ON co.course_id = cm.course_id
     INNER JOIN course_schedule cs ON co.course_id = cs.course_id
-    WHERE student_id = $user_id";
+    WHERE student_id = $user_id
+    ORDER BY 
+        CASE 
+            WHEN cs.day_of_week = '2' THEN 1
+            WHEN cs.day_of_week = '3' THEN 2
+            WHEN cs.day_of_week = '4' THEN 3
+            WHEN cs.day_of_week = '5' THEN 4
+            WHEN cs.day_of_week = '6' THEN 5
+            WHEN cs.day_of_week = '7' THEN 6
+            WHEN cs.day_of_week = '8' THEN 7
+            ELSE 8
+        END,
+        cs.start_time";
     $result = mysqli_query($dbconnect, $sql);
 }
 ?>
@@ -40,8 +52,6 @@ if (isset($_SESSION['full_name']))
             </thead>
             <tbody>
             <?php
-            mysqli_data_seek($result, 0);
-
             while ($row = mysqli_fetch_array($result)) {
             ?>
                 <tr>

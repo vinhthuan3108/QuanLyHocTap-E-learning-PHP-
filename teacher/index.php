@@ -55,7 +55,7 @@ if (isset($_SESSION['user_id'])) {
         <h5>Khóa học hôm nay</h5>
 
         <?php
-        $dayOfWeekNumber = date("N");
+        $dayOfWeekNumber = date("N")+1;
 
         // Query to check if there are courses for the current day
         $sql = "SELECT * FROM course co

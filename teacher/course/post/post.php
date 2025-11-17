@@ -1,6 +1,6 @@
 <?php
+// include("layout.php");
 include("../layout.php");
-
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }

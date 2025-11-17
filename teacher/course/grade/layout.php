@@ -51,6 +51,27 @@ if (isset($_SESSION['course_id'])) {
     <style>
         body {
             padding-top: 70px;
+            background-color: white;
+        }
+
+        nav.navbar {
+            background-color: white !important;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .navbar-nav .nav-link {
+            color: #000 !important;
+            padding: 8px 14px;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .dropdown-menu a.dropdown-item:hover {
+            background-color: rgba(0, 0, 0, 0.05);
         }
     </style>
 </head>

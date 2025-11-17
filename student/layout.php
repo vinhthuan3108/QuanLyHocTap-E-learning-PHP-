@@ -43,14 +43,18 @@ $row_profile = mysqli_fetch_assoc($result_profile);
         .dropdown-menu a.dropdown-item:hover {
             background-color: rgba(91, 87, 87, 0.1);
         }
+
+        /* Đảm bảo container nhất quán */
+        .main-container {
+            min-height: calc(100vh - 70px);
+        }
     </style>
 </head>
 
 <body class="with-navbar">
 
     <nav class="navbar navbar-expand-lg bg-white border-bottom fixed-top">
-        <div class="container-fluid">
-
+        <div class="container">
             <a class="navbar-brand text-dark" href="#">TNT</a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -60,25 +64,19 @@ $row_profile = mysqli_fetch_assoc($result_profile);
             </button>
 
             <div class="collapse navbar-collapse" id="navbarNav">
-
                 <ul class="navbar-nav ms-auto">
-
                     <li class="nav-item">
                         <a class="nav-link" href="index.php">Trang chủ</a>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" href="courses.php">Khóa học của tôi</a>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" href="othercourses.php">Các khóa học khác</a>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" href="schedule.php">Thời khóa biểu</a>
                     </li>
-
                     <li class="nav-item">
                         <a class="nav-link" href="grade.php">Bảng điểm</a>
                     </li>
@@ -87,29 +85,21 @@ $row_profile = mysqli_fetch_assoc($result_profile);
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
-
                             <?php echo $username_now; ?>
-
-                            <img src="../assets/images/course1.jpg" class="rounded-circle"
-                             width="30" height="30">
+                            <img src="../assets/images/<?php echo $row_profile['image']; ?>" alt="Avatar" class="rounded-circle" width="30" height="30">
                         </a>
-
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="my.php">Trang cá nhân</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="../logout.php">Đăng xuất</a></li>
                         </ul>
-
                     </li>
-
                 </ul>
             </div>
-
         </div>
     </nav>
 
+    <main class="main-container"> <!-- Thêm wrapper cho nội dung -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
-
 </html>
