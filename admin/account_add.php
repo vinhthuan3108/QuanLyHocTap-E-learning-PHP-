@@ -98,6 +98,22 @@ mysqli_close($dbconnect);
                     </div>
                 </div>
             </div>
+            <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="password" class="form-label">Mật khẩu</label>
+                <input type="password" class="form-control" id="password" name="password" required placeholder="Nhập mật khẩu">
+                <div class="invalid-feedback">
+                    Vui lòng nhập mật khẩu.
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="confirm_password" class="form-label">Xác nhận mật khẩu</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required placeholder="Nhập lại mật khẩu">
+                <div class="invalid-feedback">
+                    Vui lòng xác nhận mật khẩu.
+                </div>
+            </div>
+        </div>
 
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary" name="sbm_add">Tạo Tài Khoản</button>
@@ -122,6 +138,26 @@ mysqli_close($dbconnect);
                 form.classList.add('was-validated');
             }, false);
         })();
+        document.getElementById('accountForm').addEventListener('submit', function(e) {
+            var password = document.getElementById('password');
+            var confirmPassword = document.getElementById('confirm_password');
+            
+            if (password.value !== confirmPassword.value) {
+                e.preventDefault();
+                e.stopPropagation();
+                confirmPassword.setCustomValidity('Mật khẩu xác nhận không khớp');
+                confirmPassword.reportValidity();
+            } else {
+                confirmPassword.setCustomValidity('');
+            }
+            
+            if (!this.checkValidity()) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            this.classList.add('was-validated');
+        });
     </script>
         <?php include("../footer.php"); ?>
 </body>
