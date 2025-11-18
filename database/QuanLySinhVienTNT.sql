@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Nov 18, 2025 at 03:06 AM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.2.12
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th10 18, 2025 lúc 08:21 PM
+-- Phiên bản máy phục vụ: 10.4.32-MariaDB
+-- Phiên bản PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `quanlysinhvientnt`
+-- Cơ sở dữ liệu: `quanlysinhvientnt`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `course`
+-- Cấu trúc bảng cho bảng `course`
 --
 
 CREATE TABLE `course` (
@@ -36,23 +36,24 @@ CREATE TABLE `course` (
   `teacher_id` bigint(20) NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
-  `status` char(1) NOT NULL
+  `status` char(1) NOT NULL,
+  `price` decimal(10,2) NOT NULL DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `course`
+-- Đang đổ dữ liệu cho bảng `course`
 --
 
-INSERT INTO `course` (`course_id`, `course_background`, `course_code`, `course_name`, `course_description`, `teacher_id`, `start_date`, `end_date`, `status`) VALUES
-(1, '1.jpg', 'SOT366', 'Phát triển mã nguồn mở', 'No description', 9, '2025-01-01', '2025-12-12', 'A'),
-(2, '2.jpg', 'SOT357', 'Kiểm thử phần mềm', 'No description', 9, '2025-01-01', '2025-12-12', 'A'),
-(3, '3.jpg', 'SOT344', 'Trí tuệ nhân tạo', 'No description', 9, '2025-01-01', '2025-12-12', 'A'),
-(5, 'TAB100_tienganha1_a2.jpg', 'TAB100', 'Tiếng Anh A1-A2', 'Tiếng Anh A1-A2', 14, '2025-08-15', '2025-11-29', 'A');
+INSERT INTO `course` (`course_id`, `course_background`, `course_code`, `course_name`, `course_description`, `teacher_id`, `start_date`, `end_date`, `status`, `price`) VALUES
+(1, '1.jpg', 'SOT366', 'Phát triển mã nguồn mở', '20 slide pdf, 20 video, 80 câu bài tập', 9, '2025-01-01', '2025-12-12', 'A', 500000.00),
+(2, '2.jpg', 'SOT357', 'Kiểm thử phần mềm', 'No description', 9, '2025-01-01', '2025-12-12', 'A', 450000.00),
+(3, '3.jpg', 'SOT344', 'Trí tuệ nhân tạo', 'No description', 9, '2025-01-01', '2025-12-12', 'A', 600000.00),
+(5, 'TAB100_tienganha1_a2.jpg', 'TAB100', 'Tiếng Anh A1-A2', 'Tiếng Anh A1-A2', 14, '2025-08-15', '2025-11-29', 'A', 300000.00);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `course_contents`
+-- Cấu trúc bảng cho bảng `course_contents`
 --
 
 CREATE TABLE `course_contents` (
@@ -65,10 +66,19 @@ CREATE TABLE `course_contents` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `course_contents`
+--
+
+INSERT INTO `course_contents` (`contents_id`, `topic_id`, `title_content`, `content_type`, `description_content`, `created_by`, `created_at`) VALUES
+(14, 6, 'Video mở đầu về mã nguồn mở', 'video', 'Video mẫu', NULL, '2025-11-18 10:27:24'),
+(15, 6, 'Chapter 1', 'file', 'Chapter 1 - Mở đầu về phát triển mã nguồn mở', NULL, '2025-11-18 10:27:59'),
+(16, 6, 'Video tham khảo', 'embed', 'Lịch sử hình thành và phát triển ', NULL, '2025-11-18 10:29:10');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `course_member`
+-- Cấu trúc bảng cho bảng `course_member`
 --
 
 CREATE TABLE `course_member` (
@@ -78,7 +88,7 @@ CREATE TABLE `course_member` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `course_member`
+-- Đang đổ dữ liệu cho bảng `course_member`
 --
 
 INSERT INTO `course_member` (`member_id`, `course_id`, `student_id`) VALUES
@@ -110,7 +120,7 @@ INSERT INTO `course_member` (`member_id`, `course_id`, `student_id`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `course_schedule`
+-- Cấu trúc bảng cho bảng `course_schedule`
 --
 
 CREATE TABLE `course_schedule` (
@@ -122,7 +132,7 @@ CREATE TABLE `course_schedule` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `course_schedule`
+-- Đang đổ dữ liệu cho bảng `course_schedule`
 --
 
 INSERT INTO `course_schedule` (`course_schedule_id`, `course_id`, `day_of_week`, `start_time`, `end_time`) VALUES
@@ -134,7 +144,7 @@ INSERT INTO `course_schedule` (`course_schedule_id`, `course_id`, `day_of_week`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `embedded_contents`
+-- Cấu trúc bảng cho bảng `embedded_contents`
 --
 
 CREATE TABLE `embedded_contents` (
@@ -143,10 +153,17 @@ CREATE TABLE `embedded_contents` (
   `embed_code` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `embedded_contents`
+--
+
+INSERT INTO `embedded_contents` (`embedded_id`, `course_content_id`, `embed_code`) VALUES
+(6, 16, 'https://www.youtube.com/embed/p__Lf__h2rU?si=i388Qj9p9Zo2rHC_');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `file_contents`
+-- Cấu trúc bảng cho bảng `file_contents`
 --
 
 CREATE TABLE `file_contents` (
@@ -156,10 +173,17 @@ CREATE TABLE `file_contents` (
   `file_size` decimal(10,0) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `file_contents`
+--
+
+INSERT INTO `file_contents` (`file_id`, `course_content_id`, `file_name`, `file_size`) VALUES
+(4, 15, 'Chapter1.pdf', 4341);
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `grade`
+-- Cấu trúc bảng cho bảng `grade`
 --
 
 CREATE TABLE `grade` (
@@ -170,7 +194,7 @@ CREATE TABLE `grade` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `grade`
+-- Đang đổ dữ liệu cho bảng `grade`
 --
 
 INSERT INTO `grade` (`grade_id`, `column_id`, `member_id`, `score`) VALUES
@@ -250,7 +274,7 @@ INSERT INTO `grade` (`grade_id`, `column_id`, `member_id`, `score`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `grade_column`
+-- Cấu trúc bảng cho bảng `grade_column`
 --
 
 CREATE TABLE `grade_column` (
@@ -261,7 +285,7 @@ CREATE TABLE `grade_column` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `grade_column`
+-- Đang đổ dữ liệu cho bảng `grade_column`
 --
 
 INSERT INTO `grade_column` (`column_id`, `course_id`, `grade_column_name`, `proportion`) VALUES
@@ -278,7 +302,7 @@ INSERT INTO `grade_column` (`column_id`, `course_id`, `grade_column_name`, `prop
 -- --------------------------------------------------------
 
 --
--- Table structure for table `post`
+-- Cấu trúc bảng cho bảng `post`
 --
 
 CREATE TABLE `post` (
@@ -293,7 +317,7 @@ CREATE TABLE `post` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `role`
+-- Cấu trúc bảng cho bảng `role`
 --
 
 CREATE TABLE `role` (
@@ -302,7 +326,7 @@ CREATE TABLE `role` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `role`
+-- Đang đổ dữ liệu cho bảng `role`
 --
 
 INSERT INTO `role` (`role_id`, `role_name`) VALUES
@@ -313,7 +337,7 @@ INSERT INTO `role` (`role_id`, `role_name`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `text_contents`
+-- Cấu trúc bảng cho bảng `text_contents`
 --
 
 CREATE TABLE `text_contents` (
@@ -325,7 +349,7 @@ CREATE TABLE `text_contents` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `topics`
+-- Cấu trúc bảng cho bảng `topics`
 --
 
 CREATE TABLE `topics` (
@@ -337,10 +361,17 @@ CREATE TABLE `topics` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `topics`
+--
+
+INSERT INTO `topics` (`topic_id`, `title_topic`, `course_id`, `description`, `created_by`, `created_at`) VALUES
+(6, 'Tổng quan về phần mềm mã nguồn mở', 1, '<p>Hiểu về kiến thức thế nào là phần mềm nguồn mở.</p><p>Khi phát triển phần mềm nguồn mở thì cần phải tuân theo nguyên tắc nào</p>', NULL, '2025-11-18 10:24:48');
+
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user`
+-- Cấu trúc bảng cho bảng `user`
 --
 
 CREATE TABLE `user` (
@@ -358,11 +389,11 @@ CREATE TABLE `user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `user`
+-- Đang đổ dữ liệu cho bảng `user`
 --
 
 INSERT INTO `user` (`user_id`, `full_name`, `date_of_birth`, `gender`, `address`, `phone`, `email`, `citizen_id`, `image`, `verification_code`, `email_verified_at`) VALUES
-(1, 'Vĩnh Thuận', '2005-10-01', 'M', 'Xã Vĩnh Phương, Thành phố Nha Trang, Khánh Hòa', '0349396534', 'vinhthuan@gmail.com', '056205001946', NULL, '', NULL),
+(1, 'Vĩnh Thuận', '2005-10-01', 'M', 'Xã Vĩnh Phương, Thành phố Nha Trang, Khánh Hòa', '0349396534', 'vinhthuan@gmail.com', '056205001946', 'vinhthuan.jpg', '', NULL),
 (2, 'Trần Ngọc Hân', '2003-07-15', 'F', 'Phường Tân Lập, Thành phố Nha Trang, Khánh Hòa', '0358237456', 'tranngochan@gmail.com', '056205001952', NULL, '', NULL),
 (3, 'Lê Việt Hùng', '1999-11-02', 'M', 'Phường Phước Long, Thành phố Nha Trang, Khánh Hòa', '0394728165', 'lethanhbinh@gmail.com', '056205001953', NULL, '', NULL),
 (4, 'Phạm Thị Mỹ Duyên', '2001-04-23', 'F', 'Phường 7, Thành phố Tuy Hòa, Phú Yên', '0387429513', 'phammyduyen@gmail.com', '056205001954', NULL, '', NULL),
@@ -370,15 +401,16 @@ INSERT INTO `user` (`user_id`, `full_name`, `date_of_birth`, `gender`, `address`
 (6, 'Đặng Hoàng Yến', '2004-09-11', 'F', 'Xã Cam Hải Tây, Huyện Cam Lâm, Khánh Hòa', '0362859437', 'danghoangyen@gmail.com', '056205001956', NULL, '', NULL),
 (7, 'Võ Hữu Tài', '2000-05-09', 'M', 'Phường Ninh Hiệp, Thị xã Ninh Hòa, Khánh Hòa', '0371948256', 'vohuutai@gmail.com', '056205001957', NULL, '', NULL),
 (8, 'Nguyễn Thị Thu Hà', '2003-02-18', 'F', 'Phường Phú Lâm, Thành phố Tuy Hòa, Phú Yên', '0392748615', 'nguyenthuhuha@gmail.com', '056205001958', NULL, '', NULL),
-(9, 'Huỳnh Xuân Nam', '2005-12-01', 'M', 'Xã An Phú, Thành phố Tuy Hòa, Phú Yên', '0349396524', 'huynhxuannam@gmail.com', '056205001943', NULL, '', NULL),
+(9, 'Huỳnh Xuân Nam', '2005-12-01', 'M', 'Xã An Phú, Thành phố Tuy Hòa, Phú Yên', '0349396524', 'huynhxuannam@gmail.com', '056205001943', 'huynhxuannam.jpg', '', NULL),
 (10, 'Nguyễn Minh Tài', '2000-01-20', 'M', 'Xã Đại Lãnh, Huyện Vạn Ninh, Khánh Hòa', '0372424264', 'nguyenminhtai@gmail.com', '056205000218', NULL, '', NULL),
 (14, 'Lê Văn Lương', '2000-01-20', 'M', 'Xã Đại Lãnh, Huyện Vạn Ninh, Khánh Hòa', '0372424264', 'levanluong@gmail.com', '056205000218', NULL, '', NULL),
-(20, 'Huỳnh Thành', '2025-11-19', 'M', 'phú yên', '0947138175', 'nam.hx.64cntt@ntu.edu.vn', '054204000313', 'male.jpeg', '', '2025-11-17 08:22:31');
+(20, 'Huỳnh Thành', '2025-11-19', 'M', 'phú yên', '0947138175', 'nam.hx.64cntt@ntu.edu.vn', '054204000313', 'male.jpeg', '', '2025-11-17 08:22:31'),
+(22, 'Vĩnh Thuận', '2025-11-27', 'M', '123 Nha Trang, Khánh Hòa', '1111111', 'vinhthuan9@gmail.com', '111111', 'vinhthuan.jpg', '', '2025-11-18 10:57:10');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_account`
+-- Cấu trúc bảng cho bảng `user_account`
 --
 
 CREATE TABLE `user_account` (
@@ -391,7 +423,7 @@ CREATE TABLE `user_account` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `user_account`
+-- Đang đổ dữ liệu cho bảng `user_account`
 --
 
 INSERT INTO `user_account` (`account_id`, `username`, `password`, `user_id`, `reset_token`, `reset_token_expiry`) VALUES
@@ -406,12 +438,13 @@ INSERT INTO `user_account` (`account_id`, `username`, `password`, `user_id`, `re
 (9, 'huynhxuannam', '$2y$10$gsUuHnxcuhHi3.I2rp/qOO1hsa1qDg6H/vlDsQAQ5/PJANPS.x2p.', 9, NULL, NULL),
 (10, 'nguyenminhtai', '$2y$10$9rBDhRO0P23WNAqDffm/DOy2rxOGD4FJ3FSOpcKWIKVo/wK3O7Xtm', 10, NULL, NULL),
 (14, 'levanluong', '$2y$10$7.0R3THPF9nVc4i1xNkNDO3YRzLgbkXTEcGdyMJATx4KYjavvcgYe', 14, NULL, NULL),
-(15, 'thanhhuynh', '$2y$10$F8d8sKsXYW5g4dtlKLNlnOl8H67VlY9o9mzscHhjgLT1D1wN31Xo6', 20, NULL, NULL);
+(15, 'thanhhuynh', '$2y$10$F8d8sKsXYW5g4dtlKLNlnOl8H67VlY9o9mzscHhjgLT1D1wN31Xo6', 20, NULL, NULL),
+(17, 'vinhthuan2', '$2y$12$F.M/2iDd.RvJY7bKdJxw5ehwx9VqmeHSJCUMkDwzVlvf.j.9P1/wS', 22, NULL, NULL);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `user_role`
+-- Cấu trúc bảng cho bảng `user_role`
 --
 
 CREATE TABLE `user_role` (
@@ -420,7 +453,7 @@ CREATE TABLE `user_role` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data for table `user_role`
+-- Đang đổ dữ liệu cho bảng `user_role`
 --
 
 INSERT INTO `user_role` (`user_id`, `role_id`) VALUES
@@ -434,12 +467,13 @@ INSERT INTO `user_role` (`user_id`, `role_id`) VALUES
 (8, 1),
 (9, 2),
 (10, 3),
-(20, 1);
+(20, 1),
+(22, 1);
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `video_contents`
+-- Cấu trúc bảng cho bảng `video_contents`
 --
 
 CREATE TABLE `video_contents` (
@@ -450,25 +484,32 @@ CREATE TABLE `video_contents` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Indexes for dumped tables
+-- Đang đổ dữ liệu cho bảng `video_contents`
+--
+
+INSERT INTO `video_contents` (`video_id`, `course_content_id`, `video_url`, `video_size`) VALUES
+(6, 14, 'Chapter1.mkv', 1898);
+
+--
+-- Chỉ mục cho các bảng đã đổ
 --
 
 --
--- Indexes for table `course`
+-- Chỉ mục cho bảng `course`
 --
 ALTER TABLE `course`
   ADD PRIMARY KEY (`course_id`),
   ADD KEY `fk_course_teacher_id` (`teacher_id`);
 
 --
--- Indexes for table `course_contents`
+-- Chỉ mục cho bảng `course_contents`
 --
 ALTER TABLE `course_contents`
   ADD PRIMARY KEY (`contents_id`),
   ADD KEY `topic_id` (`topic_id`);
 
 --
--- Indexes for table `course_member`
+-- Chỉ mục cho bảng `course_member`
 --
 ALTER TABLE `course_member`
   ADD PRIMARY KEY (`member_id`),
@@ -476,28 +517,28 @@ ALTER TABLE `course_member`
   ADD KEY `fk_course_member_course_id` (`course_id`);
 
 --
--- Indexes for table `course_schedule`
+-- Chỉ mục cho bảng `course_schedule`
 --
 ALTER TABLE `course_schedule`
   ADD PRIMARY KEY (`course_schedule_id`),
   ADD KEY `fk_course_schedule_course_id` (`course_id`);
 
 --
--- Indexes for table `embedded_contents`
+-- Chỉ mục cho bảng `embedded_contents`
 --
 ALTER TABLE `embedded_contents`
   ADD PRIMARY KEY (`embedded_id`),
   ADD KEY `course_content_id` (`course_content_id`);
 
 --
--- Indexes for table `file_contents`
+-- Chỉ mục cho bảng `file_contents`
 --
 ALTER TABLE `file_contents`
   ADD PRIMARY KEY (`file_id`),
   ADD KEY `course_content_id` (`course_content_id`);
 
 --
--- Indexes for table `grade`
+-- Chỉ mục cho bảng `grade`
 --
 ALTER TABLE `grade`
   ADD PRIMARY KEY (`grade_id`),
@@ -505,13 +546,13 @@ ALTER TABLE `grade`
   ADD KEY `fk_grade_column_id` (`column_id`);
 
 --
--- Indexes for table `grade_column`
+-- Chỉ mục cho bảng `grade_column`
 --
 ALTER TABLE `grade_column`
   ADD PRIMARY KEY (`column_id`);
 
 --
--- Indexes for table `post`
+-- Chỉ mục cho bảng `post`
 --
 ALTER TABLE `post`
   ADD PRIMARY KEY (`post_id`),
@@ -519,228 +560,228 @@ ALTER TABLE `post`
   ADD KEY `course_id` (`course_id`);
 
 --
--- Indexes for table `role`
+-- Chỉ mục cho bảng `role`
 --
 ALTER TABLE `role`
   ADD PRIMARY KEY (`role_id`);
 
 --
--- Indexes for table `text_contents`
+-- Chỉ mục cho bảng `text_contents`
 --
 ALTER TABLE `text_contents`
   ADD PRIMARY KEY (`text_id`),
   ADD KEY `course_content_id` (`course_content_id`);
 
 --
--- Indexes for table `topics`
+-- Chỉ mục cho bảng `topics`
 --
 ALTER TABLE `topics`
   ADD PRIMARY KEY (`topic_id`),
   ADD KEY `course_id` (`course_id`);
 
 --
--- Indexes for table `user`
+-- Chỉ mục cho bảng `user`
 --
 ALTER TABLE `user`
   ADD PRIMARY KEY (`user_id`);
 
 --
--- Indexes for table `user_account`
+-- Chỉ mục cho bảng `user_account`
 --
 ALTER TABLE `user_account`
   ADD PRIMARY KEY (`account_id`),
   ADD KEY `fk_user_account_user_id` (`user_id`);
 
 --
--- Indexes for table `user_role`
+-- Chỉ mục cho bảng `user_role`
 --
 ALTER TABLE `user_role`
   ADD PRIMARY KEY (`user_id`,`role_id`),
   ADD KEY `fk_user_role_role_id` (`role_id`);
 
 --
--- Indexes for table `video_contents`
+-- Chỉ mục cho bảng `video_contents`
 --
 ALTER TABLE `video_contents`
   ADD PRIMARY KEY (`video_id`),
   ADD KEY `course_content_id` (`course_content_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT cho các bảng đã đổ
 --
 
 --
--- AUTO_INCREMENT for table `course`
+-- AUTO_INCREMENT cho bảng `course`
 --
 ALTER TABLE `course`
-  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `course_contents`
+-- AUTO_INCREMENT cho bảng `course_contents`
 --
 ALTER TABLE `course_contents`
-  MODIFY `contents_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `contents_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
--- AUTO_INCREMENT for table `course_member`
+-- AUTO_INCREMENT cho bảng `course_member`
 --
 ALTER TABLE `course_member`
   MODIFY `member_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
--- AUTO_INCREMENT for table `course_schedule`
+-- AUTO_INCREMENT cho bảng `course_schedule`
 --
 ALTER TABLE `course_schedule`
-  MODIFY `course_schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `course_schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `embedded_contents`
+-- AUTO_INCREMENT cho bảng `embedded_contents`
 --
 ALTER TABLE `embedded_contents`
-  MODIFY `embedded_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `embedded_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `file_contents`
+-- AUTO_INCREMENT cho bảng `file_contents`
 --
 ALTER TABLE `file_contents`
-  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT for table `grade`
+-- AUTO_INCREMENT cho bảng `grade`
 --
 ALTER TABLE `grade`
-  MODIFY `grade_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
+  MODIFY `grade_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=145;
 
 --
--- AUTO_INCREMENT for table `grade_column`
+-- AUTO_INCREMENT cho bảng `grade_column`
 --
 ALTER TABLE `grade_column`
   MODIFY `column_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
--- AUTO_INCREMENT for table `post`
+-- AUTO_INCREMENT cho bảng `post`
 --
 ALTER TABLE `post`
   MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `role`
+-- AUTO_INCREMENT cho bảng `role`
 --
 ALTER TABLE `role`
   MODIFY `role_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `text_contents`
+-- AUTO_INCREMENT cho bảng `text_contents`
 --
 ALTER TABLE `text_contents`
   MODIFY `text_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `topics`
+-- AUTO_INCREMENT cho bảng `topics`
 --
 ALTER TABLE `topics`
-  MODIFY `topic_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `topic_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `user`
+-- AUTO_INCREMENT cho bảng `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
--- AUTO_INCREMENT for table `user_account`
+-- AUTO_INCREMENT cho bảng `user_account`
 --
 ALTER TABLE `user_account`
-  MODIFY `account_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `account_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
--- AUTO_INCREMENT for table `video_contents`
+-- AUTO_INCREMENT cho bảng `video_contents`
 --
 ALTER TABLE `video_contents`
-  MODIFY `video_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `video_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- Constraints for dumped tables
+-- Các ràng buộc cho các bảng đã đổ
 --
 
 --
--- Constraints for table `course`
+-- Các ràng buộc cho bảng `course`
 --
 ALTER TABLE `course`
   ADD CONSTRAINT `fk_course_teacher_id` FOREIGN KEY (`teacher_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `course_contents`
+-- Các ràng buộc cho bảng `course_contents`
 --
 ALTER TABLE `course_contents`
   ADD CONSTRAINT `course_contents_ibfk_1` FOREIGN KEY (`topic_id`) REFERENCES `topics` (`topic_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `course_member`
+-- Các ràng buộc cho bảng `course_member`
 --
 ALTER TABLE `course_member`
   ADD CONSTRAINT `fk_course_member_course_id` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_course_member_student_id` FOREIGN KEY (`student_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `course_schedule`
+-- Các ràng buộc cho bảng `course_schedule`
 --
 ALTER TABLE `course_schedule`
   ADD CONSTRAINT `fk_course_schedule_course_id` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `embedded_contents`
+-- Các ràng buộc cho bảng `embedded_contents`
 --
 ALTER TABLE `embedded_contents`
   ADD CONSTRAINT `embedded_contents_ibfk_1` FOREIGN KEY (`course_content_id`) REFERENCES `course_contents` (`contents_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `file_contents`
+-- Các ràng buộc cho bảng `file_contents`
 --
 ALTER TABLE `file_contents`
   ADD CONSTRAINT `file_contents_ibfk_1` FOREIGN KEY (`course_content_id`) REFERENCES `course_contents` (`contents_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `grade`
+-- Các ràng buộc cho bảng `grade`
 --
 ALTER TABLE `grade`
   ADD CONSTRAINT `fk_grade_column_id` FOREIGN KEY (`column_id`) REFERENCES `grade_column` (`column_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_grade_member_id` FOREIGN KEY (`member_id`) REFERENCES `course_member` (`member_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `post`
+-- Các ràng buộc cho bảng `post`
 --
 ALTER TABLE `post`
   ADD CONSTRAINT `post_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `post_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE SET NULL ON UPDATE CASCADE;
 
 --
--- Constraints for table `text_contents`
+-- Các ràng buộc cho bảng `text_contents`
 --
 ALTER TABLE `text_contents`
   ADD CONSTRAINT `text_contents_ibfk_1` FOREIGN KEY (`course_content_id`) REFERENCES `course_contents` (`contents_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `topics`
+-- Các ràng buộc cho bảng `topics`
 --
 ALTER TABLE `topics`
   ADD CONSTRAINT `topics_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `user_account`
+-- Các ràng buộc cho bảng `user_account`
 --
 ALTER TABLE `user_account`
   ADD CONSTRAINT `fk_user_account_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `user_role`
+-- Các ràng buộc cho bảng `user_role`
 --
 ALTER TABLE `user_role`
   ADD CONSTRAINT `fk_user_role_role_id` FOREIGN KEY (`role_id`) REFERENCES `role` (`role_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_user_role_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `video_contents`
+-- Các ràng buộc cho bảng `video_contents`
 --
 ALTER TABLE `video_contents`
   ADD CONSTRAINT `video_contents_ibfk_1` FOREIGN KEY (`course_content_id`) REFERENCES `course_contents` (`contents_id`) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -749,5 +790,3 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-
-

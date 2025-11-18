@@ -117,6 +117,57 @@ if (isset($_SESSION['full_name'])) {
             ?>
         </div>
     </div>
+    <div class="container mt-5">
+            <h5>Khóa học hôm nay</h5>
+
+            <?php
+            $dayOfWeekNumber = date("N")+1;
+
+            // Query to check if there are courses for the current day
+            $sql = "SELECT * FROM course co
+            INNER JOIN course_member cm ON co.course_id = cm.course_id
+            INNER JOIN course_schedule cs ON co.course_id = cs.course_id
+            WHERE student_id = $user_id AND day_of_week = $dayOfWeekNumber";
+
+            $result = mysqli_query($dbconnect, $sql);
+            $num_rows = mysqli_num_rows($result);
+            if ($num_rows > 0) {
+                // Display courses
+            ?>
+            <div class="row">
+                <?php
+                    mysqli_data_seek($result, 0);
+                    while ($row = mysqli_fetch_array($result)) {
+                    ?>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="custom-card">
+                            <img src=<?php echo "../assets/file/course_background/" . $row['course_background'] ?> class="card-img-top" alt="Course 1 Image">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title"><?php echo $row['course_name'];?></h5>
+                            <p class="card-text">
+                                Mã khóa học: <?php echo $row['course_code'];?> <br>
+                                Thời gian: Từ <?php echo $row['start_time'] . " đến " . $row['end_time']?>
+                            </p>
+
+                            <a class="btn btn-primary" href="course/index.php?id=<?php echo $row['course_id']; ?>">Truy
+                                cập</a>
+                        </div>
+                    </div>
+                </div>
+                <?php
+                    }
+                    ?>
+            </div>
+            <?php
+            } else {
+            ?>
+            <p>Không có khóa học nào trong hôm nay.</p>
+            <?php
+            }
+            ?>
+        </div>
 </body>
 
 </html>

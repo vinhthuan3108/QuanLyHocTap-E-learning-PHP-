@@ -66,14 +66,15 @@ if (isset($_POST['edit_course'])) {
     $start_date = $_POST['start_date'];
     $end_date = $_POST['end_date'];
     $course_id = $_SESSION['course_id'];
-
+    $price = $_POST['price'];
     // Cập nhật thông tin khóa học trong cơ sở dữ liệu
     $update_course_query = "UPDATE course SET
                             course_name = '$course_name',
                             course_code = '$course_code',
                             course_description = '$course_description',
                             start_date = '$start_date',
-                            end_date = '$end_date'
+                            end_date = '$end_date',
+                            price = '$price'
                             WHERE course_id = $course_id";
 
     mysqli_query($dbconnect, $update_course_query);
