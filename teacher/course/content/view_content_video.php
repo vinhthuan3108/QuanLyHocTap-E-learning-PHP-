@@ -38,7 +38,7 @@ $result=mysqli_query($dbconnect,$sql);
         <div class="row">
             <div class="col-md-6">
                 <p>
-                    <b>Tạo bởi: </b> <img src="../../assets/images/<?php echo $row_vd['image'] ?> " alt="Avatar" class="img-fluid rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+                    <b>Tạo bởi: </b> <img src="../../../assets/images/<?php echo $row_vd['image'] ?> " alt="Avatar" class="img-fluid rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
                     <span><?php echo $row_vd['full_name']; ?></span>
                 </p>
             </div>
@@ -64,7 +64,7 @@ $result=mysqli_query($dbconnect,$sql);
         </div>
     </div>
     <?php endwhile; ?>
-    <?php include("../../footer.php"); ?>
+    <?php include("../../../footer.php"); ?>
 </body>
 
 </html>

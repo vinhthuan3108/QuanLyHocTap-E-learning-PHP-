@@ -1,6 +1,6 @@
 <?php
 include('../layout.php');
-include_once('../../config/connect.php');
+include_once('../../../config/connect.php');
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -36,7 +36,7 @@ $result = mysqli_query($dbconnect, $sql);
             <div class="row">
                 <div class="col-md-6">
                     <p>
-                        <b>Tạo bởi: </b> <img src="../../assets/images/<?php echo $row_vd['image'] ?> " alt="Avatar" class="img-fluid rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+                        <b>Tạo bởi: </b> <img src="../../../assets/images/<?php echo $row_vd['image'] ?> " alt="Avatar" class="img-fluid rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
                         <span><?php echo $row_vd['full_name']; ?></span>
                     </p>
                 </div>
@@ -51,9 +51,23 @@ $result = mysqli_query($dbconnect, $sql);
         <div class="container mt-3">
             <div class="row">
                 <div class="col-md-7">
-                    <iframe id="inlineFrameExample" title="Inline Frame Example" width="100%" height="450" src="../../assets/<?php echo $row_vd['video_url']?>">
-                    </iframe>
+                    <?php
+                    // Kiểm tra video_url tồn tại và file thực sự có trên server
+                    $video_path = "../../../assets/" . $row_vd['video_url'];
+                    if (!empty($row_vd['video_url']) && file_exists($video_path)) :
+                    ?>
+                        <iframe
+                            id="inlineFrameExample"
+                            title="Inline Frame Example"
+                            width="100%"
+                            height="450"
+                            src="<?php echo $video_path; ?>">
+                        </iframe>
+                    <?php else: ?>
+                        <div class="alert alert-warning">Video chưa có hoặc không tồn tại.</div>
+                    <?php endif; ?>
                 </div>
+
                 <div class="card col-md-5">
                     <div class="card-body">
                         <h5>Mô tả video</h5>
@@ -64,7 +78,7 @@ $result = mysqli_query($dbconnect, $sql);
             </div>
         </div>
     <?php endwhile; ?>
-    <?php include("../../footer.php"); ?>
+    <?php include("../../../footer.php"); ?>
 </body>
 
 </html>

@@ -1,5 +1,5 @@
 <?php
-include('layout.php');
+include('../layout.php');
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -19,12 +19,20 @@ $topic_id = isset($_GET['topic_id']) ? $_GET['topic_id'] : "";
 </head>
 
 <body>
+    <?php
+    $back_link = "content.php"; // mặc định
+    if (isset($_GET['edit']) && $_GET['edit'] == 1) {
+        $back_link = "edit_content.php?topic_id=" . (isset($_GET['topic_id']) ? intval($_GET['topic_id']) : 0);
+    }
+    ?>
+
     <header class="container mt-4">
         <h3>
-            <a href="content.php"><i class="bi bi-arrow-left-circle"></i></a>
-            Tạo chủ đề mới
+            <a href="<?php echo $back_link; ?>"><i class="bi bi-arrow-left-circle"></i></a>
+            Tạo nội dung mới
         </h3>
     </header>
+
     <div class="container mt-4">
         <ul class="nav nav-tabs">
             <?php
@@ -42,18 +50,18 @@ $topic_id = isset($_GET['topic_id']) ? $_GET['topic_id'] : "";
         switch ($nav_id) {
             case 1:
                 echo '
-                    <form action="process.php?topic_id=' . $topic_id . '" method="post" class="row g-3" enctype="multipart/form-data">
+                    <form action="../process.php?topic_id=' . $topic_id . '" method="post" class="row g-3" enctype="multipart/form-data">
                         <div class="col-12">
                             <label for="file_title" class="form-label">Tiêu đề bài học</label>
                             <input type="text" class="form-control" id="file_title" name="titlecontent" required>
                         </div>
                         <div class="col-12">
                             <label for="inputAddress2" class="form-label">Mô tả bài học</label>
-                            <input type="textarea" class="form-control" id="inputAddress2" name="title_description" value="No description" required>
+                            <textarea class="form-control" id="inputAddress2" name="title_description" required></textarea >
                         </div>
                         <div class="col-12">
-                            <label for="videoInput" class="form-label">Tải lên file video</label required>
-                            <input type="file" class="form-control" id="videoInput" name="contentVideo">
+                            <label for="videoInput" class="form-label">Tải lên file video</label>
+                            <input type="file" class="form-control" id="videoInput" name="contentVideo" required>
                         </div>
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary" name="create_video">Lưu nội dung</button>
@@ -63,14 +71,14 @@ $topic_id = isset($_GET['topic_id']) ? $_GET['topic_id'] : "";
 
             case 2:
                 echo '
-                    <form action="process.php?topic_id=' . $topic_id . '" method="post" class="row g-3">
+                    <form action="../process.php?topic_id=' . $topic_id . '" method="post" class="row g-3">
                         <div class="col-12">
                             <label for="file_title" class="form-label">Tiêu đề bài học</label>
                             <input type="text" class="form-control" id="file_title" name="titlecontent" required>
                         </div>
                         <div class="col-12">
                             <label for="inputAddress2" class="form-label">Mô tả bài học </label>
-                            <input type="textarea" class="form-control" id="inputAddress2" name="title_description" value="No description" required>
+                            <textarea class="form-control" id="inputAddress2" name="title_description" required></textarea >
                         </div>
                         <div class="col-12">
                             <label for="inputCity" class="form-label">Dán mã nhúng vào đây</label>
@@ -84,14 +92,14 @@ $topic_id = isset($_GET['topic_id']) ? $_GET['topic_id'] : "";
 
             case 3:
                 echo '
-                    <form action="process.php?topic_id=' . $topic_id . '" method="post" class="row g-3" enctype="multipart/form-data">
+                    <form action="../process.php?topic_id=' . $topic_id . '" method="post" class="row g-3" enctype="multipart/form-data">
                         <div class="col-12">
                             <label for="file_title" class="form-label">Tiêu đề bài học</label>
                             <input type="text" class="form-control" id="file_title" name="titlecontent" required>
                         </div>
                         <div class="col-12">
                             <label for="inputAddress2" class="form-label">Mô tả bài học </label>
-                            <input type="textarea" class="form-control" id="inputAddress2" name="title_description" value="No description" required>
+                           <textarea class="form-control" id="inputAddress2" name="title_description" required></textarea >
                         </div>
                         <div class="col-12">
                             <label for="inputCity" class="form-label">Tải lên tập tin</label>
@@ -105,14 +113,14 @@ $topic_id = isset($_GET['topic_id']) ? $_GET['topic_id'] : "";
 
             case 4:
                 echo '
-                    <form action="process.php?topic_id=' . $topic_id . '" method="post" class="row g-3">
+                    <form action="../process.php?topic_id=' . $topic_id . '" method="post" class="row g-3">
                         <div class="col-12">
                             <label for="file_title" class="form-label">Tiêu đề bài học</label>
                             <input type="text" class="form-control" id="file_title" name="titlecontent" required>
                         </div>
                         <div class="col-12">
                             <label for="inputAddress2" class="form-label">Mô tả bài học</label>
-                            <input type="textarea" class="form-control" id="inputAddress2" name="title_description" value="No description" required>
+                            <textarea class="form-control" id="inputAddress2" name="title_description" required></textarea >
                         </div>
                         <div class="col-12">
                             <div class="form-group">
@@ -194,7 +202,7 @@ $topic_id = isset($_GET['topic_id']) ? $_GET['topic_id'] : "";
             document.getElementById('postContent').value = content;
         });
     </script>
-    <?php include("../../footer.php"); ?>
+    <?php include("../../../footer.php"); ?>
 </body>
 
 </html>

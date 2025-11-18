@@ -1,5 +1,5 @@
 <?php
-include('layout.php');
+include('../layout.php');
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -219,7 +219,7 @@ if (isset($_GET['nav_id'])) {
             document.getElementById('postContent').value = content;
         });
     </script>
-    <?php include("../../footer.php"); ?>
+    <?php include("../../../footer.php"); ?>
 </body>
 
 </html>
