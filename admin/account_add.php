@@ -43,21 +43,35 @@ mysqli_close($dbconnect);
         <!-- Body - Registration Form -->
         <form action="process.php?id=<?php echo $role_id; ?>" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate id="accountForm">
         <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="fullName" class="form-label">Họ và tên</label>
-                    <input type="text" class="form-control" id="fullName" name="full_name" required placeholder="Nhập họ tên">
-                    <div class="invalid-feedback">
-                        Họ và tên không được trống.
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <label for="idCard" class="form-label">Mã số căn cước công dân</label>
-                    <input type="text" class="form-control" id="idCard" name="citizen_id" required placeholder="Nhập CCCD">
-                    <div class="invalid-feedback">
-                        Mã số căn cước công dân không được trống.
-                    </div>
+            <div class="col-md-6">
+                <label for="fullName" class="form-label">Họ và tên</label>
+                <input type="text" class="form-control" id="fullName" name="full_name" required placeholder="Nhập họ tên">
+                <div class="invalid-feedback">
+                    Họ và tên không được trống.
                 </div>
             </div>
+            <div class="col-md-6">
+                <label for="username" class="form-label">Tên tài khoản</label>
+                <input type="text" class="form-control" id="username" name="username" required placeholder="Nhập tên tài khoản">
+                <div class="invalid-feedback">
+                    Tên tài khoản không được trống.
+                </div>
+                <div id="usernameFeedback" class="form-text"></div>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="idCard" class="form-label">Mã số căn cước công dân</label>
+                <input type="text" class="form-control" id="idCard" name="citizen_id" required placeholder="Nhập CCCD">
+                <div class="invalid-feedback">
+                    Mã số căn cước công dân không được trống.
+                </div>
+            </div>
+            <div class="col-md-6">
+                <!-- Các trường khác giữ nguyên -->
+            </div>
+        </div>
 
             <div class="row mb-3">
                 <div class="col-md-4">
@@ -98,6 +112,22 @@ mysqli_close($dbconnect);
                     </div>
                 </div>
             </div>
+            <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="password" class="form-label">Mật khẩu</label>
+                <input type="password" class="form-control" id="password" name="password" required placeholder="Nhập mật khẩu">
+                <div class="invalid-feedback">
+                    Vui lòng nhập mật khẩu.
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label for="confirm_password" class="form-label">Xác nhận mật khẩu</label>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required placeholder="Nhập lại mật khẩu">
+                <div class="invalid-feedback">
+                    Vui lòng xác nhận mật khẩu.
+                </div>
+            </div>
+        </div>
 
             <div class="mb-3">
                 <button type="submit" class="btn btn-primary" name="sbm_add">Tạo Tài Khoản</button>
@@ -122,6 +152,66 @@ mysqli_close($dbconnect);
                 form.classList.add('was-validated');
             }, false);
         })();
+
+        document.getElementById('username').addEventListener('blur', function() {
+    checkUsernameAvailability(this.value);
+});
+
+function checkUsernameAvailability(username) {
+    if (username.length < 3) {
+        document.getElementById('usernameFeedback').innerHTML = 'Tên tài khoản phải có ít nhất 3 ký tự';
+        document.getElementById('usernameFeedback').className = 'form-text text-danger';
+        return;
+    }
+    
+    fetch('check_username.php?username=' + encodeURIComponent(username))
+        .then(response => response.json())
+        .then(data => {
+            const feedback = document.getElementById('usernameFeedback');
+            if (data.available) {
+                feedback.innerHTML = 'Tên tài khoản có thể sử dụng';
+                feedback.className = 'form-text text-success';
+            } else {
+                feedback.innerHTML = 'Tên tài khoản đã tồn tại, vui lòng chọn tên khác';
+                feedback.className = 'form-text text-danger';
+            }
+        });
+}
+
+// Sửa lại validation form để kiểm tra username
+document.getElementById('accountForm').addEventListener('submit', function(e) {
+    var username = document.getElementById('username');
+    var password = document.getElementById('password');
+    var confirmPassword = document.getElementById('confirm_password');
+    
+    // Kiểm tra username
+    if (username.value.length < 3) {
+        e.preventDefault();
+        e.stopPropagation();
+        username.setCustomValidity('Tên tài khoản phải có ít nhất 3 ký tự');
+        username.reportValidity();
+        return;
+    } else {
+        username.setCustomValidity('');
+    }
+    
+    // Kiểm tra mật khẩu
+    if (password.value !== confirmPassword.value) {
+        e.preventDefault();
+        e.stopPropagation();
+        confirmPassword.setCustomValidity('Mật khẩu xác nhận không khớp');
+        confirmPassword.reportValidity();
+    } else {
+        confirmPassword.setCustomValidity('');
+    }
+    
+    if (!this.checkValidity()) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+    
+    this.classList.add('was-validated');
+});
     </script>
         <?php include("../footer.php"); ?>
 </body>
