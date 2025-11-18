@@ -2,36 +2,44 @@
 session_start();
 include_once('config/connect.php');
 include_once('layout.php');
+
+
+if (!isset($cookie_name)) $cookie_name = 'auto_login';
+if (!isset($cookie_time)) $cookie_time = 3600 * 24 * 30; 
+
+$error = '';  
+$login_error_message = ''; 
+
 try {
-    //Chạy tính năng auto dang nhap bằng cookie
-if (isset($cookie_name)) {
-    if (isset($_COOKIE[$cookie_name]) == 1) {
+    
+    if (isset($_COOKIE[$cookie_name])) {
         $cookie_data = $_COOKIE[$cookie_name];
-        // tách cookie thành usr và hash
         parse_str($cookie_data, $cookie_values);
 
         if (isset($cookie_values['usr']) && isset($cookie_values['hash'])) {
             $t_username = $cookie_values['usr'];
-            $t_password_hash = $cookie_values['hash']; // Đây là mật khẩu đã mã hóa
+            $t_hashedPassword = $cookie_values['hash'];  
 
-            $sql_us = "SELECT us.full_name, us.user_id FROM user us
-            INNER JOIN user_account ua ON us.user_id = ua.user_id
-            WHERE ua.username = '$t_username' ";
+            
+            $sql = "SELECT ua.password, us.full_name, us.user_id FROM user_account ua
+                    INNER JOIN user us ON ua.user_id = us.user_id
+                    WHERE ua.username = ?";
+            $stmt = mysqli_prepare($dbconnect, $sql);
+            mysqli_stmt_bind_param($stmt, "s", $t_username);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+            $row = mysqli_fetch_assoc($result);
 
-            $result_us = mysqli_query($dbconnect, $sql_us);
-            $row_us = mysqli_fetch_assoc($result_us);
-            $_SESSION['full_name'] = $row_us['full_name'];
-            $_SESSION['user_id'] = $row_us['user_id'];
-
-            // Chỉ cần kiểm tra username, không cần so sánh password hash
-            $sql = "SELECT * FROM user_account WHERE username='$t_username'";
-            $result = mysqli_query($dbconnect, $sql);
-            if ($result) {
-                if ($row = mysqli_fetch_array($result)) {
+            if ($row && password_verify('', $row['password'])) {  
+               
+                
+              
+                if (isset($_SESSION['username'])) {
+                
                     $sql_role = "SELECT r.role_name FROM user_account ua
                     INNER JOIN user_role ur ON ua.user_id = ur.user_id
                     INNER JOIN role r ON ur.role_id = r.role_id
-                    WHERE ua.username = '$t_username'";
+                    WHERE ua.username = '{$_SESSION['username']}'";
 
                     $result_r = mysqli_query($dbconnect, $sql_role);
                     if ($result_r) {
@@ -50,65 +58,56 @@ if (isset($cookie_name)) {
                                     exit;
                             }
                         }
-                    } else {
-                        echo "Lỗi câu truy vấn vai trò: " . mysqli_error($dbconnect);
-                        exit;
                     }
                 }
             }
         }
     }
-}
+
+   
     if (isset($_COOKIE['remember_credentials'])) {
         $remembered_credentials = $_COOKIE['remember_credentials'];
         parse_str($remembered_credentials, $credentials);
         $remembered_username = $credentials['usr'];
-        $remembered_password = $credentials['hash'];
+        $remembered_password = '';  
     } else {
         $remembered_username = '';
         $remembered_password = '';
     }
 
     if (isset($_POST['submit'])) {
-    $username = $_POST['username'];
-    $password = $_POST['password'];
-    $remember = ((isset($_POST['remember']) != 0) ? 1 : "");
-    $remember_auto = ((isset($_POST['remember_auto']) != 0) ? 1 : "");
+        $username = $_POST['username'];
+        $password = $_POST['password'];  
+        $remember = ((isset($_POST['remember']) != 0) ? 1 : "");
 
-    if (empty($username) || empty($password)) {
-        $login_error_message = "Thông tin chưa đầy đủ. Vui lòng nhập đầy đủ thông tin.";
-    } else {
-        // Sửa câu truy vấn: chỉ lấy username, không so sánh password trực tiếp
-        $sql = "SELECT * FROM user_account WHERE username=?";
-        $stmt = mysqli_prepare($dbconnect, $sql);
-        mysqli_stmt_bind_param($stmt, "s", $username);
-        mysqli_stmt_execute($stmt);
-        $result = mysqli_stmt_get_result($stmt);
-
-        if (!$result) {
-            throw new Exception("Lỗi câu truy vấn: " . mysqli_error($dbconnect));
-        }
-
-        $row = mysqli_fetch_array($result);
-
-        if ($row) {
-            // Lấy mật khẩu đã mã hóa từ database
-            $hashed_password = $row['password'];
+        if (empty($username) || empty($password)) {
+            $login_error_message = "Thông tin chưa đầy đủ. Vui lòng nhập đầy đủ thông tin.";
+        } else {
             
-            // Sử dụng password_verify để kiểm tra mật khẩu
-            if (password_verify($password, $hashed_password)) {
+            $sql = "SELECT * FROM user_account WHERE username=?";  
+            $stmt = mysqli_prepare($dbconnect, $sql);
+            mysqli_stmt_bind_param($stmt, "s", $username);
+            mysqli_stmt_execute($stmt);
+            $result = mysqli_stmt_get_result($stmt);
+
+            if (!$result) {
+                throw new Exception("Lỗi câu truy vấn: " . mysqli_error($dbconnect));
+            }
+
+            $row = mysqli_fetch_array($result);
+
+            if ($row && password_verify($password, $row['password'])) { 
+             
                 $f_user = $row['username'];
-                $f_pass = $row['password'];
-                
-                if ($remember_auto == 1) {
-                    setcookie($cookie_name, 'usr=' . $f_user . '&hash=' . $f_pass, time() + $cookie_time);
-                }
+
+               
                 if ($remember == 1) {
-                    setcookie('remember_credentials', 'usr=' . $f_user . '&hash=' . $f_pass, time() + $cookie_time);
+                    setcookie('remember_credentials', 'usr=' . $f_user, time() + $cookie_time);
                 } else {
                     setcookie('remember_credentials', '', time() - 3600);
                 }
 
+    
                 $sql_user = "SELECT us.full_name, us.user_id FROM user us
                               INNER JOIN user_account ua ON us.user_id = ua.user_id
                               WHERE username = ?";
@@ -124,7 +123,7 @@ if (isset($cookie_name)) {
                 $_SESSION['username'] = $username;
                 $_SESSION['user_id'] = $row_user['user_id'];
 
-                // Fetch user role
+              
                 $sql_role = "SELECT r.role_name FROM user_account ua
                                 INNER JOIN user_role ur ON ua.user_id = ur.user_id
                                 INNER JOIN role r ON ur.role_id = r.role_id
@@ -140,7 +139,6 @@ if (isset($cookie_name)) {
                 if ($row_role) {
                     $_SESSION['role_name'] = $row_role['role_name'];
 
-                    // Redirect based on user role
                     switch ($row_role['role_name']) {
                         case "student":
                             header('location: student/index.php');
@@ -162,114 +160,158 @@ if (isset($cookie_name)) {
             } else {
                 $login_error_message = "Tên đăng nhập hoặc mật khẩu không chính xác";
             }
-        } else {
-            $login_error_message = "Tên đăng nhập hoặc mật khẩu không chính xác";
         }
     }
-}
-
 } catch (Exception $exp) {
     echo $exp->getMessage() . '<br>';
     echo 'File: ' . $exp->getFile() . '<br>';
     echo 'Line: ' . $exp->getLine() . '<br>';
 }
+
+$login_error_message = $login_error_message ?: $error;  
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Đăng nhập</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
     <style>
         body {
-            min-height: 100vh;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0;
+            font-family: "Segoe UI", sans-serif;
         }
 
-        .login-container {
-            max-width: 400px;
+        .login-card {
+            width: 380px;
+            background: #ffffff;
+            padding: 35px 30px;
+          
+            box-shadow: 0 12px 35px rgba(0,0,0,0.12);
         }
 
-        .password-container {
-            position: relative;
+        h3 {
+            font-weight: 700;
+            color: #0d47a1;
+            margin-bottom: 15px;
+        }
+
+        .form-control {
+          
+            padding: 12px 14px;
+            font-size: 1rem;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+          
+            font-weight: 600;
+            background: linear-gradient(135deg, #1976d2, #0d47a1);
+            border: none;
+            color: white;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #1565c0, #0b3c91);
         }
 
         .password-toggle {
             position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
+            right: 14px;
+            color: #666;
+        }
+
+        .forgot-text a {
+            color: #0d47a1;
+            text-decoration: none;
+            font-size: 0.95rem;
+        }
+
+        .forgot-text a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 
 <body>
-    <div class="container-fluid">
-        <?php
-        if (!empty($login_error_message)) {
-            echo '<div class="alert alert-danger mt-3" role="alert">' . $login_error_message . '</div>';
-        }
-        ?>
 
-        <header class="text-center">
-            <h3>Đăng nhập</h3>
-        </header>
+<div class="login-card">
 
-        <div class="container mt-5 login-container">
-            <div class="row justify-content-center">
-                <div class="col-md-14">
-                    <div class="card">
-                        <div class="card-body">
-                            <form action="login.php" method="post">
-                                <div class="form-floating mb-3">
-                                    <input type="text" class="form-control shadow-sm" id="username" name="username" placeholder="username" value="<?php echo htmlspecialchars($remembered_username); ?>">
-                                    <label for="username">Tên đăng nhập</label>
-                                </div>
-                                <div class="form-floating mb-3 password-container">
-                                    <input type="password" class="form-control shadow-sm" id="password" name="password" placeholder="password" value="<?php echo htmlspecialchars($remembered_password); ?>">
-                                    <label for="password">Mật khẩu</label>
-                                    <span class="password-toggle" onclick="togglePasswordVisibility()"><i class="fa-regular fa-eye"></i></span>
-                                </div>
-                                <div class="mb-3 form-check">
-                                    <input type="checkbox" class="form-check-input" id="remember" name="remember" value="1" <?php if (!empty($remembered_username) && !empty($remembered_password)) echo 'checked'; ?>>
-                                    <label class="form-check-label" for="remember">Ghi nhớ đăng nhập</label>
-                                </div>
-                                <div class="text-center">
-                                    <button type="submit" class="btn btn-primary" name="submit">Đăng nhập</button>
-                                </div>
+    <?php if (!empty($login_error_message)): ?>
+        <div class="alert alert-danger text-center"><?php echo $login_error_message; ?></div>
+    <?php endif; ?>
 
-                                <?php
-                                if (!empty($login_error_message)) {
-                                    echo '<div class="alert alert-danger mt-3" role="alert">' . $login_error_message . '</div>';
-                                }
-                                ?>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <h3 class="text-center">Đăng nhập</h3>
+
+    <form action="login.php" method="post">
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Tên đăng nhập</label>
+            <input type="text" 
+                   class="form-control shadow-sm"
+                   name="username" 
+                   placeholder="Nhập tên đăng nhập"
+                   value="<?php echo htmlspecialchars($remembered_username); ?>">
         </div>
-    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function togglePasswordVisibility() {
-            var passwordField = document.getElementById("password");
-            var icon = document.querySelector(".toggle-password");
+        <div class="mb-3 position-relative">
+            <label class="form-label fw-semibold">Mật khẩu</label>
+            <input type="password" 
+                   class="form-control shadow-sm"
+                   id="password"
+                   name="password" 
+                   placeholder="Nhập mật khẩu">
 
-            if (passwordField.type === "password") {
-                passwordField.type = "text";
-            } else {
-                passwordField.type = "password";
-            }
+            <span class="password-toggle" onclick="togglePasswordVisibility()">
+                <i class="fa-regular fa-eye"></i>
+            </span>
+        </div>
+
+        <div class="mb-3 form-check">
+            <input type="checkbox" 
+                   class="form-check-input"
+                   id="remember"
+                   name="remember"
+                   value="1"
+                   <?php if (!empty($remembered_username)) echo 'checked'; ?>>
+            <label class="form-check-label" for="remember">Ghi nhớ tài khoản</label>
+        </div>
+
+        <button type="submit" name="submit" class="btn-login">Đăng nhập</button>
+
+        <div class="text-center mt-3 forgot-text">
+            <a href="forgot_password.php">Quên mật khẩu?</a>
+        </div>
+
+    </form>
+</div>
+
+<script>
+    function togglePasswordVisibility() {
+        var pw = document.getElementById("password");
+        var icon = document.querySelector(".password-toggle i");
+
+        if (pw.type === "password") {
+            pw.type = "text";
+            icon.classList.remove("fa-eye");
+            icon.classList.add("fa-eye-slash");
+        } else {
+            pw.type = "password";
+            icon.classList.remove("fa-eye-slash");
+            icon.classList.add("fa-eye");
         }
-    </script>
+    }
+</script>
+
 </body>
+</html>
