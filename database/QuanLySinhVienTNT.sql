@@ -395,7 +395,7 @@ CREATE TABLE `user_account` (
 
 INSERT INTO `user_account` (`account_id`, `username`, `password`, `user_id`, `reset_token`, `reset_token_expiry`) VALUES
 (1, 'vinhthuan', '$2y$10$euldWUB.2PJIm0h0pzHSFuOqCe.6tHxl719XO.b9v0pJqTi5zyYpG', 1, NULL, NULL),
-(2, 'tranngochan', '$2y$10$ipgQvkqB6bOjBN0EBT46dOLVcxJfOkCQJE5bPqKz.dbIpdNNlS9GO', 2), NULL, NULL,
+(2, 'tranngochan', '$2y$10$ipgQvkqB6bOjBN0EBT46dOLVcxJfOkCQJE5bPqKz.dbIpdNNlS9GO', 2, NULL, NULL),
 (3, 'leviethung', '$2y$10$DFeOujHc4U/cdIVCLD4.8OYvg9fjc8LzXeFyO74uKbPS5bvY7eIVO', 3, NULL, NULL),
 (4, 'phamthimyduyen', '$2y$10$LP6SHOMHeiB3Vg2UaoPnDukdpow.R3mXTLq.dHgNDxA92GPUwhFUy', 4, NULL, NULL),
 (5, 'ngoductoan', '$2y$10$v5HpCvxbaxzOqOLxz0M1Ye9wkTJwnMH4midej73ysREJByHDCq/pm', 5, NULL, NULL),
@@ -748,3 +748,4 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
