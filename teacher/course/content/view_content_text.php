@@ -1,6 +1,6 @@
 <?php
-include_once('../../config/connect.php');
-include('layout.php');
+include_once('../../../config/connect.php');
+include('../layout.php');
 $text_id = $_GET['content_id'];
 $sql = "SELECT * FROM text_contents tc
 INNER JOIN course_contents ct ON ct.contents_id = tc.course_content_id
