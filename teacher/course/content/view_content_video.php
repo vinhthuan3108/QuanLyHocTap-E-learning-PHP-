@@ -1,6 +1,6 @@
 <?php
-include("layout.php");
-include_once('../../config/connect.php');
+include("../layout.php");
+include_once('../../../config/connect.php');
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
