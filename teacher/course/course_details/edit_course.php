@@ -2,8 +2,6 @@
 include_once('../../../config/connect.php');
 include("../layout.php");
 
-
-
 $sql_course = "SELECT * FROM course WHERE course_id = $course_id";
 $result = mysqli_query($dbconnect, $sql_course);
 
@@ -33,7 +31,7 @@ while ($row_course = mysqli_fetch_array($result)) {
             </div>
         </header>
         <div class="container mt-5">
-            <form id="createCourseForm" action="process.php" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
+            <form id="createCourseForm" action="../process.php" method="post" class="needs-validation" novalidate enctype="multipart/form-data">
                 <div class="mb-3 row">
                     <label for="course_name" class="col-sm-2 col-form-label">Tên khóa học</label>
                     <div class="col-sm-4">
@@ -68,6 +66,17 @@ while ($row_course = mysqli_fetch_array($result)) {
                     <label for="end_date" class="col-sm-2 col-form-label">Ngày kết thúc</label>
                     <div class="col-sm-4">
                         <input type="date" class="form-control" id="end_date" name="end_date" value="<?php echo $row_course['end_date'] ?>" required>
+                    </div>
+                </div>
+
+                <!-- Bổ sung trường giá tiền -->
+                <div class="mb-3 row">
+                    <label for="price" class="col-sm-2 col-form-label">Giá tiền (VND)</label>
+                    <div class="col-sm-4">
+                        <input type="number" step="0.01" min="0" class="form-control" id="price" name="price" value="<?php echo $row_course['price']; ?>" required>
+                        <div class="invalid-feedback">
+                            Vui lòng nhập giá tiền hợp lệ.
+                        </div>
                     </div>
                 </div>
             <?php
