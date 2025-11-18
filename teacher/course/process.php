@@ -265,7 +265,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $titlecontent = $_POST['titlecontent'];
         $title_description = $_POST['title_description'];
         $sql = "INSERT INTO course_contents(topic_id, title_content, content_type, description_content ,created_by, created_at)
-        VALUES ('$topic_id','$titlecontent','Nội dung dạng text','$title_description',NULL,DEFAULT)";
+        VALUES ('$topic_id','$titlecontent','text','$title_description',NULL,DEFAULT)";
         if (mysqli_query($dbconnect, $sql)) {
             $content_id = mysqli_insert_id($dbconnect);
             echo "Thêm record thành công";
@@ -277,7 +277,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         VALUES ('$content_id','$text_content')";
         mysqli_query($dbconnect, $sql_content_text);
         mysqli_close($dbconnect);
-        header("location: content.php");
+        header("location: content/content.php");
 
     }
 }
@@ -287,7 +287,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $titlecontent = $_POST['titlecontent'];
         $title_description = $_POST['title_description'];
         $sql = "INSERT INTO course_contents(topic_id, title_content, content_type, description_content ,created_by, created_at)
-        VALUES ('$topic_id','$titlecontent','File nội dung','$title_description',NULL,DEFAULT)";
+        VALUES ('$topic_id','$titlecontent','file','$title_description',NULL,DEFAULT)";
         if (mysqli_query($dbconnect, $sql)) {
             $content_id = mysqli_insert_id($dbconnect);
             echo "Thêm record thành công";
@@ -303,7 +303,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (move_uploaded_file($file_tmp, '../../assets/' . $file_name)) {
             echo 'Upload thành công';
             mysqli_close($dbconnect);
-            header("location: content.php");
+            header("location: content/content.php");
         } else {
             echo 'Lỗi khi upload: ' . error_get_last()['message'];
             exit;
@@ -316,7 +316,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $titlecontent = $_POST['titlecontent'];
         $title_description = $_POST['title_description'];
         $sql = "INSERT INTO course_contents(topic_id, title_content, content_type, description_content ,created_by, created_at)
-        VALUES ('$topic_id','$titlecontent','File video bài giảng','$title_description',NULL,DEFAULT)";
+        VALUES ('$topic_id','$titlecontent','video','$title_description',NULL,DEFAULT)";
         if (mysqli_query($dbconnect, $sql)) {
             $content_id = mysqli_insert_id($dbconnect);
             echo "Thêm record thành công";
@@ -329,7 +329,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $query = "INSERT INTO video_contents(course_content_id, video_url, video_size) VALUES ('$content_id','$videoName', '$videosize')";
         mysqli_query($dbconnect, $query);
         mysqli_close($dbconnect);
-        header("location: content.php");
+        header("location: content/content.php");
     }
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -339,7 +339,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $title_description = $_POST['title_description'];
         $embed_code = $_POST["code_embedded"];
         $sql = "INSERT INTO course_contents(topic_id, title_content, content_type, description_content ,created_by, created_at)
-        VALUES ('$topic_id','$titlecontent','Bài giảng video','$title_description',NULL,DEFAULT)";
+        VALUES ('$topic_id','$titlecontent','embed','$title_description',NULL,DEFAULT)";
         if (mysqli_query($dbconnect, $sql)) {
             $content_id = mysqli_insert_id($dbconnect);
             echo "Thêm record thành công";
@@ -358,7 +358,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $query_video = "INSERT INTO embedded_contents(course_content_id,embed_code ) VALUES ('$content_id','$embed_code')";
         mysqli_query($dbconnect, $query_video);
         mysqli_close($dbconnect);
-        header("location: content.php");
+        header("location: content/content.php");
     }
 }
 
@@ -433,16 +433,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["edit_content"])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_topic"])) {
-    $topic_id = $_GET['topic_id'];
+    $topic_id = isset($_POST['topic_id']) ? intval($_POST['topic_id']) : 0;
+    if ($topic_id <= 0) {
+        die("Lỗi: topic_id không hợp lệ");
+    }
     $sql = "DELETE FROM topics where topic_id = $topic_id";
     $query = mysqli_query($dbconnect, $sql);
     mysqli_close($dbconnect);
     header('location: content/content.php');
 }
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["delete_content"])) {
-    $content_id = $_GET['content_id'];
+    $content_id = $_POST['content_id'];
+     $topic_id = isset($_POST['topic_id']) ? intval($_POST['topic_id']) : 0;
     $sql = "DELETE FROM course_contents where contents_id = $content_id";
     $query = mysqli_query($dbconnect, $sql);
     mysqli_close($dbconnect);
-    header('location:content.php');
+    header('location:content/edit_content.php?topic_id=' . $topic_id);
 }
