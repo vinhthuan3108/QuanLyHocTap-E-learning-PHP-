@@ -1,8 +1,18 @@
-<?php
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Xác thực Email</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <?php
 session_start();
 include_once('layout.php');
 include_once('./config/connect.php');
-
+$error = '';
+$success = '';
+$email = isset($_GET['email']) ? trim($_GET['email']) : '';
 $error = '';
 $success = '';
 
@@ -64,39 +74,108 @@ mysqli_stmt_bind_param($account_stmt, "ssi", $username, $password, $user_id);
     }
 }
 ?>
+    <style>
+        body {
+            background: #f3f6fc;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', sans-serif;
+        }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <title>Xác thực Email</title>
+        .verify-card {
+            background: #ffffff;
+            width: 450px;
+            padding: 35px 40px;
+            border-radius: 18px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+        h3 {
+            font-weight: 700;
+            color: #1a4d91;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        p {
+            text-align: center;
+            color: #555;
+        }
+
+        .form-label {
+            font-weight: 600;
+        }
+
+        .form-control {
+            padding: 12px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+        }
+
+        .btn-primary {
+            background: #1a4d91;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+        }
+
+        .btn-primary:hover {
+            background: #15406d;
+        }
+
+        .btn-secondary {
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 10px;
+        }
+
+      
+    </style>
+
 </head>
 <body>
-    <div class="container mt-5">
-        <h3>Xác thực Email</h3>
-        <p>Nhập mã xác thực gửi đến <?php echo htmlspecialchars($email); ?></p>
-        
-        <?php if ($error): ?>
-            <div class="alert alert-danger"><?php echo $error; ?></div>
+
+    <div class="verify-card">
+
+        <h3>Xác Thực Email</h3>
+        <p>Mã xác thực đã gửi đến <strong><?php
+        echo htmlspecialchars($email); ?></strong></p>
+
+        <?php
+        if ($error): ?>
+            <div class="alert alert-danger text-center"><?php echo $error; ?></div>
         <?php endif; ?>
-        
-        <?php if ($success): ?>
-            <div class="alert alert-success"><?php echo $success; ?></div>
+
+        <?php 
+        if ($success): ?>
+            <div class="alert alert-success text-center"><?php echo $success; ?></div>
         <?php endif; ?>
 
         <form method="post" class="needs-validation" novalidate>
+
             <div class="mb-3">
-                <label for="verification_code" class="form-label">Mã xác thực (6 chữ số)</label>
-                <input type="text" class="form-control" id="verification_code" name="verification_code" required pattern="\d{6}" maxlength="6">
-                <div class="invalid-feedback">Mã phải là 6 chữ số.</div>
+                <label class="form-label">Mã xác thực (6 chữ số)</label>
+                <input type="text" 
+                       class="form-control text-center fs-4"
+                       id="verification_code" 
+                       name="verification_code" 
+                       required 
+                      >
+                <div class="invalid-feedback">Mã phải gồm 6 chữ số.</div>
             </div>
-            <button type="submit" class="btn btn-primary">Xác thực</button>
-            <a href="register.php" class="btn btn-secondary">Quay lại đăng ký</a>
+
+            <button type="submit" class="btn btn-primary w-100 mb-2">Xác thực</button>
+
+            <a href="register.php" class="btn btn-secondary w-100">Quay lại đăng ký</a>
         </form>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
     <script>
         (function() {
             'use strict';
@@ -110,6 +189,6 @@ mysqli_stmt_bind_param($account_stmt, "ssi", $username, $password, $user_id);
             }, false);
         })();
     </script>
-    <?php include("footer.php"); ?>
+
 </body>
 </html>
