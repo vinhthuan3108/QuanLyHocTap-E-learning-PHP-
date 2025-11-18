@@ -35,7 +35,7 @@ include("../layout.php");
                 <label for="postTitle">Tiêu đề bài đăng</label>
                 <input type="text" class="form-control" id="postTitle" name="topicTitle" required>
             </div>
-            <div class="form-group">
+            <div class="form-group">to
                 <label for="postContent">Nội dung bài đăng</label>
                 <div id="editor-container"></div>
                 <textarea class="form-control" id="postContent" name="topicdescription" style="display: none;" rows="8" required></textarea>

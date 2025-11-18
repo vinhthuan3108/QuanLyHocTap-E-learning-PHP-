@@ -9,8 +9,8 @@ if (isset($_SESSION['full_name'])) {
     $username_now = "User not logged in";
 }
 
-$teacher_id = $_SESSION['user_id'];
-$sql_profile = "SELECT image FROM user WHERE user_id = $teacher_id";
+$student_id = $_SESSION['user_id'];
+$sql_profile = "SELECT image FROM user WHERE user_id = $student_id";
 $result_profile = mysqli_query($dbconnect, $sql_profile);
 $row_profile = mysqli_fetch_assoc($result_profile);
 ?>
