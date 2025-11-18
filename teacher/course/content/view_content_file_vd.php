@@ -53,7 +53,7 @@ $result = mysqli_query($dbconnect, $sql);
                 <div class="col-md-7">
                     <?php
                     // Kiểm tra video_url tồn tại và file thực sự có trên server
-                    $video_path = "../../../assets/" . $row_vd['video_url'];
+                    $video_path = "../../../assets/videos/" . $row_vd['video_url'];
                     if (!empty($row_vd['video_url']) && file_exists($video_path)) :
                     ?>
                         <iframe

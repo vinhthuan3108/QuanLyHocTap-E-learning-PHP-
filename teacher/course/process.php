@@ -300,7 +300,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql_file = "INSERT INTO file_contents(course_content_id, file_name, file_size)
         VALUES ('$content_id','$file_name','$file_size')";
         mysqli_query($dbconnect, $sql_file);
-        if (move_uploaded_file($file_tmp, '../../assets/' . $file_name)) {
+        if (move_uploaded_file($file_tmp, '../../assets/study_files/' . $file_name)) {
             echo 'Upload thành công';
             mysqli_close($dbconnect);
             header("location: content/content.php");
@@ -324,7 +324,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $videoName = $_FILES["contentVideo"]["name"];
         $videoTmpName = $_FILES["contentVideo"]["tmp_name"];
         $videosize = $_FILES["contentVideo"]["size"] / 1024;
-        $uploadDirectory = "../../assets/" . $videoName;
+        $uploadDirectory = "../../assets/videos/" . $videoName;
         move_uploaded_file($videoTmpName, $uploadDirectory);
         $query = "INSERT INTO video_contents(course_content_id, video_url, video_size) VALUES ('$content_id','$videoName', '$videosize')";
         mysqli_query($dbconnect, $query);
