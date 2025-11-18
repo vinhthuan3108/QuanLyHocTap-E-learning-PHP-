@@ -27,6 +27,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $portrait = $_FILES['portrait']['name'];
     $image_tmp = $_FILES['portrait']['tmp_name'];
 
+    $check_email_sql = "SELECT * FROM user WHERE email = ?";
+$stmt_email = mysqli_prepare($dbconnect, $check_email_sql);
+mysqli_stmt_bind_param($stmt_email, "s", $email);
+mysqli_stmt_execute($stmt_email);
+$result_email = mysqli_stmt_get_result($stmt_email);
+
+if(mysqli_num_rows($result_email) > 0){
+    die("Email này đã được đăng ký cho một tài khoản khác!");
+}
+
+
     $check_sql = "SELECT * FROM user_account WHERE username = '$username'";
     $check_result = mysqli_query($dbconnect, $check_sql);
     if (mysqli_num_rows($check_result) > 0) {
@@ -38,8 +49,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Upload ảnh thất bại");
     }
 
+    $options = [
+        'cost' => 12,  
+    ];
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT, $options);  
+
+
     $_SESSION['pending_username'] = $username;
-    $_SESSION['pending_password'] = $password; 
+    $_SESSION['pending_password'] = $hashedPassword;   
 
     $verification_code = rand(100000, 999999);
 
@@ -54,6 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mail = new PHPMailer(true);
 
     try {
+        $mail->CharSet = 'UTF-8';
         $mail->SMTPDebug = SMTP::DEBUG_SERVER;
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
