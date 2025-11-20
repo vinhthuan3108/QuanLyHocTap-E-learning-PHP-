@@ -52,7 +52,7 @@ else
     <header class="container mt-4">
         <div class="row">
             <div class="col-md-2">
-                <img src="../assets/images/course1.jpg" alt="Profile Image" class="profile-image">
+                <img src="../assets/images/<?php echo $row['image'] ?>" alt="Profile Image" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
             </div>
             <div class="col-md-10">
                 <h2><?php echo $row['full_name'];?></h2>
