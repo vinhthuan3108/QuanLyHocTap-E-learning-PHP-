@@ -171,4 +171,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
     
     <?php include("footer.php"); ?>
 </body>
+<<<<<<< HEAD
+
 </html>
+=======
+</html>
+>>>>>>> 70f35c5cdd7db00c7e9f3ab958859b6e5984215b
