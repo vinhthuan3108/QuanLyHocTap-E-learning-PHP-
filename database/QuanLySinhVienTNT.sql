@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 18, 2025 lúc 08:21 PM
+-- Thời gian đã tạo: Th10 20, 2025 lúc 11:15 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -45,10 +45,10 @@ CREATE TABLE `course` (
 --
 
 INSERT INTO `course` (`course_id`, `course_background`, `course_code`, `course_name`, `course_description`, `teacher_id`, `start_date`, `end_date`, `status`, `price`) VALUES
-(1, '1.jpg', 'SOT366', 'Phát triển mã nguồn mở', '20 slide pdf, 20 video, 80 câu bài tập', 9, '2025-01-01', '2025-12-12', 'A', 500000.00),
+(1, '1.jpg', 'SOT366', 'Phát triển mã nguồn mở', '20 slide pdf, 20 video, 80 câu bài tập', 9, '2025-01-01', '2025-12-12', 'A', 5000.00),
 (2, '2.jpg', 'SOT357', 'Kiểm thử phần mềm', 'No description', 9, '2025-01-01', '2025-12-12', 'A', 450000.00),
 (3, '3.jpg', 'SOT344', 'Trí tuệ nhân tạo', 'No description', 9, '2025-01-01', '2025-12-12', 'A', 600000.00),
-(5, 'TAB100_tienganha1_a2.jpg', 'TAB100', 'Tiếng Anh A1-A2', 'Tiếng Anh A1-A2', 14, '2025-08-15', '2025-11-29', 'A', 300000.00);
+(5, 'TAB100_tienganha1_a2.jpg', 'TAB100', 'Tiếng Anh A1-A2', 'Tiếng Anh A1-A2', 14, '2025-08-15', '2025-11-29', 'A', 3000.00);
 
 -- --------------------------------------------------------
 
@@ -115,7 +115,11 @@ INSERT INTO `course_member` (`member_id`, `course_id`, `student_id`) VALUES
 (21, 3, 7),
 (22, 1, 8),
 (23, 2, 8),
-(24, 3, 8);
+(24, 3, 8),
+(25, 5, 1),
+(26, 5, 1),
+(27, 5, 22),
+(28, 1, 22);
 
 -- --------------------------------------------------------
 
@@ -298,6 +302,56 @@ INSERT INTO `grade_column` (`column_id`, `course_id`, `grade_column_name`, `prop
 (7, 3, 'Quá trình', 30),
 (8, 3, 'Giữa kỳ', 30),
 (9, 3, 'Cuối kỳ', 30);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `payments`
+--
+
+CREATE TABLE `payments` (
+  `payment_id` int(11) NOT NULL,
+  `user_id` bigint(20) NOT NULL,
+  `course_id` int(11) NOT NULL,
+  `amount` decimal(10,2) NOT NULL,
+  `payment_method` enum('payos','bank_transfer') NOT NULL DEFAULT 'payos',
+  `status` enum('pending','paid','cancelled','failed') NOT NULL DEFAULT 'pending',
+  `order_code` bigint(20) NOT NULL,
+  `checkout_url` text DEFAULT NULL,
+  `qr_code` text DEFAULT NULL,
+  `transaction_id` varchar(255) DEFAULT NULL,
+  `payos_order_id` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp(),
+  `updated_at` datetime DEFAULT NULL ON UPDATE current_timestamp(),
+  `paid_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `payments`
+--
+
+INSERT INTO `payments` (`payment_id`, `user_id`, `course_id`, `amount`, `payment_method`, `status`, `order_code`, `checkout_url`, `qr_code`, `transaction_id`, `payos_order_id`, `description`, `created_at`, `updated_at`, `paid_at`) VALUES
+(1, 1, 5, 3000.00, 'payos', 'paid', 152183, 'https://pay.payos.vn/web/9baf376e2c3949868d18b1fe63f0fc96', NULL, NULL, NULL, 'Tiếng Anh A1-A2', '2025-11-20 16:39:04', '2025-11-20 16:39:55', '2025-11-20 16:39:55'),
+(2, 22, 5, 3000.00, 'payos', 'paid', 367310, 'https://pay.payos.vn/web/fb9a6319c5f54dfabd4a0afe95c30fe9', NULL, NULL, NULL, 'Tiếng Anh A1-A2', '2025-11-20 16:42:22', '2025-11-20 16:42:53', '2025-11-20 16:42:53'),
+(3, 22, 2, 450000.00, 'payos', 'pending', 223065, 'https://pay.payos.vn/web/5b6af1612e224e009d82f2f1e0bd74d9', NULL, NULL, NULL, 'Kiểm thử phần mềm', '2025-11-20 16:43:15', '2025-11-20 16:43:16', NULL),
+(4, 22, 1, 500000.00, 'payos', 'pending', 905511, 'https://pay.payos.vn/web/c2f29300068c4314b4b976aa01d4061f', NULL, NULL, NULL, 'Phát triển mã nguồn mở', '2025-11-20 16:45:58', '2025-11-20 16:45:58', NULL),
+(5, 22, 1, 5000.00, 'payos', 'pending', 448270, 'https://pay.payos.vn/web/ae140a74a50e4a59a4c3f6df14d98a5b', NULL, NULL, NULL, 'Phát triển mã nguồn mở', '2025-11-20 17:02:26', '2025-11-20 17:02:27', NULL),
+(6, 22, 1, 5000.00, 'payos', 'paid', 885124, 'https://pay.payos.vn/web/f82f424f307f4eb7b4614b02253b442b', NULL, NULL, NULL, 'Phát triển mã nguồn mở', '2025-11-20 17:07:45', '2025-11-20 17:08:01', '2025-11-20 17:08:01');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `payment_logs`
+--
+
+CREATE TABLE `payment_logs` (
+  `log_id` int(11) NOT NULL,
+  `payment_id` int(11) NOT NULL,
+  `status` enum('pending','paid','cancelled','failed') NOT NULL,
+  `log_message` text NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -552,6 +606,24 @@ ALTER TABLE `grade_column`
   ADD PRIMARY KEY (`column_id`);
 
 --
+-- Chỉ mục cho bảng `payments`
+--
+ALTER TABLE `payments`
+  ADD PRIMARY KEY (`payment_id`),
+  ADD UNIQUE KEY `unique_order_code` (`order_code`),
+  ADD KEY `fk_payments_user_id` (`user_id`),
+  ADD KEY `fk_payments_course_id` (`course_id`),
+  ADD KEY `idx_status` (`status`),
+  ADD KEY `idx_created` (`created_at`);
+
+--
+-- Chỉ mục cho bảng `payment_logs`
+--
+ALTER TABLE `payment_logs`
+  ADD PRIMARY KEY (`log_id`),
+  ADD KEY `fk_payment_logs_payment_id` (`payment_id`);
+
+--
 -- Chỉ mục cho bảng `post`
 --
 ALTER TABLE `post`
@@ -626,7 +698,7 @@ ALTER TABLE `course_contents`
 -- AUTO_INCREMENT cho bảng `course_member`
 --
 ALTER TABLE `course_member`
-  MODIFY `member_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `member_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT cho bảng `course_schedule`
@@ -657,6 +729,18 @@ ALTER TABLE `grade`
 --
 ALTER TABLE `grade_column`
   MODIFY `column_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT cho bảng `payments`
+--
+ALTER TABLE `payments`
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT cho bảng `payment_logs`
+--
+ALTER TABLE `payment_logs`
+  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT cho bảng `post`
@@ -747,6 +831,19 @@ ALTER TABLE `file_contents`
 ALTER TABLE `grade`
   ADD CONSTRAINT `fk_grade_column_id` FOREIGN KEY (`column_id`) REFERENCES `grade_column` (`column_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `fk_grade_member_id` FOREIGN KEY (`member_id`) REFERENCES `course_member` (`member_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `payments`
+--
+ALTER TABLE `payments`
+  ADD CONSTRAINT `fk_payments_course_id` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_payments_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `payment_logs`
+--
+ALTER TABLE `payment_logs`
+  ADD CONSTRAINT `fk_payment_logs_payment_id` FOREIGN KEY (`payment_id`) REFERENCES `payments` (`payment_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `post`
