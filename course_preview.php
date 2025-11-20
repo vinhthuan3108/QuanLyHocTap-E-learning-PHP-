@@ -25,15 +25,30 @@ if (!$course) {
     die("Khóa học không tồn tại");
 }
 
-// Kiểm tra xem user đã đăng nhập và đã mua khóa học chưa
-$has_paid = false;
+// Kiểm tra xem user đã đăng nhập và đã tham gia khóa học chưa
+$has_joined = false;
 $is_free = $course['price'] == 0;
 
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
-    $check_payment_sql = "SELECT * FROM payments WHERE user_id = $user_id AND course_id = $course_id AND payment_status = 'completed'";
-    $payment_result = mysqli_query($dbconnect, $check_payment_sql);
-    $has_paid = mysqli_num_rows($payment_result) > 0;
+    
+    // Kiểm tra xem user có phải là student không
+    $check_student_sql = "SELECT ur.role_id 
+                         FROM user_role ur 
+                         WHERE ur.user_id = $user_id AND ur.role_id = 1";
+    $student_result = mysqli_query($dbconnect, $check_student_sql);
+    $is_student = mysqli_num_rows($student_result) > 0;
+    
+    if ($is_student) {
+        // Kiểm tra trong bảng course_member
+        $check_member_sql = "SELECT * FROM course_member 
+                            WHERE student_id = $user_id AND course_id = $course_id";
+        $member_result = mysqli_query($dbconnect, $check_member_sql);
+        $has_joined = mysqli_num_rows($member_result) > 0;
+    } else {
+        // Nếu là giáo viên hoặc admin, có thể xem tất cả khóa học
+        $has_joined = true;
+    }
 }
 
 // Lấy lịch học
@@ -166,7 +181,7 @@ function getDayOfWeek($day) {
     </div>
 
     <div class="container">
-        <!-- Phần giá và thanh toán -->
+        <!-- Phần giá và tham gia -->
         <div class="price-section">
             <div class="row align-items-center">
                 <div class="col-md-6">
@@ -179,26 +194,25 @@ function getDayOfWeek($day) {
                 </div>
                 <div class="col-md-6 text-end">
                     <?php if (isset($_SESSION['user_id'])): ?>
-                        <?php if ($has_paid || $is_free): ?>
+                        <?php if ($has_joined || $is_free): ?>
                             <a href="course/index.php?id=<?php echo $course_id; ?>" class="btn btn-success btn-lg">
                                 <?php echo $is_free ? 'Tham gia ngay' : 'Truy cập khóa học'; ?>
                             </a>
                         <?php else: ?>
-                            <a href="payment.php?course_id=<?php echo $course_id; ?>" class="btn btn-warning btn-lg">
-                                Thanh toán ngay
+                            <a href="join_course.php?course_id=<?php echo $course_id; ?>" class="btn btn-warning btn-lg">
+                                Đăng ký tham gia
                             </a>
                         <?php endif; ?>
                     <?php else: ?>
                         <?php if ($is_free): ?>
                             <a href="login.php" class="btn btn-success btn-lg">Tham gia</a>
                         <?php else: ?>
-                            <a href="login.php?redirect=payment&course_id=<?php echo $course_id; ?>" class="btn btn-warning btn-lg">Thanh toán</a>
+                            <a href="login.php?redirect=join_course&course_id=<?php echo $course_id; ?>" class="btn btn-warning btn-lg">Đăng ký tham gia</a>
                         <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>
         </div>
-
 
         <div class="row">
             <!-- Thông tin chi tiết -->
@@ -267,9 +281,9 @@ function getDayOfWeek($day) {
                                                                 </span>
                                                                 <?php echo htmlspecialchars($content['title_content']); ?>
                                                             </div>
-                                                            <?php if (!isset($_SESSION['user_id']) || !$has_paid): ?>
+                                                            <?php if (!isset($_SESSION['user_id']) || !$has_joined): ?>
                                                                 <span class="badge bg-light text-dark">
-                                                                    <?php echo $is_free ? 'Đăng nhập để xem' : 'Thanh toán để xem'; ?>
+                                                                    <?php echo $is_free ? 'Đăng nhập để xem' : 'Đăng ký để xem'; ?>
                                                                 </span>
                                                             <?php endif; ?>
                                                         </div>
@@ -349,15 +363,15 @@ function getDayOfWeek($day) {
                         <hr>
                         <div class="text-center">
                             <?php if (isset($_SESSION['user_id'])): ?>
-                                <?php if ($has_paid || $is_free): ?>
+                                <?php if ($has_joined || $is_free): ?>
                                     <a href="course/index.php?id=<?php echo $course_id; ?>" class="btn btn-primary w-100">
                                         Truy cập khóa học
                                     </a>
                                 <?php else: ?>
-                                    <a href="payment.php?course_id=<?php echo $course_id; ?>" class="btn btn-warning w-100 mb-2">
-                                        Thanh toán ngay
+                                    <a href="join_course.php?course_id=<?php echo $course_id; ?>" class="btn btn-warning w-100 mb-2">
+                                        Đăng ký tham gia
                                     </a>
-                                    <small class="text-muted">Sau khi thanh toán, bạn sẽ được truy cập toàn bộ nội dung</small>
+                                    <small class="text-muted">Sau khi đăng ký, bạn sẽ được truy cập toàn bộ nội dung</small>
                                 <?php endif; ?>
                             <?php else: ?>
                                 <?php if ($is_free): ?>
@@ -365,8 +379,8 @@ function getDayOfWeek($day) {
                                         Đăng nhập để tham gia
                                     </a>
                                 <?php else: ?>
-                                    <a href="login.php?redirect=payment&course_id=<?php echo $course_id; ?>" class="btn btn-warning w-100 mb-2">
-                                        Đăng nhập để thanh toán
+                                    <a href="login.php?redirect=join_course&course_id=<?php echo $course_id; ?>" class="btn btn-warning w-100 mb-2">
+                                        Đăng nhập để đăng ký
                                     </a>
                                 <?php endif; ?>
                                 <a href="register.php" class="btn btn-outline-primary w-100">
