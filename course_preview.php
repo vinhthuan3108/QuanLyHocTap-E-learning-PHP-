@@ -195,7 +195,7 @@ function getDayOfWeek($day) {
                 <div class="col-md-6 text-end">
                     <?php if (isset($_SESSION['user_id'])): ?>
                         <?php if ($has_joined || $is_free): ?>
-                            <a href="course/index.php?id=<?php echo $course_id; ?>" class="btn btn-success btn-lg">
+                            <a href="/student/course/index.php?id=<?php echo $course_id; ?>" class="btn btn-success btn-lg">
                                 <?php echo $is_free ? 'Tham gia ngay' : 'Truy cập khóa học'; ?>
                             </a>
                         <?php else: ?>
