@@ -1,7 +1,7 @@
 <?php
 include_once('../../config/connect.php');
 include_once('../../config/connect.php'); 
-require '../vendor/autoload.php'; 
+require '../../vendor/autoload.php'; 
 use PHPMailer\PHPMailer\PHPMailer; 
 use PHPMailer\PHPMailer\Exception;
 
