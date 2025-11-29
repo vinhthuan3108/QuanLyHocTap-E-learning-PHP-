@@ -17,10 +17,10 @@ if (file_exists($envFile)) {
 }
 
 //cau hinh ket noi
-$servername = "localhost";
-$username   = "root";
-$password   = ""; // để trống nếu chưa đặt mật khẩu
-$dbname     = "quanlysinhvientnt";
+$servername = $_ENV['DB_HOST']; 
+$username   = $_ENV['DB_USER'];
+$password   = $_ENV['DB_PASS'];
+$dbname     = $_ENV['DB_NAME'];
 
 $dbconnect = mysqli_connect($servername, $username, $password, $dbname);
 if ($dbconnect) {
