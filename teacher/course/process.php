@@ -1,6 +1,12 @@
 <?php
 include_once('../../config/connect.php');
+include_once('../../config/connect.php'); 
+require '../vendor/autoload.php'; 
+use PHPMailer\PHPMailer\PHPMailer; 
+use PHPMailer\PHPMailer\Exception;
 
+
+// use PHPMailer\PHPMailer\SMTP;
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -172,21 +178,128 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     echo "Invalid request method";
 }
 
-// Check if the form is submitted
+
+
+
+//mới sữa
+
+
+ob_start();
+
 if (isset($_POST['create_post'])) {
-    // Retrieve user_id and course_id from the session
     $user_id = $_SESSION["user_id"];
     $course_id = $_SESSION['course_id'];
     $title = mysqli_real_escape_string($dbconnect, $_POST["postTitle"]);
     $content = mysqli_real_escape_string($dbconnect, $_POST["postContent"]);
 
-    $sql = "INSERT INTO post (user_id, course_id, title, content, created_at) VALUES ($user_id, $course_id, '$title', '$content', DEFAULT)";
-
+    
+    $sql = "INSERT INTO post (user_id, course_id, title, content, created_at)
+            VALUES ($user_id, $course_id, '$title', '$content', DEFAULT)";
     mysqli_query($dbconnect, $sql);
+
+    $post_id = mysqli_insert_id($dbconnect);  
+
+    
+    $sql_student = "SELECT u.email, u.full_name
+                    FROM course_member cm
+                    JOIN user u ON cm.student_id = u.user_id
+                    WHERE cm.course_id = $course_id";
+    $result_student = mysqli_query($dbconnect, $sql_student);
+
+    
+    $teacher = mysqli_fetch_assoc(mysqli_query($dbconnect, "SELECT full_name, email FROM user WHERE user_id = $user_id"));
+    $teacher_name = $teacher['full_name'];
+    $teacher_email = $teacher['email'];
+
+
+    $post_time_query = mysqli_query($dbconnect, "SELECT created_at FROM post WHERE post_id = $post_id");
+    $post_time_row = mysqli_fetch_assoc($post_time_query);
+    $post_time_formatted = date("H:i - d/m/Y", strtotime($post_time_row['created_at']));  
+
+    
+   $app_password = 'qsyi hdos gdou twnh';
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = $teacher_email;
+        $mail->Password = $app_password;
+        $mail->SMTPSecure = 'tls';
+        $mail->Port = 587;
+        $mail->CharSet = 'UTF-8'; 
+        $mail->setFrom($teacher_email, $teacher_name);
+
+        while ($row = mysqli_fetch_assoc($result_student)) {
+            $mail->addAddress($row['email'], $row['full_name']);
+        }
+
+        $mail->isHTML(true);
+        $mail->Subject = "Thông báo mới từ giáo viên $teacher_name";
+       $mail->Body = '
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông báo mới</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; background-color: #f8f9fa; padding: 20px; }
+        .header { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 20px; border-radius: 10px 10px 0 0; text-align: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { background: white; padding: 25px; border-radius: 0 0 10px 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .post-meta { background: #e9ecef; padding: 10px; border-radius: 5px; margin-bottom: 20px; font-size: 14px; color: #6c757d; }
+        .post-body { font-size: 16px; line-height: 1.7; margin-bottom: 20px; }
+        .post-body img { max-width: 100%; height: auto; border-radius: 5px; }
+        .post-body table { border-collapse: collapse; width: 100%; }
+        .post-body table, .post-body th, .post-body td { border: 1px solid #ddd; padding: 8px; }
+        .post-body th { background-color: #f8f9fa; }
+        .footer { text-align: center; padding-top: 20px; border-top: 1px solid #dee2e6; color: #6c757d; font-size: 12px; }
+        @media (max-width: 600px) { body { padding: 10px; } .content { padding: 15px; } .post-body { font-size: 14px; } }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📢 Thông báo mới</h1>
+    </div>
+    <div class="content">
+        <div class="post-meta">
+            <strong>Bởi:</strong> ' . htmlspecialchars($teacher_name) . ' <br>
+            <strong>Thời gian:</strong> ' . $post_time_formatted . '  <!-- Thời gian từ DB, chính xác hôm nay -->
+        </div>
+        <div class="post-body">
+            ' . $content . '  <!-- Sử dụng $content trực tiếp để giữ HTML từ Quill, không htmlspecialchars -->
+        </div>
+        <p style="margin-top: 20px; font-style: italic; color: #6c757d;">
+            Truy cập hệ thống Elearning để xem chi tiết và tương tác.
+        </p>
+    </div>
+    <div class="footer">
+        <p>— Hệ thống Elearning (Tự động gửi) —</p>
+        <p>Nếu bạn có câu hỏi, vui lòng liên hệ giáo viên qua hệ thống.</p>
+    </div>
+</body>
+</html>
+';
+
+
+        $mail->send();
+    } catch (Exception $e) {
+        // chỉ log vào file, không echo ra màn hình
+        error_log("Email không gửi được. Lỗi: {$mail->ErrorInfo}");
+    }
+
     mysqli_close($dbconnect);
+
+    // xoá buffer trước khi redirect
+    ob_end_clean();
+
     header("Location: post/post.php");
     exit();
 }
+
+
 
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
