@@ -169,7 +169,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
                                                     </a>
                                                 <?php else: ?>
                                                     <!-- Nếu chưa tham gia và là khóa học có phí -->
-                                                    <a class="btn btn-warning" href="../payment.php?course_id=<?php echo $row['course_id']; ?>">Thanh toán</a>
+                                                    <a class="btn btn-warning" href="../payment/payment.php?course_id=<?php echo $row['course_id']; ?>">Thanh toán</a>
                                                 <?php endif; ?>
                                             <?php endif; ?>
                                         <?php } else { ?>

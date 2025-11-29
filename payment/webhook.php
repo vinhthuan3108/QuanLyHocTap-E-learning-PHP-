@@ -1,6 +1,6 @@
 <?php
-include_once('config/connect.php');
-require_once 'vendor/autoload.php';
+include_once('../config/connect.php');
+require_once '../vendor/autoload.php';
 
 use PayOS\PayOS;
 
