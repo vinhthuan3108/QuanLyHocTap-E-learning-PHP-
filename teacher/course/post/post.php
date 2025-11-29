@@ -1,11 +1,42 @@
 <?php
 // include("layout.php");
+
+
+
+
+
 include("../layout.php");
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
 $course_id = $_SESSION['course_id'];
+
+
+//mới them de xoa
+// XÓA BÀI POST
+if (isset($_POST['delete_post'])) {
+
+    if (!isset($_GET['post_id'])) {
+        die("Thiếu post_id");
+    }
+
+    $post_id = intval($_GET['post_id']);
+
+    $sql = "DELETE FROM post WHERE post_id = ? AND course_id = ?";
+    $stmt = mysqli_prepare($dbconnect, $sql);
+    mysqli_stmt_bind_param($stmt, "ii", $post_id, $course_id);
+
+    if (mysqli_stmt_execute($stmt)) {
+        header("Location: post.php");
+        exit();
+    } else {
+        die("Xóa thất bại: " . mysqli_error($dbconnect));
+    }
+}
+
+
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
     $tukhoa = $_POST['tukhoa'];
@@ -120,18 +151,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
             </div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const deleteButtons = document.querySelectorAll('.delete-post-btn');
-            deleteButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const postId = this.getAttribute('data-postid');
-                    const form = document.querySelector('#deletePostForm');
-                    form.action = `process.php?post_id=${postId}`;
-                });
-            });
+   <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const deleteButtons = document.querySelectorAll('.delete-post-btn');
+    deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const postId = this.getAttribute('data-postid');
+            const form = document.querySelector('#deletePostForm');
+            form.action = `post.php?post_id=${postId}`;
         });
-    </script>
+    });
+});
+</script>
+
     <?php include("../../../footer.php"); ?>
 </body>
 
