@@ -6,14 +6,13 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Lấy ID khóa học từ URL
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     die("Không tìm thấy khóa học");
 }
 
 $course_id = intval($_GET['id']);
 
-// Lấy thông tin khóa học
+
 $course_sql = "SELECT c.*, u.full_name as teacher_name 
                FROM course c 
                LEFT JOIN user u ON c.teacher_id = u.user_id 
@@ -63,7 +62,6 @@ $topics_sql = "SELECT ct.*,
                ORDER BY ct.created_at";
 $topics_result = mysqli_query($dbconnect, $topics_sql);
 
-// Hàm chuyển đổi thứ trong tuần
 function getDayOfWeek($day) {
     $days = [
         '2' => 'Thứ 2',

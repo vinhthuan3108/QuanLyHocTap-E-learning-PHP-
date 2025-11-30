@@ -1,22 +1,19 @@
 <?php
-// student/course/exam/take_exam.php
+
 include("../layout.php");
 
 if(!isset($_GET['exam_id'])) { header("Location: index.php"); exit(); }
 $exam_id = intval($_GET['exam_id']);
 $course_id = $_SESSION['course_id'];
 
-// 1. Lấy thông tin bài thi để hiển thị tiêu đề và check thời gian
 $sql_exam = "SELECT * FROM exam WHERE exam_id = $exam_id AND course_id = $course_id";
 $exam = mysqli_fetch_assoc(mysqli_query($dbconnect, $sql_exam));
 
-// Check thời gian lần nữa cho chắc (bảo mật)
 $now = time();
 if($now < strtotime($exam['open_time']) || $now > strtotime($exam['close_time'])) {
     die("<div class='container mt-5 alert alert-danger'>Bài thi hiện không khả dụng!</div>");
 }
 
-// 2. Lấy danh sách câu hỏi
 $sql_questions = "SELECT * FROM question WHERE exam_id = $exam_id ORDER BY order_num ASC, question_id ASC";
 $res_questions = mysqli_query($dbconnect, $sql_questions);
 ?>
@@ -53,11 +50,10 @@ $res_questions = mysqli_query($dbconnect, $sql_questions);
                             
                             <?php else: // Trắc nghiệm 
                                 $qid = $q['question_id'];
-                                // Lấy các phương án trả lời nhưng KHÔNG lấy cột is_correct (chống soi code)
+
                                 $sql_ans = "SELECT answer_id, answer_text FROM answer WHERE question_id = $qid";
                                 $res_ans = mysqli_query($dbconnect, $sql_ans);
                                 
-                                // Nếu muốn xáo trộn đáp án thì dùng mảng PHP shuffle ở đây, còn không thì while luôn
                                 while($ans = mysqli_fetch_assoc($res_ans)):
                             ?>
                                 <div class="form-check mb-2">
@@ -94,8 +90,7 @@ $res_questions = mysqli_query($dbconnect, $sql_questions);
 </div>
 
 <script>
-    // Logic đếm ngược đơn giản (Client side)
-    // Thực tế cần lưu start_time vào DB exam_submission để tính chính xác server side
+
     var timeLimit = <?php echo $exam['time_limit']; ?>; 
     var timeInSeconds = timeLimit * 60;
     

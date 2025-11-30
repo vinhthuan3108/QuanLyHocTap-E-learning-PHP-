@@ -37,10 +37,8 @@ $row_count_member = mysqli_fetch_assoc($result_count_member);
         <h3><?php echo $row_course['course_code'] . " - " . $row_course['course_name']?></h3>
         <p><?php echo $row_course['course_description']?></p>
     </div>
-    <!-- Body Section -->
     <div class="container mt-4">
         <div class="row">
-            <!-- Thông tin cá nhân -->
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body">
@@ -67,7 +65,6 @@ $row_count_member = mysqli_fetch_assoc($result_count_member);
                                     <td><b>Ngày kết thúc</b>
                                     <br><?php echo date('d/m/Y', strtotime($row_course['end_date']))?></td>
                                 </tr>
-                                <!-- Add more rows as needed -->
                             </tbody>
                         </table>
                     </div>

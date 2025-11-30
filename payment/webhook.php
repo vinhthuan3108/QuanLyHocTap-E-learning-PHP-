@@ -4,7 +4,6 @@ require_once '../vendor/autoload.php';
 
 use PayOS\PayOS;
 
-// Đọc input từ webhook
 $webhookBody = file_get_contents('php://input');
 $data = json_decode($webhookBody, true);
 
@@ -14,15 +13,14 @@ if (!$data) {
 }
 
 try {
-    // Khởi tạo PayOS
+
     $payOS = new PayOS(
         $_ENV['PAYOS_CLIENT_ID'],
         $_ENV['PAYOS_API_KEY'], 
         $_ENV['PAYOS_CHECKSUM_KEY']
     );
     
-    // Xác thực webhook - SỬ DỤNG PHƯƠNG THỨC ĐÚNG
-    // PayOS thường sử dụng signature trong header để xác thực
+
     $webhookSignature = isset($_SERVER['HTTP_X_PAYOS_SIGNATURE']) ? $_SERVER['HTTP_X_PAYOS_SIGNATURE'] : '';
     
     if (empty($webhookSignature)) {
@@ -87,7 +85,6 @@ try {
             error_log("Webhook Error: Failed to update payment - " . $stmt->error);
         }
     } else {
-        // Xử lý trạng thái thanh toán khác
         $orderCode = $data['orderCode'];
         $status = $data['success'] ? 'pending' : 'failed';
         

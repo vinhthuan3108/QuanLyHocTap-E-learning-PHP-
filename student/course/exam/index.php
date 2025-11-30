@@ -1,12 +1,10 @@
 <?php
-// student/course/exam/index.php
 include("../layout.php"); 
 
-// 1. Kiểm tra Session và Lấy thông tin
 $course_id = $_SESSION['course_id'];
-$user_id = $_SESSION['user_id']; // Đây là user_id (student_id)
+$user_id = $_SESSION['user_id']; 
 
-// Lấy member_id để đối chiếu với bảng nộp bài
+
 $sql_member = "SELECT member_id FROM course_member WHERE student_id = '$user_id' AND course_id = '$course_id' LIMIT 1";
 $res_member = mysqli_query($dbconnect, $sql_member);
 
@@ -22,8 +20,7 @@ $member_id = $row_member['member_id'];
     
     <div class="row">
         <?php
-        // 2. Truy vấn Bài thi KẾT HỢP Kết quả đã làm (LEFT JOIN)
-        // Logic: Lấy tất cả bài thi, nếu có bài nộp của member_id này thì lấy luôn điểm và thời gian nộp
+
         $sql = "SELECT e.*, gc.grade_column_name, 
                        es.submit_time, es.total_score 
                 FROM exam e 
@@ -41,43 +38,40 @@ $member_id = $row_member['member_id'];
                 $open = strtotime($row['open_time']);
                 $close = strtotime($row['close_time']);
                 
-                // Kiểm tra đã nộp bài chưa
-                $is_submitted = !empty($row['submit_time']); // Nếu có thời gian nộp => đã làm
                 
-                // Mặc định
+                $is_submitted = !empty($row['submit_time']); 
+                
+                
                 $btn_status = '';
                 $btn_text = 'Vào thi ngay';
                 $btn_link = "take_exam.php?exam_id=$exam_id";
                 $card_class = 'border-primary';
-                $badge_status = ''; // Hiển thị thêm badge trạng thái
+                $badge_status = ''; 
 
-                // --- LOGIC HIỂN THỊ TRẠNG THÁI ---
+                
                 
                 if ($is_submitted) {
-                    // TRƯỜNG HỢP 1: Đã làm bài
-                    $btn_status = 'disabled'; // Không cho làm lại (trừ khi bạn muốn mở tính năng làm lại)
-                    // Hiển thị điểm (làm tròn đẹp nếu cần)
+                    
+                    $btn_status = 'disabled'; 
+                   
                     $score = floatval($row['total_score']); 
                     $btn_text = "Đã nộp bài - Điểm: " . $score;
-                    $card_class = 'border-success'; // Viền xanh lá
+                    $card_class = 'border-success'; 
                     $badge_status = '<span class="badge bg-success float-end ms-2">Đã hoàn thành</span>';
                     
                 } elseif ($now < $open) {
-                    // TRƯỜNG HỢP 2: Chưa mở
                     $btn_status = 'disabled';
                     $btn_text = 'Chưa mở';
                     $card_class = 'border-secondary';
                     $badge_status = '<span class="badge bg-secondary float-end ms-2">Sắp diễn ra</span>';
                     
                 } elseif ($now > $close) {
-                    // TRƯỜNG HỢP 3: Đã đóng mà chưa làm
                     $btn_status = 'disabled';
                     $btn_text = 'Đã đóng';
-                    $card_class = 'border-danger'; // Viền đỏ cảnh báo
+                    $card_class = 'border-danger'; 
                     $badge_status = '<span class="badge bg-danger float-end ms-2">Đã kết thúc</span>';
                 }
                 
-                // TRƯỜNG HỢP 4: Đang mở và chưa làm -> Giữ nguyên mặc định
 
                 echo "
                 <div class='col-md-6 mb-4'>

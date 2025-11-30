@@ -13,7 +13,7 @@ $limit = isset($_GET['limit']) && in_array(intval($_GET['limit']), $per_page_opt
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $start = ($page - 1) * $limit;
 
-// --- TÌM KIẾM ---
+
 $keyword_sql = "";
 $tukhoa = "";
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
@@ -31,7 +31,7 @@ $total_row = mysqli_fetch_assoc($total_result);
 $total_records = $total_row['total'];
 $total_pages = ceil($total_records / $limit);
 
-// --- LẤY KHÓA HỌC ---
+
 $sql = "SELECT * FROM course co
 INNER JOIN course_member cm ON co.course_id = cm.course_id
 WHERE student_id = $user_id $keyword_sql
@@ -39,7 +39,7 @@ ORDER BY co.course_name ASC
 LIMIT $start, $limit";
 $result = mysqli_query($dbconnect, $sql);
 
-// --- KHÓA HỌC HÔM NAY ---
+
 $phpDay = date("N"); // 1=Thứ 2 … 7=Chủ nhật
 $dayOfWeekNumber = ($phpDay == 7) ? 1 : $phpDay + 1;
 $today_sql = "SELECT * FROM course co
@@ -57,7 +57,7 @@ $today_result = mysqli_query($dbconnect, $today_sql);
 <title>Khóa học của tôi</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 <style>
-    /* Card Elearning Style */
+
     .course-card {
         position: relative;
         overflow: hidden;

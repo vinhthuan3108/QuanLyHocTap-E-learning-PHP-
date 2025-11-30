@@ -47,21 +47,17 @@ $course_id = $_SESSION['course_id'];
                             FROM exam e 
                             JOIN grade_column gc ON e.column_id = gc.column_id 
                             WHERE e.course_id = $course_id 
-                            ORDER BY e.created_at DESC"; // Nên sắp xếp mới nhất lên đầu
+                            ORDER BY e.created_at DESC"; 
                 $result_exam = mysqli_query($dbconnect, $sql_exam);
 
                 if ($result_exam && mysqli_num_rows($result_exam) > 0) {
                     while ($row = mysqli_fetch_array($result_exam)) {
                         $exam_id = $row['exam_id'];
-                        // Link Sửa: Trỏ về trang soạn câu hỏi
-                        // Trong exam.php
-                        $edit_link = "edit_exam_info.php?exam_id=" . $exam_id; // Đã đổi từ edit_exam.php sang edit_exam_info.php
+
+                        $edit_link = "edit_exam_info.php?exam_id=" . $exam_id; 
                         
-                        // Link Xóa: Gọi file process.php
                         $delete_link = "process.php?action=delete_exam&exam_id=" . $exam_id;
                         
-                        // Link Truy cập: (Ví dụ: Xem kết quả thi của sinh viên)
-                        // Bạn có thể đổi thành view_exam.php nếu muốn
                         $view_link = "view_exam_results.php?exam_id=" . $exam_id; 
 
                         echo '<tr>

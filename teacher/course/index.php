@@ -164,10 +164,10 @@ $result_post = mysqli_query($dbconnect, $sql_post);
         <div class="col-lg-6">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title">Bài đăng mới</h5>
+                    <h5 class="card-title">Thông báo mới</h5>
                     <hr class="info-divider">
                     <?php if(mysqli_num_rows($result_post) == 0): ?>
-                        <p>Chưa có bài đăng nào.</p>
+                        <p>Chưa có thông báo nào.</p>
                     <?php else: ?>
                         <ul class="list-group list-group-flush">
                             <?php while($row_post = mysqli_fetch_array($result_post)): ?>

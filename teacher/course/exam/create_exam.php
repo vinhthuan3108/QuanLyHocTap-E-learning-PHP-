@@ -2,13 +2,12 @@
 include("../layout.php");
 $course_id = $_SESSION['course_id'];
 
-// Lấy danh sách cột điểm của khóa học
 $sql_grade_columns = "SELECT * FROM grade_column WHERE course_id = $course_id";
 $result_grade_columns = mysqli_query($dbconnect, $sql_grade_columns);
 
-// Xử lý khi form được submit
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Lấy dữ liệu từ form
+
     $title = mysqli_real_escape_string($dbconnect, $_POST['title']);
     $description = mysqli_real_escape_string($dbconnect, $_POST['description']);
     $column_id = $_POST['column_id'];
@@ -17,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $time_limit = $_POST['time_limit'];
     $max_score = $_POST['max_score'];
     
-    // Thêm bài kiểm tra vào database
+
     $sql_insert_exam = "INSERT INTO exam (course_id, column_id, title, description, open_time, close_time, time_limit, max_score) 
                         VALUES ($course_id, $column_id, '$title', '$description', '$open_time', '$close_time', $time_limit, $max_score)";
     
@@ -150,10 +149,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Đặt thời gian mở mặc định là hiện tại
         document.getElementById('open_time').value = new Date().toISOString().slice(0, 16);
         
-        // Đặt thời gian đóng mặc định là 7 ngày sau
+
         const closeTime = new Date();
         closeTime.setDate(closeTime.getDate() + 7);
         document.getElementById('close_time').value = closeTime.toISOString().slice(0, 16);

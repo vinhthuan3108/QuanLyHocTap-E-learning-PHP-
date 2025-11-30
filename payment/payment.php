@@ -71,7 +71,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['pay_now'])) {
         // Tạo payment link với PayOS
         // Tự động detect base URL từ server
         $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST']; // Sẽ bao gồm cả cổng nếu có
+        $host = $_SERVER['HTTP_HOST']; 
         $base_url = $protocol . '://' . $host;
 
         $orderData = [
@@ -122,7 +122,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['pay_now'])) {
                             <div class="alert alert-danger"><?php echo $error; ?></div>
                         <?php endif; ?>
 
-                        <!-- Thông tin khóa học -->
                         <div class="mb-4">
                             <h5>Thông tin khóa học</h5>
                             <div class="border p-3 rounded">
@@ -135,7 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['pay_now'])) {
                             </div>
                         </div>
 
-                        <!-- Phương thức thanh toán -->
                         <div class="mb-4">
                             <h5>Phương thức thanh toán</h5>
                             <div class="border p-3 rounded">
@@ -151,7 +149,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['pay_now'])) {
                             </div>
                         </div>
 
-                        <!-- Nút thanh toán -->
                         <form method="POST">
                             <button type="submit" name="pay_now" class="btn btn-success w-100 btn-lg">
                                 Thanh toán ngay - <?php echo number_format($course['price'], 0, ',', '.'); ?> VNĐ
@@ -164,7 +161,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['pay_now'])) {
                     </div>
                 </div>
 
-                <!-- Thông tin bảo mật -->
                 <div class="mt-3 text-center">
                     <small class="text-muted">
                         <i class="bi bi-shield-check"></i> Giao dịch được bảo mật bởi PayOS

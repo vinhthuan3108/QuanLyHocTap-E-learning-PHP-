@@ -2,14 +2,12 @@
 include("../layout.php");
 $course_id = $_SESSION['course_id'];
 
-// Kiểm tra ID bài thi
 if (!isset($_GET['exam_id'])) {
     header("Location: exam.php");
     exit();
 }
 $exam_id = intval($_GET['exam_id']);
 
-// Xử lý CẬP NHẬT dữ liệu khi bấm Lưu
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $title = mysqli_real_escape_string($dbconnect, $_POST['title']);
     $description = mysqli_real_escape_string($dbconnect, $_POST['description']);
@@ -19,7 +17,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $time_limit = $_POST['time_limit'];
     $max_score = $_POST['max_score'];
     
-    // SQL Update
     $sql_update = "UPDATE exam SET 
                    title = '$title',
                    description = '$description',
@@ -37,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 }
 
-// Lấy thông tin hiện tại của bài thi để điền vào form
 $sql_exam = "SELECT * FROM exam WHERE exam_id = $exam_id AND course_id = $course_id";
 $result_exam = mysqli_query($dbconnect, $sql_exam);
 if (mysqli_num_rows($result_exam) == 0) {
@@ -45,7 +41,7 @@ if (mysqli_num_rows($result_exam) == 0) {
 }
 $exam = mysqli_fetch_assoc($result_exam);
 
-// Lấy danh sách cột điểm để hiển thị dropdown
+
 $sql_grade_columns = "SELECT * FROM grade_column WHERE course_id = $course_id";
 $result_grade_columns = mysqli_query($dbconnect, $sql_grade_columns);
 ?>
