@@ -6,99 +6,159 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-if (isset($_SESSION['user_id']))
-{
+if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
-
     $sql = "SELECT * FROM user WHERE user_id = $user_id";
     $result = mysqli_query($dbconnect, $sql);
-}
-else
-{
-    $username_now = "User not logged in";
+    $row = mysqli_fetch_assoc($result);
+} else {
+    $row = [
+        'full_name' => 'User not logged in',
+        'image' => 'default_avatar.png',
+        'date_of_birth' => '',
+        'gender' => '',
+        'email' => '',
+        'phone' => '',
+        'citizen_id' => ''
+    ];
 }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang cá nhân</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        .profile-image {
-            border-radius: 50%;
-            width: 150px;
-            height: 150px;
-        }
-        .info-divider {
-            border: 0;
-            height: 1px;
-            background-color: #ccc; /* Màu của đường kẻ */
-            margin: 10px 0; /* Khoảng cách trên và dưới đường kẻ */
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trang cá nhân - <?php echo $row['full_name']; ?></title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+    body {
+        background-color: #f2f4f8;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .profile-header {
+        text-align: center;
+        padding: 30px 0 20px 0;
+        background-color: #fff;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .profile-avatar {
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        margin-bottom: 15px;
+    }
+
+    .profile-name {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .profile-role {
+        font-size: 1rem;
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+
+    .btn-edit {
+        font-size: 0.9rem;
+        padding: 8px 20px;
+    }
+
+    .card {
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+    }
+
+    .card h4 {
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-label {
+        font-weight: 500;
+        color: #495057;
+    }
+
+    .info-value {
+        color: #6c757d;
+    }
+
+    @media (max-width: 576px) {
+        .profile-header { padding: 20px 10px; }
+        .profile-name { font-size: 1.5rem; }
+        .profile-avatar { width: 120px; height: 120px; }
+    }
+</style>
 </head>
-
 <body>
-    <?php
-        // Đặt con trỏ kết quả về đầu để có thể duyệt lại từ đầu
-        mysqli_data_seek($result, 0);
+<?php include("sidebar.php"); ?>
 
-        $row = mysqli_fetch_assoc($result)
-    ?>
-    <header class="container mt-4">
-        <div class="row">
-            <div class="col-md-2">
-                <img src="../assets/images/<?php echo $row['image'];?>" alt="Profile Image" class="profile-image">
-            </div>
-            <div class="col-md-10">
-                <h2><?php echo $row['full_name'];?></h2>
-                <h5>Quản trị viên</h5> <br>
-                <a class="btn btn-primary rounded-end rounded-start" type="button" href="account_edit.php?user_id=<?php echo $user_id;?>&role_id=3&role_name=admin">Thay đổi thông tin</a>
-            </div>
+<div class="main p-4" id="mainContent">
 
-        </div>
+<div class="container mt-4">
+    <!-- Header Avatar -->
+    <div class="profile-header">
+        <img src="../assets/images/<?php echo $row['image'];?>" alt="Avatar" class="profile-avatar">
+        <div class="profile-name"><?php echo $row['full_name'];?></div>
+        <div class="profile-role">Quản trị viên</div>
+        <a href="account_edit.php?user_id=<?php echo $user_id;?>&role_id=3&role_name=admin" class="btn btn-primary btn-edit">
+            <i class="bi bi-pencil-square"></i> Chỉnh sửa thông tin
+        </a>
+    </div>
 
-    </header>
-
-    <!-- Body Section -->
-    <div class="container mt-4">
-        <div class="row">
-            <!-- Thông tin cá nhân -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h4>Thông tin cá nhân</h4>
-                        <hr class="info-divider">
-                        <p>
-                            <b>Ngày sinh</b>
-                            <br> <?php echo date('d/m/Y', strtotime($row['date_of_birth'])); ?>
-                        </p>
-                        <p>
-                            <b>Giới tính</b>
-                            <br> <?php echo ($row['gender'] == "M" ? "Nam":"Nữ");?>
-                        </p>
-                        <p>
-                            <b>Email</b>
-                            <br> <?php echo $row['email'];?>
-                        </p>
-                        <p>
-                            <b>Số điện thoại</b>
-                            <br> <?php echo $row['phone'];?>
-                        </p>
-                        <p>
-                            <b>Mã số CCCD/CMND</b>
-                            <br> <?php echo $row['citizen_id'];?>
-                        </p>
-                    </div>
+    <!-- Thông tin cá nhân -->
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card p-3">
+                <h4>Thông tin cá nhân</h4>
+                <div class="info-row">
+                    <div class="info-label">Ngày sinh:</div>
+                    <div class="info-value"><?php echo !empty($row['date_of_birth']) ? date('d/m/Y', strtotime($row['date_of_birth'])) : 'Chưa cập nhật'; ?></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Giới tính:</div>
+                    <div class="info-value"><?php echo ($row['gender'] == "M" ? "Nam" : ($row['gender'] == "F" ? "Nữ" : 'Chưa cập nhật')); ?></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Email:</div>
+                    <div class="info-value"><?php echo !empty($row['email']) ? $row['email'] : 'Chưa cập nhật'; ?></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Số điện thoại:</div>
+                    <div class="info-value"><?php echo !empty($row['phone']) ? $row['phone'] : 'Chưa cập nhật'; ?></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">CCCD/CMND:</div>
+                    <div class="info-value"><?php echo !empty($row['citizen_id']) ? $row['citizen_id'] : 'Chưa cập nhật'; ?></div>
                 </div>
             </div>
         </div>
     </div>
+</div>
     <?php include("../footer.php"); ?>
-</body>
 
+</div>
+</body>
 </html>
