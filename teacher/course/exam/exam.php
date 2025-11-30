@@ -1,7 +1,5 @@
 <?php
 include("../layout.php");
-$nav_id = isset($_GET['nav_id']) ? $_GET['nav_id'] : 1;
-
 $course_id = $_SESSION['course_id'];
 ?>
 <!DOCTYPE html>
@@ -10,106 +8,84 @@ $course_id = $_SESSION['course_id'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài tập và kiểm tra</title>
-    <!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> -->
+    <title>Bài kiểm tra</title>
 </head>
 
 <body>
     <header class="container mt-4">
         <div class="row">
             <div class="col-md-6">
-                <h3>Bài tập và kiểm tra</h3>
+                <h3>Bài kiểm tra</h3>
             </div>
             <div class="col-md-6">
                 <div class="input-group mb-3 float-end">
-                    <input type="text" class="form-control" placeholder="Tìm kiếm ..." aria-label="Recipient's username" aria-describedby="button-addon2">
-                    <button class="btn btn-dark" type="button" id="button-addon2">Tìm</button>
+                    <input type="text" class="form-control" placeholder="Tìm kiếm ...">
+                    <button class="btn btn-dark" type="button">Tìm</button>
                 </div>
             </div>
         </div>
     </header>
     <div class="container mt-4">
         <div class="row">
-            <div class="col-md-8">
-                <ul class="nav nav-tabs">
-                    <?php
-                    $tabs = ['Bài tập', 'Bài kiểm tra'];
-                    for ($i = 1; $i <= count($tabs); $i++) {
-                        echo '<li class="nav-item">
-                        <a class="nav-link ' . ($nav_id == $i ? "active" : "") . '" href="exam.php?nav_id=' . $i . '">' . $tabs[$i - 1] . '</a>
-                    </li>';
-                    }
-                    ?>
-                </ul>
-            </div>
-            <div class="col-md-4">
+            <div class="col-md-12">
                 <a class="btn btn-primary float-end" href="create_exam.php">+ Tạo bài kiểm tra</a>
-                <a class="btn btn-primary float-end me-2" href="create_practice.php">+ Tạo bài tập</a>
             </div>
         </div>
     </div>
     <div class="container mt-4">
-        <?php
-        switch ($nav_id) {
-            case 1:
-                echo '
-                <table class="table">
-                <thead>
-                    <th>Tiêu đề</th>
-                    <th>Thời gian mở</th>
-                    <th>Thời gian đóng</th>
-                    <th></th>
-                </thead>';
-                $sql_practice = "SELECT * FROM practice WHERE course_id = $course_id";
-                $result_practice = mysqli_query($dbconnect, $sql_practice);
+        <table class="table">
+            <thead>
+                <th>Tiêu đề</th>
+                <th>Loại điểm</th>
+                <th>Thời gian mở</th>
+                <th>Thời gian đóng</th>
+                <th>Thao tác</th>
+            </thead>
+            <tbody>
+                <?php
+                $sql_exam = "SELECT e.*, gc.grade_column_name 
+                            FROM exam e 
+                            JOIN grade_column gc ON e.column_id = gc.column_id 
+                            WHERE e.course_id = $course_id 
+                            ORDER BY e.created_at DESC"; // Nên sắp xếp mới nhất lên đầu
+                $result_exam = mysqli_query($dbconnect, $sql_exam);
 
-                // Loop through practice results and generate table rows
-                while ($row = mysqli_fetch_array($result_practice)) {
-                    echo '<tr>
-                        <td>' . $row['description'] . '</td>
-                        <td>' . date('d/m/Y', strtotime($row['open_time'])) . '</td>
-                        <td>' . date('d/m/Y', strtotime($row['close_time'])) . '</td>
-                        <td>
-                            <a class="me-2" style="text-decoration: none;" href="#">Truy cập</a>
-                            <a class="me-2" style="text-decoration: none;" href="#">Sửa</a>
-                            <a style="text-decoration: none;" href="#">Xóa</a>
-                        </td>
+                if ($result_exam && mysqli_num_rows($result_exam) > 0) {
+                    while ($row = mysqli_fetch_array($result_exam)) {
+                        $exam_id = $row['exam_id'];
+                        // Link Sửa: Trỏ về trang soạn câu hỏi
+                        // Trong exam.php
+                        $edit_link = "edit_exam_info.php?exam_id=" . $exam_id; // Đã đổi từ edit_exam.php sang edit_exam_info.php
+                        
+                        // Link Xóa: Gọi file process.php
+                        $delete_link = "process.php?action=delete_exam&exam_id=" . $exam_id;
+                        
+                        // Link Truy cập: (Ví dụ: Xem kết quả thi của sinh viên)
+                        // Bạn có thể đổi thành view_exam.php nếu muốn
+                        $view_link = "view_exam_results.php?exam_id=" . $exam_id; 
+
+                        echo '<tr>
+                            <td>' . htmlspecialchars($row['title']) . '</td>
+                            <td>' . htmlspecialchars($row['grade_column_name']) . '</td>
+                            <td>' . date('d/m/Y H:i', strtotime($row['open_time'])) . '</td>
+                            <td>' . date('d/m/Y H:i', strtotime($row['close_time'])) . '</td>
+                            <td>
+                                <a class="me-2 btn btn-sm btn-warning text-white" href="' . $edit_link . '">Sửa đề</a>
+                                <a class="btn btn-sm btn-danger" 
+                                   href="' . $delete_link . '" 
+                                   onclick="return confirm(\'Bạn có chắc chắn muốn xóa bài kiểm tra này? Toàn bộ câu hỏi và bài làm của sinh viên cũng sẽ bị xóa!\');">
+                                   Xóa
+                                </a>
+                            </td>
                         </tr>';
+                    }
+                } else {
+                    echo '<tr><td colspan="5" class="text-center">Chưa có bài kiểm tra nào</td></tr>';
                 }
-                echo '</tbody></table>';
-                break;
-
-            case 2:
-                echo '
-                <table class="table">
-                <thead>
-                    <th>Tiêu đề</th>
-                    <th>Thời gian mở</th>
-                    <th>Thời gian đóng</th>
-                    <th></th>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Bài kiểm tra lấy điểm quá trình</td>
-                        <td>01/01/2024</td>
-                        <td>31/12/2024</td>
-                        <td>
-                            <a class="me-2" style="text-decoration: none;" href="#">Truy cập</a>
-                            <a class="me-2" style="text-decoration: none;" href="#">Sửa</a>
-                            <a style="text-decoration: none;" href="#">Xóa</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>';
-                break;
-
-            default:
-                // Handle default case here if needed
-                break;
-        }
-        ?>
+                ?>
+            </tbody>
+        </table>
     </div>
     <?php include("../../../footer.php"); ?>
 </body>
-
 </html>
