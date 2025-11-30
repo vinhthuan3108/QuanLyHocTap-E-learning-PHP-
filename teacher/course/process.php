@@ -1,8 +1,8 @@
 <?php
 include_once('../../config/connect.php');
-include_once('../../config/connect.php'); 
-require '../../vendor/autoload.php'; 
-use PHPMailer\PHPMailer\PHPMailer; 
+include_once('../../config/connect.php');
+// require '../../vendor/autoload.php';
+use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 
@@ -60,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["change_cover"])) {
             echo "Đã xảy ra lỗi khi tải lên tệp ảnh.";
         }
         mysqli_close($dbconnect);
-        header('location: edit_course.php');
+        header('location: course_details/edit_course.php');
     }
 }
 
@@ -165,7 +165,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($delete_result) {
                 mysqli_close($dbconnect);
-                header("Location: member.php");
+                header("Location: course_details/member.php");
                 exit();
             } else {
                 die('Deletion failed: ' . mysqli_error($dbconnect));
@@ -192,21 +192,21 @@ if (isset($_POST['create_post'])) {
     $title = mysqli_real_escape_string($dbconnect, $_POST["postTitle"]);
     $content = mysqli_real_escape_string($dbconnect, $_POST["postContent"]);
 
-    
+
     $sql = "INSERT INTO post (user_id, course_id, title, content, created_at)
             VALUES ($user_id, $course_id, '$title', '$content', DEFAULT)";
     mysqli_query($dbconnect, $sql);
 
-    $post_id = mysqli_insert_id($dbconnect);  
+    $post_id = mysqli_insert_id($dbconnect);
 
-    
+
     $sql_student = "SELECT u.email, u.full_name
                     FROM course_member cm
                     JOIN user u ON cm.student_id = u.user_id
                     WHERE cm.course_id = $course_id";
     $result_student = mysqli_query($dbconnect, $sql_student);
 
-    
+
     $teacher = mysqli_fetch_assoc(mysqli_query($dbconnect, "SELECT full_name, email FROM user WHERE user_id = $user_id"));
     $teacher_name = $teacher['full_name'];
     $teacher_email = $teacher['email'];
@@ -214,9 +214,9 @@ if (isset($_POST['create_post'])) {
 
     $post_time_query = mysqli_query($dbconnect, "SELECT created_at FROM post WHERE post_id = $post_id");
     $post_time_row = mysqli_fetch_assoc($post_time_query);
-    $post_time_formatted = date("H:i - d/m/Y", strtotime($post_time_row['created_at']));  
+    $post_time_formatted = date("H:i - d/m/Y", strtotime($post_time_row['created_at']));
 
-    
+
    $app_password = 'qsyi hdos gdou twnh';
     $mail = new PHPMailer(true);
 
@@ -228,7 +228,7 @@ if (isset($_POST['create_post'])) {
         $mail->Password = $app_password;
         $mail->SMTPSecure = 'tls';
         $mail->Port = 587;
-        $mail->CharSet = 'UTF-8'; 
+        $mail->CharSet = 'UTF-8';
         $mail->setFrom($teacher_email, $teacher_name);
 
         while ($row = mysqli_fetch_assoc($result_student)) {
@@ -310,7 +310,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sql = "UPDATE post SET title = '$title', content = '$content', created_at = DEFAULT WHERE post_id = $post_id";
         mysqli_query($dbconnect, $sql);
         mysqli_close($dbconnect);
-        header("Location: post.php");
+        header("Location: post/post.php");
         exit();
     }
 }
@@ -320,7 +320,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['delete_post'])) {
     $result_delete = mysqli_query($dbconnect, $sql_delete);
     if ($result_delete) {
         mysqli_close($dbconnect);
-        header("location: post.php");
+        header("location: post/post.php");
     } else {
         echo "Không thể xóa. Lỗi: " . mysqli_error($dbconnect);
     }
@@ -354,7 +354,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["create_practice"])) {
 
     if ($dbconnect->query($sql) === TRUE) {
         mysqli_close($dbconnect);
-        header("Location: exam.php");
+        header("Location: exam/exam.php");
         exit();
     } else {
         echo "Error: " . $sql . "<br>" . $dbconnect->error;
@@ -499,7 +499,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["edit_content"])) {
         $query = "UPDATE video_contents SET video_url = '$videoName', video_size = '$videosize' WHERE course_content_id=$content_id";
         mysqli_query($dbconnect, $query);
         mysqli_close($dbconnect);
-        header("location: content.php");
+        header("location: content/content.php");
     }
     if (isset($_POST["code_embedded"])) {
         $embed_code = $_POST["code_embedded"];
@@ -517,7 +517,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["edit_content"])) {
         $query_video = "UPDATE embedded_contents SET embed_code ='$embed_code' WHERE course_content_id = $content_id ";
         mysqli_query($dbconnect, $query_video);
         mysqli_close($dbconnect);
-        header("location: content.php");
+        header("location: content/content.php");
     }
     if (isset($_FILES['contentFile'])) {
         $sql_edit = "SELECT * FROM file_contents where course_content_id=$content_id";
@@ -535,14 +535,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["edit_content"])) {
         course_content_id = $content_id";
         mysqli_query($dbconnect, $sql_file);
         mysqli_close($dbconnect);
-        header("location: content.php");
+        header("location: content/content.php");
     }
     if (isset($_POST['contentText'])) {
         $text_content = $_POST['contentText'];
         $sql_content_text = "UPDATE text_contents SET text_content ='$text_content' WHERE course_content_id = '$content_id'";
         mysqli_query($dbconnect, $sql_content_text);
         mysqli_close($dbconnect);
-        header("location: content.php");
+        header("location: content/content.php");
     }
 }
 

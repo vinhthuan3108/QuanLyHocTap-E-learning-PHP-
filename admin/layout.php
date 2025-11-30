@@ -1,25 +1,37 @@
 <?php
 include_once('../config/connect.php');
-
 session_start();
 
-if (isset($_SESSION['full_name'])) {
-    $sql_user = "SELECT * FROM user us
-    INNER JOIN user_role ur ON us.user_id = ur.user_id WHERE us.full_name = ?";
+// Kiểm tra session user_id
+if (isset($_SESSION['user_id'])) {
+    $user_id = $_SESSION['user_id'];
+
+    // Lấy thông tin user
+    $sql_user = "SELECT us.*, ur.role_id FROM user us
+                 INNER JOIN user_role ur ON us.user_id = ur.user_id
+                 WHERE us.user_id = ?";
     $stmt_user = mysqli_prepare($dbconnect, $sql_user);
-    mysqli_stmt_bind_param($stmt_user, "s", $_SESSION['full_name']);
+    mysqli_stmt_bind_param($stmt_user, "i", $user_id);
     mysqli_stmt_execute($stmt_user);
     $result_user = mysqli_stmt_get_result($stmt_user);
-    $row_la = mysqli_fetch_array($result_user);
-    if ($row_la['role_id'] == 3) {
-        $username_now = $_SESSION['full_name'];
+
+    if ($result_user && mysqli_num_rows($result_user) > 0) {
+        $row_la = mysqli_fetch_assoc($result_user);
+        $username_now = ($row_la['role_id'] == 3) ? $_SESSION['full_name'] : "Quản trị viên";
+        $user_image = $row_la['image'];
     } else {
-        $username_now = "Quản trị viên";
+        // User đã bị xóa -> logout
+        session_unset();
+        session_destroy();
+        header("Location: ../login.php?message=account_deleted");
+        exit;
     }
 } else {
     $username_now = "User not logged in";
+    $user_image = "default.png"; // avatar mặc định
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

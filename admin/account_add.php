@@ -1,83 +1,90 @@
 <?php
 include("layout.php");
 include_once ("../config/connect.php");
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
+if (session_status() == PHP_SESSION_NONE) session_start();
+
+$role_id = $_GET['role_id'];
+$role_name = $_GET['role_name'];
+
+switch ($role_id) {
+    case 1: $role_fullName = "Học Sinh"; break;
+    case 2: $role_fullName = "Giáo Viên"; break;
+    case 3: $role_fullName = "Quản Trị Viên"; break;
+    default: $role_fullName = "Người dùng"; break;
 }
-$role_id = $_GET['role_id']; $role_name = $_GET['role_name'];
-if($role_id == 1){
-    $role_fullName = "Học Sinh";
-}else if($role_id == 2){
-    $role_fullName = "Giáo Viên";
-}else if($role_id == 3){
-    $role_fullName = "Quản Trị Viên";
-}
+
 mysqli_close($dbconnect);
 ?>
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <title>Registration Form</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tạo tài khoản mới - <?php echo $role_fullName;?></title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<style>
+    body { background-color: #f8f9fa; font-family: 'Segoe UI', sans-serif; }
+    .form-card { background-color: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 5px; }
+    .form-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+    .form-header h2 { font-weight: 700; color: #343a40; }
+    .btn-upload { position: relative; overflow: hidden; }
+    .btn-upload input[type=file] { position: absolute; opacity: 0; right: 0; top: 0; cursor: pointer; }
+    .form-label { font-weight: 500; }
+    .btn-primary, .btn-secondary { min-width: 130px; }
+</style>
 </head>
-
 <body>
+<?php include("sidebar.php"); ?>
 
-    <div class="container mt-5">
+<div class="main" id="mainContent">
+<div class="container">
+    <div class="form-card mx-auto">
         <!-- Header -->
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <h2>Tạo tài khoản mới (<?php echo $role_fullName?>)</h2>
+        <div class="form-header">
+            <h2>Tạo tài khoản mới (<?php echo $role_fullName;?>)</h2>
+            <div>
+                <button class="btn btn-outline-primary btn-upload me-2">
+                    <i class="bi bi-file-earmark-arrow-up"></i> Tải lên Excel
+                    <input type="file" name="excel_file" accept=".xlsx,.xls">
+                </button>
+                <a href="<?php echo $role_name;?>.php" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i> Thoát
+                </a>
             </div>
-            <div class="col-md-6">
-                <div class="d-flex justify-content-end">
-                    <button class="btn btn-primary me-2">Tải lên từ Excel</button>
-                    <a class="btn btn-primary" href="<?php echo $role_name;?>.php">Thoát</a>
-                </div>
-            </div>
+            <?php if(isset($_SESSION['error'])){ echo '<div class="alert alert-danger">'.$_SESSION['error'].'</div>'; unset($_SESSION['error']); } ?>
         </div>
 
-        <!-- Body - Registration Form -->
+        <!-- Form -->
         <form action="process.php?id=<?php echo $role_id; ?>" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate id="accountForm">
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="fullName" class="form-label">Họ và tên</label>
-                <input type="text" class="form-control" id="fullName" name="full_name" required placeholder="Nhập họ tên">
-                <div class="invalid-feedback">
-                    Họ và tên không được trống.
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="fullName" class="form-label">Họ và tên</label>
+                    <input type="text" class="form-control" id="fullName" name="full_name" required placeholder="Nhập họ tên">
+                    <div class="invalid-feedback">Họ và tên không được trống.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="username" class="form-label">Tên tài khoản</label>
+                    <input type="text" class="form-control" id="username" name="username" required placeholder="Nhập tên tài khoản">
+                    <div class="invalid-feedback">Tên tài khoản không được trống.</div>
+                    <div id="usernameFeedback" class="form-text"></div>
                 </div>
             </div>
-            <div class="col-md-6">
-                <label for="username" class="form-label">Tên tài khoản</label>
-                <input type="text" class="form-control" id="username" name="username" required placeholder="Nhập tên tài khoản">
-                <div class="invalid-feedback">
-                    Tên tài khoản không được trống.
-                </div>
-                <div id="usernameFeedback" class="form-text"></div>
-            </div>
-        </div>
-
-        <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="idCard" class="form-label">Mã số căn cước công dân</label>
-                <input type="text" class="form-control" id="idCard" name="citizen_id" required placeholder="Nhập CCCD">
-                <div class="invalid-feedback">
-                    Mã số căn cước công dân không được trống.
-                </div>
-            </div>
-            <div class="col-md-6">
-                <!-- Các trường khác giữ nguyên -->
-            </div>
-        </div>
 
             <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="dob" class="form-label">Ngày sinh</label>
-                    <input type="date" class="form-control" id="dob" name="date_of_birth" required>
+                <div class="col-md-6">
+                    <label for="idCard" class="form-label">Mã số CCCD</label>
+                    <input type="text" class="form-control" id="idCard" name="citizen_id" required placeholder="Nhập CCCD">
+                    <div class="invalid-feedback">Mã số căn cước không được trống.</div>
                 </div>
+                <div class="col-md-6">
+                    <label for="dob" class="form-label">Ngày sinh</label>
+                    <input type="date" class="form-control" id="dob" name="date_of_birth" value="<?php echo date('Y-m-d'); ?>" required>
+                    <div class="invalid-feedback">Vui lòng chọn ngày sinh.</div>
+                </div>
+            </div>
+
+            <div class="row mb-3">
                 <div class="col-md-4">
                     <label for="gender" class="form-label">Giới tính</label>
                     <select class="form-select" id="gender" name="gender" required>
@@ -85,118 +92,93 @@ mysqli_close($dbconnect);
                         <option value="M">Nam</option>
                         <option value="F">Nữ</option>
                     </select>
+                    <div class="invalid-feedback">Vui lòng chọn giới tính.</div>
                 </div>
                 <div class="col-md-4">
                     <label for="phoneNumber" class="form-label">Số điện thoại</label>
-                    <input type="tel" class="form-control" id="phoneNumber" name="phone" required placeholder="Nhập Số điện thoại">
+                    <input type="tel" class="form-control" id="phoneNumber" name="phone" required placeholder="Nhập SĐT">
+                    <div class="invalid-feedback">Số điện thoại không được trống.</div>
+                </div>
+                <div class="col-md-4">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required placeholder="Nhập email">
+                    <div class="invalid-feedback" id="emailFeedback">Vui lòng nhập email hợp lệ.</div>
                 </div>
             </div>
 
             <div class="row mb-3">
-                <div class="col-md-6">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required placeholder="Nhập email">
-                </div>
                 <div class="col-md-6">
                     <label for="address" class="form-label">Địa chỉ</label>
                     <input type="text" class="form-control" id="address" name="address" required placeholder="Nhập địa chỉ">
+                    <div class="invalid-feedback">Địa chỉ không được trống.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="portrait" class="form-label">Ảnh chân dung</label>
+                    <input type="file" class="form-control" id="portrait" name="image" required>
+                    <div class="invalid-feedback">Vui lòng chọn ảnh chân dung (tối đa 5MB).</div>
                 </div>
             </div>
 
             <div class="row mb-3">
                 <div class="col-md-6">
-                    <label for="portrait" class="form-label">Ảnh chân dung</label>
-                    <input type="file" class="form-control" id="portrait" name="image" required>
-                    <div class="invalid-feedback">
-                        Vui lòng chọn ảnh chân dung.
-                    </div>
+                    <label for="password" class="form-label">Mật khẩu</label>
+                    <input type="password" class="form-control" id="password" name="password" required placeholder="Nhập mật khẩu">
+                    <div class="invalid-feedback">Vui lòng nhập mật khẩu.</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="confirm_password" class="form-label">Xác nhận mật khẩu</label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" required placeholder="Nhập lại mật khẩu">
+                    <div class="invalid-feedback">Vui lòng xác nhận mật khẩu.</div>
                 </div>
             </div>
-            <div class="row mb-3">
-            <div class="col-md-6">
-                <label for="password" class="form-label">Mật khẩu</label>
-                <input type="password" class="form-control" id="password" name="password" required placeholder="Nhập mật khẩu">
-                <div class="invalid-feedback">
-                    Vui lòng nhập mật khẩu.
-                </div>
-            </div>
-            <div class="col-md-6">
-                <label for="confirm_password" class="form-label">Xác nhận mật khẩu</label>
-                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required placeholder="Nhập lại mật khẩu">
-                <div class="invalid-feedback">
-                    Vui lòng xác nhận mật khẩu.
-                </div>
-            </div>
-        </div>
 
-            <div class="mb-3">
-                <button type="submit" class="btn btn-primary" name="sbm_add">Tạo Tài Khoản</button>
-                <a type="button" class="btn btn-secondary" href="<?php echo $role_name;?>.php">Thoát</a>
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-primary me-2" name="sbm_add">
+                    <i class="bi bi-check-circle"></i> Tạo Tài Khoản
+                </button>
+                <a class="btn btn-secondary" href="<?php echo $role_name;?>.php">
+                    <i class="bi bi-x-circle"></i> Thoát
+                </a>
             </div>
         </form>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-rqI2waM7CtpVHmUnY9NXfQTKc3N8RBLtbl6TbY3b3NC6HjbF2wF81v11z5KnMK17" crossorigin="anonymous"></script>
-    <script>
-        // Enable Bootstrap form validation
-        (function() {
-            'use strict';
+        <?php include("../footer.php"); ?>
 
-            var form = document.getElementById('accountForm');
+</div>
 
-            form.addEventListener('submit', function(event) {
-                if (!form.checkValidity()) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function() {
+    'use strict';
+    var form = document.getElementById('accountForm');
+    form.addEventListener('submit', function(event) {
+        // Kiểm tra Bootstrap validation
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+    }, false);
+})();
 
-                form.classList.add('was-validated');
-            }, false);
-        })();
-
-        document.getElementById('username').addEventListener('blur', function() {
-    checkUsernameAvailability(this.value);
-});
-
-function checkUsernameAvailability(username) {
-    if (username.length < 3) {
-        document.getElementById('usernameFeedback').innerHTML = 'Tên tài khoản phải có ít nhất 3 ký tự';
-        document.getElementById('usernameFeedback').className = 'form-text text-danger';
-        return;
-    }
-    
-    fetch('check_username.php?username=' + encodeURIComponent(username))
-        .then(response => response.json())
-        .then(data => {
-            const feedback = document.getElementById('usernameFeedback');
-            if (data.available) {
-                feedback.innerHTML = 'Tên tài khoản có thể sử dụng';
-                feedback.className = 'form-text text-success';
-            } else {
-                feedback.innerHTML = 'Tên tài khoản đã tồn tại, vui lòng chọn tên khác';
-                feedback.className = 'form-text text-danger';
-            }
-        });
-}
-
-// Sửa lại validation form để kiểm tra username
-document.getElementById('accountForm').addEventListener('submit', function(e) {
-    var username = document.getElementById('username');
-    var password = document.getElementById('password');
-    var confirmPassword = document.getElementById('confirm_password');
-    
-    // Kiểm tra username
-    if (username.value.length < 3) {
+// Kiểm tra email hợp lệ
+document.getElementById('accountForm').addEventListener('submit', function(e){
+    var email = document.getElementById('email');
+    var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if(!emailPattern.test(email.value)){
         e.preventDefault();
         e.stopPropagation();
-        username.setCustomValidity('Tên tài khoản phải có ít nhất 3 ký tự');
-        username.reportValidity();
+        document.getElementById('emailFeedback').innerHTML = 'Email không hợp lệ';
+        email.classList.add('is-invalid');
         return;
     } else {
-        username.setCustomValidity('');
+        email.classList.remove('is-invalid');
     }
-    
-    // Kiểm tra mật khẩu
-    if (password.value !== confirmPassword.value) {
+
+    // Kiểm tra password match
+    var password = document.getElementById('password');
+    var confirmPassword = document.getElementById('confirm_password');
+    if(password.value !== confirmPassword.value){
         e.preventDefault();
         e.stopPropagation();
         confirmPassword.setCustomValidity('Mật khẩu xác nhận không khớp');
@@ -204,16 +186,47 @@ document.getElementById('accountForm').addEventListener('submit', function(e) {
     } else {
         confirmPassword.setCustomValidity('');
     }
-    
-    if (!this.checkValidity()) {
-        e.preventDefault();
-        e.stopPropagation();
-    }
-    
-    this.classList.add('was-validated');
 });
-    </script>
-        <?php include("../footer.php"); ?>
-</body>
 
+// Kiểm tra username tồn tại
+document.getElementById('username').addEventListener('blur', function() {
+    var username = this.value;
+    if(username.length < 3){
+        document.getElementById('usernameFeedback').innerHTML = 'Tên tài khoản phải có ít nhất 3 ký tự';
+        document.getElementById('usernameFeedback').className = 'form-text text-danger';
+        return;
+    }
+    fetch('check_username.php?username=' + encodeURIComponent(username))
+        .then(response => response.json())
+        .then(data => {
+            const feedback = document.getElementById('usernameFeedback');
+            if(data.available){
+                feedback.innerHTML = 'Tên tài khoản có thể sử dụng';
+                feedback.className = 'form-text text-success';
+            } else {
+                feedback.innerHTML = 'Tên tài khoản đã tồn tại';
+                feedback.className = 'form-text text-danger';
+            }
+        });
+});
+
+</script>
+
+<script>
+document.getElementById('accountForm').addEventListener('submit', function(e) {
+    var fileInput = document.getElementById('portrait');
+    if(fileInput.files.length > 0){
+        var fileSize = fileInput.files[0].size; // size tính bằng byte
+        if(fileSize > 5 * 1024 * 1024){ // 5MB
+            e.preventDefault();
+            e.stopPropagation();
+            fileInput.classList.add('is-invalid');
+            alert('Ảnh phải nhỏ hơn hoặc bằng 5MB.');
+        } else {
+            fileInput.classList.remove('is-invalid');
+        }
+    }
+});
+</script>
+</body>
 </html>

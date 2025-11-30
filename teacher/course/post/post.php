@@ -44,7 +44,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
     $keyword = str_replace(' ', '', $keyword);
 
     // Use prepared statements to prevent SQL injection
-    $sql_post = "SELECT * FROM post WHERE course_id = ? AND 
+    $sql_post = "SELECT * FROM post WHERE course_id = ? AND
                  (LOWER(REPLACE(REPLACE(REPLACE(REPLACE(title, ' ', ''), 'Đ', 'D'), 'đ', 'd'), ' ', '')) LIKE ? OR title LIKE ?)";
 
     $stmt = mysqli_prepare($dbconnect, $sql_post);
@@ -119,7 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
                         <td><?php echo $row_post['title']; ?></td>
                         <td>
                             <span><?php echo $full_name; ?></span>
-                            <img src="<?php echo "../../" . $image ?>" alt="Avatar" class="img-fluid rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
+                            <img src="<?php echo "../../../assets/images/" . $image ?>" alt="Avatar" class="img-fluid rounded-circle" style="width: 30px; height: 30px; object-fit: cover;">
                         </td>
                         <td><?php echo $row_post['created_at']; ?></td>
                         <td>
