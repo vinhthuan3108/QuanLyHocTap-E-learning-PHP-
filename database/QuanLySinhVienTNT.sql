@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th10 20, 2025 lúc 11:15 AM
+-- Thời gian đã tạo: Th10 30, 2025 lúc 04:07 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -20,6 +20,45 @@ SET time_zone = "+00:00";
 --
 -- Cơ sở dữ liệu: `quanlysinhvientnt`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `answer`
+--
+
+CREATE TABLE `answer` (
+  `answer_id` int(11) NOT NULL,
+  `question_id` int(11) NOT NULL,
+  `answer_text` text NOT NULL,
+  `is_correct` tinyint(1) DEFAULT 0,
+  `points` decimal(10,2) DEFAULT 0.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `answer`
+--
+
+INSERT INTO `answer` (`answer_id`, `question_id`, `answer_text`, `is_correct`, `points`) VALUES
+(14, 5, '4', 1, 0.00),
+(15, 5, '5', 0, 0.00),
+(16, 5, '6', 0, 0.00),
+(17, 5, '7', 0, 0.00),
+(18, 6, '7', 1, 0.00),
+(23, 8, '2', 1, 0.00),
+(24, 8, '34', 0, 0.00),
+(25, 8, '4', 0, 0.00),
+(26, 8, '5', 0, 0.00),
+(27, 9, 's', 1, 0.00),
+(28, 10, 'In waterfall model, customer involved each phase', 0, 0.00),
+(29, 10, 'In waterfall phases run parallel', 0, 0.00),
+(30, 10, 'In waterfall, requirement can change frequency', 0, 0.00),
+(31, 10, 'In waterfall, testing occurs late.', 1, 0.00),
+(32, 11, 'A. Tiêu chí vận hành sản phẩm', 0, 0.00),
+(33, 11, 'B. ý C và D đúng', 0, 0.00),
+(34, 11, 'C. ý A và D sai', 0, 0.00),
+(35, 11, 'D. cả 3 ý trên đều sai', 1, 0.00),
+(36, 12, '1', 1, 0.00);
 
 -- --------------------------------------------------------
 
@@ -48,7 +87,9 @@ INSERT INTO `course` (`course_id`, `course_background`, `course_code`, `course_n
 (1, '1.jpg', 'SOT366', 'Phát triển mã nguồn mở', '20 slide pdf, 20 video, 80 câu bài tập', 9, '2025-01-01', '2025-12-12', 'A', 5000.00),
 (2, '2.jpg', 'SOT357', 'Kiểm thử phần mềm', 'No description', 9, '2025-01-01', '2025-12-12', 'A', 450000.00),
 (3, '3.jpg', 'SOT344', 'Trí tuệ nhân tạo', 'No description', 9, '2025-01-01', '2025-12-12', 'A', 600000.00),
-(5, 'TAB100_tienganha1_a2.jpg', 'TAB100', 'Tiếng Anh A1-A2', 'Tiếng Anh A1-A2', 14, '2025-08-15', '2025-11-29', 'A', 3000.00);
+(9, 'TAB100_TAB100_tienganha1_a2.jpg', 'TAB100', 'Tiếng Anh A1-A2', 'Tiếng Anh 20 video', 26, '2025-11-07', '2026-01-30', 'A', 4000.00),
+(11, 'TAB101_TAB101_tienganh_b1.jpg', 'TAB101', 'Tiếng Anh B1', 'Tiếng Anh B1 20 video', 26, '2025-10-09', '2025-12-26', 'A', 6000.00),
+(12, 'TOC100_TOC100_TinHocDaiCuong.jpg', 'TOC100', 'Tin Học Đại Cương', 'Tin học đại cương', 26, '2025-10-08', '2025-12-25', 'A', 0.00);
 
 -- --------------------------------------------------------
 
@@ -73,7 +114,9 @@ CREATE TABLE `course_contents` (
 INSERT INTO `course_contents` (`contents_id`, `topic_id`, `title_content`, `content_type`, `description_content`, `created_by`, `created_at`) VALUES
 (14, 6, 'Video mở đầu về mã nguồn mở', 'video', 'Video mẫu', NULL, '2025-11-18 10:27:24'),
 (15, 6, 'Chapter 1', 'file', 'Chapter 1 - Mở đầu về phát triển mã nguồn mở', NULL, '2025-11-18 10:27:59'),
-(16, 6, 'Video tham khảo', 'embed', 'Lịch sử hình thành và phát triển ', NULL, '2025-11-18 10:29:10');
+(16, 6, 'Video tham khảo', 'embed', 'Lịch sử hình thành và phát triển ', NULL, '2025-11-18 10:29:10'),
+(17, 7, 'Tổng quan PM', 'file', 'Phần mềm, quy trình, mô hình, chất lượng', NULL, '2025-11-30 13:01:07'),
+(18, 7, 'Kiểm thử', 'video', 'Mở đầu tổng quan', NULL, '2025-11-30 13:03:24');
 
 -- --------------------------------------------------------
 
@@ -116,10 +159,8 @@ INSERT INTO `course_member` (`member_id`, `course_id`, `student_id`) VALUES
 (22, 1, 8),
 (23, 2, 8),
 (24, 3, 8),
-(25, 5, 1),
-(26, 5, 1),
-(27, 5, 22),
-(28, 1, 22);
+(28, 1, 22),
+(31, 9, 1);
 
 -- --------------------------------------------------------
 
@@ -143,7 +184,9 @@ INSERT INTO `course_schedule` (`course_schedule_id`, `course_id`, `day_of_week`,
 (1, 1, '3', '16:00:00', '20:30:00'),
 (2, 2, '2', '09:30:00', '11:30:00'),
 (3, 3, '3', '07:00:00', '08:30:00'),
-(5, 5, '4', '07:30:00', '10:15:00');
+(9, 9, '6', '12:30:00', '15:30:00'),
+(12, 11, '2', '07:30:00', '09:30:00'),
+(13, 12, '5', '10:00:00', '11:30:00');
 
 -- --------------------------------------------------------
 
@@ -167,6 +210,81 @@ INSERT INTO `embedded_contents` (`embedded_id`, `course_content_id`, `embed_code
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `exam`
+--
+
+CREATE TABLE `exam` (
+  `exam_id` int(11) NOT NULL,
+  `course_id` int(11) NOT NULL,
+  `column_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `open_time` datetime NOT NULL,
+  `close_time` datetime NOT NULL,
+  `time_limit` int(11) DEFAULT NULL,
+  `max_score` decimal(10,2) NOT NULL DEFAULT 10.00,
+  `status` char(1) NOT NULL DEFAULT 'A',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `exam`
+--
+
+INSERT INTO `exam` (`exam_id`, `course_id`, `column_id`, `title`, `description`, `open_time`, `close_time`, `time_limit`, `max_score`, `status`, `created_at`) VALUES
+(9, 9, 13, 'Quá trình', 'Bài quá trình', '2025-11-30 11:03:00', '2025-12-07 11:03:00', 3, 10.00, 'A', '2025-11-30 11:04:11'),
+(11, 9, 14, 'Giữa kỳ', 'GK', '2025-11-30 11:42:00', '2025-12-07 11:42:00', 3, 10.00, 'A', '2025-11-30 11:43:09'),
+(12, 2, 4, 'Kiểm tra về các loại mô hình', 'Slide 1', '2025-11-30 13:03:00', '2025-12-31 13:03:00', 20, 10.00, 'A', '2025-11-30 13:04:22');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `exam_submission`
+--
+
+CREATE TABLE `exam_submission` (
+  `submission_id` int(11) NOT NULL,
+  `exam_id` int(11) NOT NULL,
+  `member_id` int(11) NOT NULL,
+  `start_time` datetime NOT NULL,
+  `submit_time` datetime DEFAULT NULL,
+  `total_score` decimal(10,2) DEFAULT 0.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `exam_submission`
+--
+
+INSERT INTO `exam_submission` (`submission_id`, `exam_id`, `member_id`, `start_time`, `submit_time`, `total_score`) VALUES
+(4, 9, 31, '2025-11-30 12:05:18', '2025-11-30 12:05:18', 10.00);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `exam_submission_detail`
+--
+
+CREATE TABLE `exam_submission_detail` (
+  `detail_id` int(11) NOT NULL,
+  `submission_id` int(11) NOT NULL,
+  `question_id` int(11) NOT NULL,
+  `selected_answer_id` int(11) DEFAULT NULL,
+  `text_answer` text DEFAULT NULL,
+  `is_correct` tinyint(1) DEFAULT 0,
+  `points_earned` decimal(10,2) DEFAULT 0.00
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `exam_submission_detail`
+--
+
+INSERT INTO `exam_submission_detail` (`detail_id`, `submission_id`, `question_id`, `selected_answer_id`, `text_answer`, `is_correct`, `points_earned`) VALUES
+(7, 4, 5, 14, NULL, 1, 1.00),
+(8, 4, 6, NULL, '7', 1, 9.00);
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `file_contents`
 --
 
@@ -182,7 +300,8 @@ CREATE TABLE `file_contents` (
 --
 
 INSERT INTO `file_contents` (`file_id`, `course_content_id`, `file_name`, `file_size`) VALUES
-(4, 15, 'Chapter1.pdf', 4341);
+(4, 15, 'Chapter1.pdf', 4341),
+(5, 17, 'Bai01-TongQuanPM.pdf', 1992);
 
 -- --------------------------------------------------------
 
@@ -273,7 +392,9 @@ INSERT INTO `grade` (`grade_id`, `column_id`, `member_id`, `score`) VALUES
 (141, 9, 15, 10),
 (142, 9, 18, 4),
 (143, 9, 21, 6),
-(144, 9, 24, 9);
+(144, 9, 24, 9),
+(148, 13, 31, 10),
+(149, 14, 31, NULL);
 
 -- --------------------------------------------------------
 
@@ -301,7 +422,9 @@ INSERT INTO `grade_column` (`column_id`, `course_id`, `grade_column_name`, `prop
 (6, 2, 'Cuối kỳ', 50),
 (7, 3, 'Quá trình', 30),
 (8, 3, 'Giữa kỳ', 30),
-(9, 3, 'Cuối kỳ', 30);
+(9, 3, 'Cuối kỳ', 30),
+(13, 9, 'Quá trình', 30),
+(14, 9, 'Giữa Kỳ', 40);
 
 -- --------------------------------------------------------
 
@@ -332,12 +455,12 @@ CREATE TABLE `payments` (
 --
 
 INSERT INTO `payments` (`payment_id`, `user_id`, `course_id`, `amount`, `payment_method`, `status`, `order_code`, `checkout_url`, `qr_code`, `transaction_id`, `payos_order_id`, `description`, `created_at`, `updated_at`, `paid_at`) VALUES
-(1, 1, 5, 3000.00, 'payos', 'paid', 152183, 'https://pay.payos.vn/web/9baf376e2c3949868d18b1fe63f0fc96', NULL, NULL, NULL, 'Tiếng Anh A1-A2', '2025-11-20 16:39:04', '2025-11-20 16:39:55', '2025-11-20 16:39:55'),
-(2, 22, 5, 3000.00, 'payos', 'paid', 367310, 'https://pay.payos.vn/web/fb9a6319c5f54dfabd4a0afe95c30fe9', NULL, NULL, NULL, 'Tiếng Anh A1-A2', '2025-11-20 16:42:22', '2025-11-20 16:42:53', '2025-11-20 16:42:53'),
 (3, 22, 2, 450000.00, 'payos', 'pending', 223065, 'https://pay.payos.vn/web/5b6af1612e224e009d82f2f1e0bd74d9', NULL, NULL, NULL, 'Kiểm thử phần mềm', '2025-11-20 16:43:15', '2025-11-20 16:43:16', NULL),
 (4, 22, 1, 500000.00, 'payos', 'pending', 905511, 'https://pay.payos.vn/web/c2f29300068c4314b4b976aa01d4061f', NULL, NULL, NULL, 'Phát triển mã nguồn mở', '2025-11-20 16:45:58', '2025-11-20 16:45:58', NULL),
 (5, 22, 1, 5000.00, 'payos', 'pending', 448270, 'https://pay.payos.vn/web/ae140a74a50e4a59a4c3f6df14d98a5b', NULL, NULL, NULL, 'Phát triển mã nguồn mở', '2025-11-20 17:02:26', '2025-11-20 17:02:27', NULL),
-(6, 22, 1, 5000.00, 'payos', 'paid', 885124, 'https://pay.payos.vn/web/f82f424f307f4eb7b4614b02253b442b', NULL, NULL, NULL, 'Phát triển mã nguồn mở', '2025-11-20 17:07:45', '2025-11-20 17:08:01', '2025-11-20 17:08:01');
+(6, 22, 1, 5000.00, 'payos', 'paid', 885124, 'https://pay.payos.vn/web/f82f424f307f4eb7b4614b02253b442b', NULL, NULL, NULL, 'Phát triển mã nguồn mở', '2025-11-20 17:07:45', '2025-11-20 17:08:01', '2025-11-20 17:08:01'),
+(7, 1, 9, 4000.00, 'payos', 'pending', 472229, 'https://pay.payos.vn/web/aba1b874085d46ffa0d19100bc0ed345', NULL, NULL, NULL, 'Tiếng Anh A1-A2', '2025-11-30 15:50:17', '2025-11-30 15:50:17', NULL),
+(8, 1, 9, 4000.00, 'payos', 'paid', 167416, 'https://pay.payos.vn/web/0edbf278e80945e695fca629d0b68173', NULL, NULL, NULL, 'Tiếng Anh A1-A2', '2025-11-30 15:54:09', '2025-11-30 15:54:44', '2025-11-30 15:54:44');
 
 -- --------------------------------------------------------
 
@@ -367,6 +490,42 @@ CREATE TABLE `post` (
   `content` text NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `post`
+--
+
+INSERT INTO `post` (`post_id`, `user_id`, `course_id`, `title`, `content`, `created_at`) VALUES
+(2, 9, 1, 'abc', '<p>defgh</p>', '2025-11-29 15:17:21'),
+(3, 9, 1, 'abc', '<p>dddd</p>', '2025-11-29 15:22:22');
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `question`
+--
+
+CREATE TABLE `question` (
+  `question_id` int(11) NOT NULL,
+  `exam_id` int(11) NOT NULL,
+  `question_type` enum('multiple_choice_single','multiple_choice_multiple','short_answer','essay') NOT NULL,
+  `question_text` text NOT NULL,
+  `points` decimal(10,2) NOT NULL DEFAULT 1.00,
+  `order_num` int(11) DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `question`
+--
+
+INSERT INTO `question` (`question_id`, `exam_id`, `question_type`, `question_text`, `points`, `order_num`) VALUES
+(5, 9, 'multiple_choice_single', '3+1=?', 1.00, 1),
+(6, 9, 'essay', '3+4=?', 9.00, 1),
+(8, 11, 'multiple_choice_single', 'a', 1.00, 1),
+(9, 11, 'essay', 'a', 1.00, 1),
+(10, 12, 'multiple_choice_single', 'Which of the following statements is true?', 1.00, 1),
+(11, 12, 'multiple_choice_single', 'Trong bộ tiêu chí đánh giá chất lượng McCall,\r\n tính/tiêu chí bảo trì được thuộc nhóm tiêu chí nào sau\r\n đây?', 2.00, 1),
+(12, 12, 'essay', '1=5, 2=10,3=15,4=20, 5=? (gợi ý qua môn: không phải 25)', 7.00, 1);
 
 -- --------------------------------------------------------
 
@@ -420,7 +579,8 @@ CREATE TABLE `topics` (
 --
 
 INSERT INTO `topics` (`topic_id`, `title_topic`, `course_id`, `description`, `created_by`, `created_at`) VALUES
-(6, 'Tổng quan về phần mềm mã nguồn mở', 1, '<p>Hiểu về kiến thức thế nào là phần mềm nguồn mở.</p><p>Khi phát triển phần mềm nguồn mở thì cần phải tuân theo nguyên tắc nào</p>', NULL, '2025-11-18 10:24:48');
+(6, 'Tổng quan về phần mềm mã nguồn mở', 1, '<p>Hiểu về kiến thức thế nào là phần mềm nguồn mở.</p><p>Khi phát triển phần mềm nguồn mở thì cần phải tuân theo nguyên tắc nào</p>', NULL, '2025-11-18 10:24:48'),
+(7, 'Tuần 1', 2, '<p>Tổng quan</p>', NULL, '2025-11-30 13:00:01');
 
 -- --------------------------------------------------------
 
@@ -455,11 +615,12 @@ INSERT INTO `user` (`user_id`, `full_name`, `date_of_birth`, `gender`, `address`
 (6, 'Đặng Hoàng Yến', '2004-09-11', 'F', 'Xã Cam Hải Tây, Huyện Cam Lâm, Khánh Hòa', '0362859437', 'danghoangyen@gmail.com', '056205001956', NULL, '', NULL),
 (7, 'Võ Hữu Tài', '2000-05-09', 'M', 'Phường Ninh Hiệp, Thị xã Ninh Hòa, Khánh Hòa', '0371948256', 'vohuutai@gmail.com', '056205001957', NULL, '', NULL),
 (8, 'Nguyễn Thị Thu Hà', '2003-02-18', 'F', 'Phường Phú Lâm, Thành phố Tuy Hòa, Phú Yên', '0392748615', 'nguyenthuhuha@gmail.com', '056205001958', NULL, '', NULL),
-(9, 'Huỳnh Xuân Nam', '2005-12-01', 'M', 'Xã An Phú, Thành phố Tuy Hòa, Phú Yên', '0349396524', 'huynhxuannam@gmail.com', '056205001943', 'huynhxuannam.jpg', '', NULL),
-(10, 'Nguyễn Minh Tài', '2000-01-20', 'M', 'Xã Đại Lãnh, Huyện Vạn Ninh, Khánh Hòa', '0372424264', 'nguyenminhtai@gmail.com', '056205000218', NULL, '', NULL),
-(14, 'Lê Văn Lương', '2000-01-20', 'M', 'Xã Đại Lãnh, Huyện Vạn Ninh, Khánh Hòa', '0372424264', 'levanluong@gmail.com', '056205000218', NULL, '', NULL),
+(9, 'Huỳnh Xuân Nam', '2005-12-01', 'M', 'Xã An Phú, Thành phố Tuy Hòa, Phú Yên', '0349396524', 'xuannam1234zz@gmail.com', '056205001943', 'huynhxuannam.jpg', '', NULL),
+(10, 'Nguyễn Minh Tài', '2000-01-20', 'M', 'Xã Đại Lãnh, Huyện Vạn Ninh, Khánh Hòa', '0372424264', 'nguyenminhtai@gmail.com', '056205000218', 'nguyenminhtai_nguyenminhtai.jpg', '', NULL),
 (20, 'Huỳnh Thành', '2025-11-19', 'M', 'phú yên', '0947138175', 'nam.hx.64cntt@ntu.edu.vn', '054204000313', 'male.jpeg', '', '2025-11-17 08:22:31'),
-(22, 'Vĩnh Thuận', '2025-11-27', 'M', '123 Nha Trang, Khánh Hòa', '1111111', 'vinhthuan9@gmail.com', '111111', 'vinhthuan.jpg', '', '2025-11-18 10:57:10');
+(22, 'Vĩnh Thuận', '2025-11-27', 'M', '123 Nha Trang, Khánh Hòa', '1111111', 'vinhthuan9@gmail.com', '111111', 'vinhthuan.jpg', '', '2025-11-18 10:57:10'),
+(25, 'VinhThuanNew', '2025-10-27', 'M', '123 Nha Trang, Khánh Hòa', '11111112', 'c3lttrong.2a2.vthuan@gmail.com', '12132313233', 'vinhthuan.jpg', '', '2025-11-30 14:53:31'),
+(26, 'Lê Văn Lương', '2025-11-12', 'M', '123 Nha Trang, Khánh Hòa', '11111111111', 'levanluong@gmail.com', '123443211234', 'levanluong_levanluong.jpg', '', NULL);
 
 -- --------------------------------------------------------
 
@@ -490,10 +651,11 @@ INSERT INTO `user_account` (`account_id`, `username`, `password`, `user_id`, `re
 (7, 'vohuutai', '$2y$10$Ohevfrm.1PkDcwfjDkUFHeR3mhEPAFS4kwm42VnmX3dmBZLNiX3kW', 7, NULL, NULL),
 (8, 'nguyenthithuha', '$2y$10$lhu63fUdKlrULX9Fq/EkfeMuNLsHdUjxMyo.3GxSMx3BEFPeHP9ju', 8, NULL, NULL),
 (9, 'huynhxuannam', '$2y$10$gsUuHnxcuhHi3.I2rp/qOO1hsa1qDg6H/vlDsQAQ5/PJANPS.x2p.', 9, NULL, NULL),
-(10, 'nguyenminhtai', '$2y$10$9rBDhRO0P23WNAqDffm/DOy2rxOGD4FJ3FSOpcKWIKVo/wK3O7Xtm', 10, NULL, NULL),
-(14, 'levanluong', '$2y$10$7.0R3THPF9nVc4i1xNkNDO3YRzLgbkXTEcGdyMJATx4KYjavvcgYe', 14, NULL, NULL),
+(10, 'nguyenminhtai', '$2y$10$R7yZe.DyEYW9pdMKD3gaO.Vn5/vYv3DL3gKK9oM2SKwCOwissW.lC', 10, NULL, NULL),
 (15, 'thanhhuynh', '$2y$10$F8d8sKsXYW5g4dtlKLNlnOl8H67VlY9o9mzscHhjgLT1D1wN31Xo6', 20, NULL, NULL),
-(17, 'vinhthuan2', '$2y$12$F.M/2iDd.RvJY7bKdJxw5ehwx9VqmeHSJCUMkDwzVlvf.j.9P1/wS', 22, NULL, NULL);
+(17, 'vinhthuan2', '$2y$12$F.M/2iDd.RvJY7bKdJxw5ehwx9VqmeHSJCUMkDwzVlvf.j.9P1/wS', 22, NULL, NULL),
+(20, 'vinhthuannew', '$2y$12$DCfWpjsinBiRrpKrC2IEuu23qRq64.otHOFhZj7LJlBpPX2jgAVnm', 25, NULL, NULL),
+(26, 'levanluong', '$2y$10$Q25CyVsxSh7eylSrhUe2GeueczQDyvq1WvSFFUlInLlgN.CS1aTWW', 26, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -522,7 +684,9 @@ INSERT INTO `user_role` (`user_id`, `role_id`) VALUES
 (9, 2),
 (10, 3),
 (20, 1),
-(22, 1);
+(22, 1),
+(25, 1),
+(26, 2);
 
 -- --------------------------------------------------------
 
@@ -542,11 +706,19 @@ CREATE TABLE `video_contents` (
 --
 
 INSERT INTO `video_contents` (`video_id`, `course_content_id`, `video_url`, `video_size`) VALUES
-(6, 14, 'Chapter1.mkv', 1898);
+(6, 14, 'Chapter1.mkv', 1898),
+(7, 18, 'Chapter1 - KTPM.mkv', 1898);
 
 --
 -- Chỉ mục cho các bảng đã đổ
 --
+
+--
+-- Chỉ mục cho bảng `answer`
+--
+ALTER TABLE `answer`
+  ADD PRIMARY KEY (`answer_id`),
+  ADD KEY `question_id` (`question_id`);
 
 --
 -- Chỉ mục cho bảng `course`
@@ -583,6 +755,30 @@ ALTER TABLE `course_schedule`
 ALTER TABLE `embedded_contents`
   ADD PRIMARY KEY (`embedded_id`),
   ADD KEY `course_content_id` (`course_content_id`);
+
+--
+-- Chỉ mục cho bảng `exam`
+--
+ALTER TABLE `exam`
+  ADD PRIMARY KEY (`exam_id`),
+  ADD KEY `course_id` (`course_id`),
+  ADD KEY `column_id` (`column_id`);
+
+--
+-- Chỉ mục cho bảng `exam_submission`
+--
+ALTER TABLE `exam_submission`
+  ADD PRIMARY KEY (`submission_id`),
+  ADD KEY `fk_submission_exam` (`exam_id`),
+  ADD KEY `fk_submission_member` (`member_id`);
+
+--
+-- Chỉ mục cho bảng `exam_submission_detail`
+--
+ALTER TABLE `exam_submission_detail`
+  ADD PRIMARY KEY (`detail_id`),
+  ADD KEY `submission_id` (`submission_id`),
+  ADD KEY `question_id` (`question_id`);
 
 --
 -- Chỉ mục cho bảng `file_contents`
@@ -630,6 +826,13 @@ ALTER TABLE `post`
   ADD PRIMARY KEY (`post_id`),
   ADD KEY `user_id` (`user_id`),
   ADD KEY `course_id` (`course_id`);
+
+--
+-- Chỉ mục cho bảng `question`
+--
+ALTER TABLE `question`
+  ADD PRIMARY KEY (`question_id`),
+  ADD KEY `exam_id` (`exam_id`);
 
 --
 -- Chỉ mục cho bảng `role`
@@ -683,28 +886,34 @@ ALTER TABLE `video_contents`
 --
 
 --
+-- AUTO_INCREMENT cho bảng `answer`
+--
+ALTER TABLE `answer`
+  MODIFY `answer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+
+--
 -- AUTO_INCREMENT cho bảng `course`
 --
 ALTER TABLE `course`
-  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `course_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `course_contents`
 --
 ALTER TABLE `course_contents`
-  MODIFY `contents_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `contents_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT cho bảng `course_member`
 --
 ALTER TABLE `course_member`
-  MODIFY `member_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `member_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT cho bảng `course_schedule`
 --
 ALTER TABLE `course_schedule`
-  MODIFY `course_schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `course_schedule_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT cho bảng `embedded_contents`
@@ -713,28 +922,46 @@ ALTER TABLE `embedded_contents`
   MODIFY `embedded_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT cho bảng `exam`
+--
+ALTER TABLE `exam`
+  MODIFY `exam_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT cho bảng `exam_submission`
+--
+ALTER TABLE `exam_submission`
+  MODIFY `submission_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT cho bảng `exam_submission_detail`
+--
+ALTER TABLE `exam_submission_detail`
+  MODIFY `detail_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
 -- AUTO_INCREMENT cho bảng `file_contents`
 --
 ALTER TABLE `file_contents`
-  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `file_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `grade`
 --
 ALTER TABLE `grade`
-  MODIFY `grade_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=145;
+  MODIFY `grade_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=150;
 
 --
 -- AUTO_INCREMENT cho bảng `grade_column`
 --
 ALTER TABLE `grade_column`
-  MODIFY `column_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `column_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT cho bảng `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `payment_logs`
@@ -746,7 +973,13 @@ ALTER TABLE `payment_logs`
 -- AUTO_INCREMENT cho bảng `post`
 --
 ALTER TABLE `post`
-  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `post_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT cho bảng `question`
+--
+ALTER TABLE `question`
+  MODIFY `question_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT cho bảng `role`
@@ -764,29 +997,35 @@ ALTER TABLE `text_contents`
 -- AUTO_INCREMENT cho bảng `topics`
 --
 ALTER TABLE `topics`
-  MODIFY `topic_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `topic_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `user`
 --
 ALTER TABLE `user`
-  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+  MODIFY `user_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT cho bảng `user_account`
 --
 ALTER TABLE `user_account`
-  MODIFY `account_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `account_id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT cho bảng `video_contents`
 --
 ALTER TABLE `video_contents`
-  MODIFY `video_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `video_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
 --
+
+--
+-- Các ràng buộc cho bảng `answer`
+--
+ALTER TABLE `answer`
+  ADD CONSTRAINT `answer_ibfk_1` FOREIGN KEY (`question_id`) REFERENCES `question` (`question_id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `course`
@@ -820,6 +1059,27 @@ ALTER TABLE `embedded_contents`
   ADD CONSTRAINT `embedded_contents_ibfk_1` FOREIGN KEY (`course_content_id`) REFERENCES `course_contents` (`contents_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
+-- Các ràng buộc cho bảng `exam`
+--
+ALTER TABLE `exam`
+  ADD CONSTRAINT `exam_ibfk_1` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`),
+  ADD CONSTRAINT `exam_ibfk_2` FOREIGN KEY (`column_id`) REFERENCES `grade_column` (`column_id`);
+
+--
+-- Các ràng buộc cho bảng `exam_submission`
+--
+ALTER TABLE `exam_submission`
+  ADD CONSTRAINT `fk_submission_exam` FOREIGN KEY (`exam_id`) REFERENCES `exam` (`exam_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_submission_member` FOREIGN KEY (`member_id`) REFERENCES `course_member` (`member_id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `exam_submission_detail`
+--
+ALTER TABLE `exam_submission_detail`
+  ADD CONSTRAINT `exam_submission_detail_ibfk_1` FOREIGN KEY (`submission_id`) REFERENCES `exam_submission` (`submission_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `exam_submission_detail_ibfk_2` FOREIGN KEY (`question_id`) REFERENCES `question` (`question_id`) ON DELETE CASCADE;
+
+--
 -- Các ràng buộc cho bảng `file_contents`
 --
 ALTER TABLE `file_contents`
@@ -851,6 +1111,12 @@ ALTER TABLE `payment_logs`
 ALTER TABLE `post`
   ADD CONSTRAINT `post_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `post_ibfk_2` FOREIGN KEY (`course_id`) REFERENCES `course` (`course_id`) ON DELETE SET NULL ON UPDATE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `question`
+--
+ALTER TABLE `question`
+  ADD CONSTRAINT `question_ibfk_1` FOREIGN KEY (`exam_id`) REFERENCES `exam` (`exam_id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `text_contents`

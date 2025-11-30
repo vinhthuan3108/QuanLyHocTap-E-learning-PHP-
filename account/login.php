@@ -253,7 +253,8 @@ $login_error_message = $login_error_message ?: $error;
     <?php endif; ?>
 
     <h3 class="text-center">Đăng nhập</h3>
-
+    <h3 class="text-center">TK mẫu: vinhthuan huynhxuannam nguyenminhtai</h3>
+    <h3 class="text-center">pass: 1234a$</h3>
     <form action="login.php" method="post">
         <div class="mb-3">
             <label class="form-label fw-semibold">Tên đăng nhập</label>
