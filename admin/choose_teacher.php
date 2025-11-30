@@ -1,118 +1,138 @@
 <?php
 include "layout.php";
 include_once "../config/connect.php";
-if (session_status() == PHP_SESSION_NONE) {
-  session_start();
-}
-if (isset($_GET['role'])) {
-  $role = $_GET['role'];
-}
+if (session_status() == PHP_SESSION_NONE) session_start();
+
+$role = isset($_GET['role']) ? $_GET['role'] : '';
+$id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$teacher_id = isset($_GET['teacher_id']) ? intval($_GET['teacher_id']) : 0;
+
+// Tìm kiếm giáo viên
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
-  $tukhoa = $_POST['tukhoa'];
-  $keyword = strtolower(trim($tukhoa));
-  $keyword = str_replace(' ', '', $keyword);
-  $sql_course = "SELECT * FROM user us
-      INNER JOIN user_role ur ON us.user_id = ur.user_id
-      WHERE ur.role_id = 2 AND
-      (LOWER(REPLACE(REPLACE(REPLACE(us.full_name, ' ', ''), 'Đ', 'D'), ' ', '')) LIKE '%$keyword%' OR us.full_name LIKE '%$tukhoa%')";
-  $result = mysqli_query($dbconnect, $sql_course);
+    $tukhoa = trim($_POST['tukhoa']);
+    $keyword = strtolower(str_replace(' ', '', $tukhoa));
+    $sql_course = "SELECT * FROM user us
+        INNER JOIN user_role ur ON us.user_id = ur.user_id
+        WHERE ur.role_id = 2 AND
+        (LOWER(REPLACE(REPLACE(REPLACE(us.full_name, ' ', ''), 'Đ','D'), ' ', '')) LIKE '%$keyword%' OR us.full_name LIKE '%$tukhoa%')";
+    $result = mysqli_query($dbconnect, $sql_course);
 } else {
-  $sql_course = "SELECT * FROM user us
-  INNER JOIN user_role ur ON us.user_id = ur.user_id where ur.role_id=2";
-  $result = mysqLi_query($dbconnect, $sql_course);
+    $sql_course = "SELECT * FROM user us
+        INNER JOIN user_role ur ON us.user_id = ur.user_id
+        WHERE ur.role_id = 2";
+    $result = mysqli_query($dbconnect, $sql_course);
 }
+
+// Chọn giáo viên
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["sbm"])) {
-  $id = $_GET['id'];
-  $role = $_GET['role'];
-  $_SESSION['teacher_course'] = $_POST['sbm'];
-  if ($role == 'add') {
-    header("location: schedule_add.php");
-  } else {
-    header("location: schedule_edit.php?id=$id");
-  }
-  exit;
+    $_SESSION['teacher_course'] = $_POST['sbm'];
+    if ($role == 'add') {
+        header("location: schedule_add.php");
+    } else {
+        header("location: schedule_edit.php?id=$id");
+    }
+    exit;
 }
+
 mysqli_close($dbconnect);
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <title>Các khóa học khác</title>
-  <style>
-    .custom-card {
-      width: 100%;
-      height: 0;
-      padding-top: 50%;
-      position: relative;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chọn giáo viên phụ trách khóa học</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<style>
+    body { background-color: #f8f9fa; }
+    .teacher-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #fff;
+    text-align: center;
+    transition: transform 0.3s, box-shadow 0.3s;
+    padding-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* căn giữa tất cả nội dung */
+}
+.teacher-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+.teacher-avatar {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 50%;
+    margin-top: 15px;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* avatar, tên, email, nút đều chính giữa */
+    padding: 10px;
+}
+.teacher-name { font-size: 1rem; font-weight: 500; margin-top: 8px; text-align: center; }
+.teacher-info { font-size: 0.8rem; color: #666; margin-bottom: 5px; text-align: center; }
+.choose-btn { width: 80%; font-size: 0.85rem; padding: 5px; }
 
-    .custom-card img {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-  </style>
+</style>
+
 </head>
-
 <body>
-  <header class="container mt-4">
-    <h3><a href="<?php echo ($role == 'add') ? "course_add" : "course_edit" ?>.php"><i class="bi bi-arrow-left-circle"></i></a></h3>
-    <div class="row">
-      <div class="col-md-6">
-        <h2>Danh sách giáo viên</h2>
-      </div>
-      <div class="col-md-6">
-        <form class="d-flex" action="choose_teacher.php" method="POST">
-          <input class="form-control me-2" type="search" placeholder="Tìm kiếm" aria-label="Tìm kiếm" name="tukhoa" value="">
-          <button class="btn btn-outline-primary" type="submit" name="timkiem" value="find">Tìm</button>
-        </form>
-        <?php if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) { ?>
-          <div class="row mt-3">
-            <div class="col">
-              <?php $tukhoa = $_POST['tukhoa'];
-              echo "<p>Tìm kiếm với từ khóa: '<strong>$tukhoa</strong>'</p>"; ?>
-            </div>
-          </div>
-        <?php } ?>
-      </div>
+<?php include "sidebar.php"; ?>
+
+<div class="main p-4" id="mainContent">
+<div class="container">
+    <!-- Tiêu đề trang -->
+    <div class="text-center mb-4">
+        <h1 class="display-5 fw-bold">Chọn giáo viên phụ trách khóa học</h1>
+        <p class="text-muted">Bạn có thể tìm kiếm hoặc chọn trực tiếp giáo viên phù hợp cho khóa học.</p>
     </div>
-  </header>
 
-  <div class="container mt-5">
-    <!-- Course Cards -->
+    <!-- Search bar & Quay lại -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <a href="<?php echo ($role == 'add') ? "course_add.php" : "course_edit.php?id=$id&teacher_id=$teacher_id" ?>" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left-circle"></i> Quay lại
+        </a>
+        <form class="form-inline d-flex search-bar" action="" method="POST">
+            <input class="form-control mr-2 w-75" type="search" name="tukhoa" placeholder="Tìm kiếm giáo viên..." value="<?php echo isset($_POST['tukhoa']) ? $_POST['tukhoa'] : ''; ?>">
+            <button class="btn btn-primary" type="submit" name="timkiem">Tìm</button>
+        </form>
+    </div>
+
+    <?php if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])): ?>
+        <p>Kết quả tìm kiếm với từ khóa: "<strong><?php echo htmlspecialchars($_POST['tukhoa']); ?></strong>"</p>
+    <?php endif; ?>
+
+    <!-- Danh sách giáo viên -->
     <form method="post">
-      <div class="row">
-        <?php
-        // Đặt con trỏ kết quả về đầu để có thể duyệt lại từ đầu
-        mysqli_data_seek($result, 0);
-        while ($row = mysqli_fetch_array($result)) {
-        ?>
-          <div class="col-md-3 mb-2">
-            <div class="card">
-              <div class="custom-card">
-                <img src=<?php echo "../assets/images/" . $row['image'] ?> class="card-img-top" alt="Course 1 Image">
-              </div>
-              <div class="card-body">
-                <h5 class="card-title"><?php echo $row['full_name']; ?></h5>
-                <button class="btn btn-primary" type="submit" name="sbm" value="<?php echo $row['user_id'] ?>">Chọn</button>
-              </div>
-            </div>
-          </div>
-        <?php
-        }
-        ?>
-      </div>
+        <div class="row">
+            <?php while ($row = mysqli_fetch_assoc($result)): ?>
+                <div class="col-12 col-sm-6 col-md-3 mb-4">
+                    <div class="card teacher-card">
+                        <img class="teacher-avatar" src="<?php echo "../assets/images/" . $row['image']; ?>" alt="<?php echo $row['full_name']; ?>">
+                        <div class="card-body">
+                            <div class="teacher-name"><?php echo $row['full_name']; ?></div>
+                            <div class="teacher-info"><?php echo $row['email']; ?></div>
+                            <button class="btn btn-success choose-btn" type="submit" name="sbm" value="<?php echo $row['user_id']; ?>">
+                                Chọn
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        </div>
     </form>
-  </div>
-  <?php include("../footer.php"); ?>
-</body>
+</div>
+    <?php include("../footer.php"); ?>
 
+</div>
+</body>
 </html>

@@ -9,16 +9,15 @@ if (session_status() == PHP_SESSION_NONE) {
 $teacher_id = $row_layout['teacher_id'];
 $sql_user = "SELECT * FROM user WHERE user_id = $teacher_id";
 $result_user = mysqli_query($dbconnect, $sql_user);
-if ($result_user) {
-    $row_user = mysqli_fetch_assoc($result_user);
-    $_SESSION['user_id'] = $row_user['user_id'];
-}
+$row_user = mysqli_fetch_assoc($result_user);
+
+$_SESSION['user_id'] = $row_user['user_id'];
 
 $sql_count_member = "SELECT COUNT(*) AS member_count FROM course_member WHERE course_id = $course_id";
 $result_count_member = mysqli_query($dbconnect, $sql_count_member);
 $row_count_member = mysqli_fetch_assoc($result_count_member);
 
-$sql_post = "SELECT * FROM post WHERE course_id = $course_id AND user_id = $teacher_id LIMIT 5";
+$sql_post = "SELECT * FROM post WHERE course_id = $course_id AND user_id = $teacher_id ORDER BY created_at DESC LIMIT 5";
 $result_post = mysqli_query($dbconnect, $sql_post);
 ?>
 <!DOCTYPE html>
@@ -27,35 +26,62 @@ $result_post = mysqli_query($dbconnect, $sql_post);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang chủ khóa học</title>
+    <title>Trang khóa học</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .info-divider {
+            border-top: 1px solid #dee2e6;
+            margin: 10px 0 15px 0;
+        }
+
+        .card-title {
+            font-weight: bold;
+        }
+
+        .course-header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 0.5rem;
+        }
+
+        .course-header h3 {
+            margin-bottom: 10px;
+        }
+
+        .btn-space {
+            margin-left: 5px;
+        }
+
+        .table-hover tbody tr:hover {
+            background-color: #f1f3f5;
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container mt-4">
-        <div class="row">
-            <div class="col-md-6 align-items-center">
-                <div>
-                    <h3><?php echo $row_layout['course_code'] . " - " . $row_layout['course_name'] ?></h3>
-                    <p><?php echo $row_layout['course_description'] ?></p>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <button type="button" class="btn btn-danger float-end" data-bs-toggle="modal" data-bs-target="#deleteCourseModal">Xóa khóa học này</button>
-                <a type="button" class="btn btn-primary float-end me-2" href="course_details/edit_course.php">Thay đổi thuộc tính khóa học</a>
-
-            </div>
+<div class="container my-4">
+    <!-- Header khóa học -->
+    <div class="row course-header align-items-center">
+        <div class="col-md-8">
+            <h3><?php echo $row_layout['course_code'] . " - " . $row_layout['course_name']; ?></h3>
+            <p><?php echo $row_layout['course_description']; ?></p>
+        </div>
+        <div class="col-md-4 text-md-end mt-3 mt-md-0">
+            <a href="course_details/edit_course.php" class="btn btn-primary btn-sm">Thay đổi thuộc tính</a>
+            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteCourseModal">Xóa khóa học</button>
         </div>
     </div>
 
-    <div class="modal fade" id="deleteCourseModal" tabindex="-1" aria-labelledby="deleteCourseModalLabel" aria-hidden="true">
+    <!-- Modal Xóa khóa học -->
+    <div class="modal fade" id="deleteCourseModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="deleteCourseModalLabel">Xác nhận xóa khóa học</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <h5>Xác nhận xóa khóa học</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <p>Bạn có chắc chắn muốn xóa khóa học này?</p>
+                    Bạn có chắc chắn muốn xóa khóa học này?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
@@ -67,104 +93,98 @@ $result_post = mysqli_query($dbconnect, $sql_post);
         </div>
     </div>
 
-    <!-- Body Section -->
-    <div class="container mt-4">
-        <div class="row">
-            <!-- Thông tin cá nhân -->
-            <div class="col-md-6">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5>Thông tin khóa học</h5>
-                        <hr class="info-divider">
-                        <table class="table table-borderless">
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <b>Giáo viên giảng dạy</b>
-                                        <br><?php echo $row_user['full_name'] ?>
-                                    </td>
-                                    <td><a type="button" class="btn btn-primary float-end" href="course_details/my_teacher.php">Xem chi tiết
-                                            thông tin</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Số lượng thành viên</b>
-                                        <br><?php echo $row_count_member['member_count'] ?>
-                                    </td>
-                                    <td><a type="button" class="btn btn-primary float-end" href="course_details/member.php">Xem danh sách thành
-                                            viên</td>
-                                </tr>
-                                <tr>
-                                    <td><b>Ngày bắt đầu</b></td>
-                                    <td><?php echo date('d/m/Y', strtotime($row_layout['start_date'])) ?></td>
-                                </tr>
-                                <tr>
-                                    <td><b>Ngày kết thúc</b></td>
-                                    <td><?php echo date('d/m/Y', strtotime($row_layout['end_date'])) ?></td>
-                                </tr>
-                                <!-- Add more rows as needed -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5>Thời khóa biểu</h5>
-                        <hr class="info-divider">
-
-                        <table class="table table-bordered">
-                            <thead class="table-light">
-                                <th>Ngày trong tuần</th>
-                                <th>Thời gian</th>
-                            </thead>
-                            <?php
-                            $sql_schedule = "SELECT * FROM course_schedule WHERE course_id = $course_id";
-                            $result_schedule = mysqli_query($dbconnect, $sql_schedule);
-
-                            while ($row_schedule = mysqli_fetch_array($result_schedule)) {
-                            ?>
-                                <tr>
-                                    <td><?php echo "Thứ " . $row_schedule['day_of_week']; ?></td>
-                                    <td><?php echo $row_schedule['start_time'] . " - " . $row_schedule['end_time']; ?></td>
-                                </tr>
-                            <?php
-                            }
-                            ?>
-
-                        </table>
-                        <a type="button" class="btn btn-primary" href="course_details/edit_schedule.php">Cập nhật thời khóa biểu</a>
-                    </div>
+    <!-- Thông tin khóa học & thời khóa biểu -->
+    <div class="row mt-4">
+        <div class="col-lg-6">
+            <!-- Thông tin khóa học -->
+            <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Thông tin khóa học</h5>
+                    <hr class="info-divider">
+                    <table class="table table-borderless mb-0">
+                        <tbody>
+                            <tr>
+                                <td>Giáo viên</td>
+                                <td><?php echo $row_user['full_name']; ?></td>
+                                <td>
+                                    <a class="btn btn-outline-primary btn-sm" href="course_details/my_teacher.php">Chi tiết</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Số lượng học viên</td>
+                                <td><?php echo $row_count_member['member_count']; ?></td>
+                                <td>
+                                    <a class="btn btn-outline-primary btn-sm" href="course_details/member.php">Danh sách</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Ngày bắt đầu</td>
+                                <td><?php echo date('d/m/Y', strtotime($row_layout['start_date'])); ?></td>
+                            </tr>
+                            <tr>
+                                <td>Ngày kết thúc</td>
+                                <td><?php echo date('d/m/Y', strtotime($row_layout['end_date'])); ?></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <div class="col-md-6">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5>Bài đăng mới</h5>
-                        <hr class="info-divider">
-                        <table class="table">
-                            <?php
-                            if (mysqli_num_rows($result_post) == 0) {
-                                echo "Không có bài đăng";
-                            } else {
-                                while ($row_post = mysqli_fetch_array($result_post)) {
-                            ?>
-                                    <tr>
-                                        <td><?php echo $row_post['title']; ?></td>
-                                        <td>
-                                            <a style="text-decoration: none;" href="post/view_post.php?post_id=<?php echo $row_post['post_id'] ?>">Truy cập&nbsp;</a>
-                                        </td>
-                                    </tr>
-                            <?php
-                                }
-                            }
-                            ?>
-                        </table>
-                    </div>
+            <!-- Thời khóa biểu -->
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Thời khóa biểu</h5>
+                    <hr class="info-divider">
+                    <table class="table table-bordered table-hover mb-3">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Ngày</th>
+                                <th>Thời gian</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <?php
+                        $sql_schedule = "SELECT * FROM course_schedule WHERE course_id = $course_id";
+                        $result_schedule = mysqli_query($dbconnect, $sql_schedule);
+                        while ($row_schedule = mysqli_fetch_array($result_schedule)) {
+                            echo "<tr>
+                                    <td>Thứ {$row_schedule['day_of_week']}</td>
+                                    <td>{$row_schedule['start_time']} - {$row_schedule['end_time']}</td>
+                                  </tr>";
+                        }
+                        ?>
+                        </tbody>
+                    </table>
+                    <a href="course_details/edit_schedule.php" class="btn btn-primary btn-sm">Cập nhật</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bài đăng mới -->
+        <div class="col-lg-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Bài đăng mới</h5>
+                    <hr class="info-divider">
+                    <?php if(mysqli_num_rows($result_post) == 0): ?>
+                        <p>Chưa có bài đăng nào.</p>
+                    <?php else: ?>
+                        <ul class="list-group list-group-flush">
+                            <?php while($row_post = mysqli_fetch_array($result_post)): ?>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <?php echo $row_post['title']; ?>
+                                    <a href="post/view_post.php?post_id=<?php echo $row_post['post_id']; ?>" class="btn btn-sm btn-outline-primary">Xem</a>
+                                </li>
+                            <?php endwhile; ?>
+                        </ul>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
     </div>
-    <?php include("../../footer.php"); ?>
-</body>
+</div>
 
+<!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script> -->
+<?php include("../../footer.php"); ?>
+</body>
 </html>

@@ -1,24 +1,20 @@
 <?php
-include_once('layout.php');
-include_once('../../config/connect.php');
+include_once('../layout.php');
+include_once('../../../config/connect.php');
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-if (isset($_GET['user_id'])) {
-    $user_id = $_GET['user_id'];
-    $sql = "SELECT * FROM user WHERE user_id = $user_id";
-    $result = mysqli_query($dbconnect, $sql);
-
-    if ($result) {
-        $row = mysqli_fetch_assoc($result);
-    }
-} 
-else 
-{
-    $username_now = "User not logged in";
+if (!isset($_GET['user_id'])) {
+    echo "User not found";
+    exit;
 }
+
+$user_id = $_GET['user_id'];
+$sql = "SELECT * FROM user WHERE user_id = $user_id";
+$result = mysqli_query($dbconnect, $sql);
+$row = mysqli_fetch_assoc($result);
 ?>
 
 <!DOCTYPE html>
@@ -27,99 +23,129 @@ else
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang cá nhân</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <title>Hồ sơ học sinh</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
-        .profile-image {
-            border-radius: 50%;
-            width: 150px;
-            height: 150px;
+        body {
+            background: #f3f5f9;
         }
-        .info-divider {
-            border: 0;
-            height: 1px;
-            background-color: #ccc; /* Màu của đường kẻ */
-            margin: 10px 0; /* Khoảng cách trên và dưới đường kẻ */
+
+        .profile-header {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+        }
+
+        .profile-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .info-title {
+            font-weight: 600;
+            color: #0d6efd;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+        }
+
+        .profile-label {
+            font-weight: 600;
+        }
+
+        .course-box {
+            background: #eef4ff;
+            padding: 12px 16px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border-left: 4px solid #0d6efd;
         }
     </style>
 </head>
 
 <body>
-    <?php
-        // Đặt con trỏ kết quả về đầu để có thể duyệt lại từ đầu
-        mysqli_data_seek($result, 0);
 
-        $row = mysqli_fetch_assoc($result)
-    ?>
-    <header class="container mt-4">
-        <div class="row">
-            <div class="col-md-2">
-                <img src="../../assets/images/course1.jpg" alt="Profile Image" class="profile-image">
-            </div>
-            <div class="col-md-10">
-                <h2><?php echo $row['full_name'];?></h2>
-                <h5>Học sinh</h5> <br>
-            </div>
-            
-        </div>
+<div class="container mt-4">
 
-    </header>
+    <!-- HEADER -->
+    <div class="profile-header">
+        <img src="../../../assets/images/course1.jpg" class="profile-avatar" alt="avatar">
 
-    <!-- Body Section -->
-    <div class="container mt-4">
-        <div class="row">
-            <!-- Thông tin cá nhân -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h4>Thông tin cá nhân</h4>
-                        <hr class="info-divider">
-                        <p>
-                            <b>Ngày sinh</b>
-                            <br> <?php echo date('d/m/Y', strtotime($row['date_of_birth'])); ?>
-                        </p>
-                        <p>
-                            <b>Giới tính</b>
-                            <br> <?php echo ($row['gender'] == "M" ? "Nam":"Nữ");?>
-                        </p>
-                        <p>
-                            <b>Email</b>
-                            <br> <?php echo $row['email'];?>
-                        </p>
-                        <p>
-                            <b>Số điện thoại</b>
-                            <br> <?php echo $row['phone'];?>
-                        </p>
-                        <p>
-                            <b>Mã số CCCD/CMND</b>
-                            <br> <?php echo $row['citizen_id'];?>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Các khóa học đang tham gia -->
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h4>Các khóa học đang tham gia</h4>
-                        <hr class="info-divider">
-                        <?php
-                        $sql = "SELECT * FROM course co
-                        INNER JOIN course_member cm ON co.course_id = cm.course_id
-                        WHERE student_id = $user_id";
-                        $result = mysqli_query($dbconnect, $sql);
-                        while ($row = mysqli_fetch_array($result)) {
-                            echo $row['course_code'] . " - " . $row['course_name'];
-                            echo "<br>";
-                        }
-                        ?>
-                    </div>
-                </div>
-            </div>
+        <div>
+            <h2 class="mb-1"><?php echo $row['full_name']; ?></h2>
+            <h5 class="text-secondary">Học sinh</h5>
         </div>
     </div>
-    <?php include("../../footer.php"); ?>
-</body>
 
+    <!-- BODY -->
+    <div class="row mt-4">
+
+        <!-- Thông tin -->
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h4 class="info-title">📌 Thông tin cá nhân</h4>
+                <hr>
+
+                <p><span class="profile-label">Ngày sinh:</span><br>
+                    <?php echo date('d/m/Y', strtotime($row['date_of_birth'])); ?></p>
+
+                <p><span class="profile-label">Giới tính:</span><br>
+                    <?php echo ($row['gender'] == "M") ? "Nam" : "Nữ"; ?></p>
+
+                <p><span class="profile-label">Email:</span><br>
+                    <?php echo $row['email']; ?></p>
+
+                <p><span class="profile-label">Số điện thoại:</span><br>
+                    <?php echo $row['phone']; ?></p>
+
+                <p><span class="profile-label">CCCD/CMND:</span><br>
+                    <?php echo $row['citizen_id']; ?></p>
+            </div>
+        </div>
+
+        <!-- Khóa học -->
+        <div class="col-md-6">
+            <div class="card p-4">
+                <h4 class="info-title">📘 Khóa học đang tham gia</h4>
+                <hr>
+
+                <?php
+                $sql = "SELECT * FROM course co
+                        INNER JOIN course_member cm ON co.course_id = cm.course_id
+                        WHERE student_id = $user_id";
+                $course_result = mysqli_query($dbconnect, $sql);
+
+                if (mysqli_num_rows($course_result) > 0) {
+                    while ($c = mysqli_fetch_assoc($course_result)) {
+                        echo "
+                            <div class='course-box'>
+                                <strong>{$c['course_code']} – {$c['course_name']}</strong>
+                            </div>
+                        ";
+                    }
+                } else {
+                    echo "<p class='text-muted'>Học sinh chưa tham gia khóa học nào.</p>";
+                }
+                ?>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<?php include("../../../footer.php"); ?>
+
+</body>
 </html>
