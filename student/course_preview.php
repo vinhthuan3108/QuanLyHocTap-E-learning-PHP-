@@ -1,6 +1,6 @@
 <?php
 include('layout.php');
-include_once('config/connect.php');
+include_once('../config/connect.php');
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -182,37 +182,49 @@ function getDayOfWeek($day) {
 
     <div class="container">
         <!-- Phần giá và tham gia -->
-        <div class="price-section">
-            <div class="row align-items-center">
-                <div class="col-md-6">
-                    <h4 class="mb-3">Chi phí khóa học</h4>
-                    <?php if ($is_free): ?>
-                        <span class="free-badge">KHÓA HỌC MIỄN PHÍ</span>
-                    <?php else: ?>
-                        <div class="price-tag"><?php echo number_format($course['price'], 0, ',', '.'); ?> VNĐ</div>
-                    <?php endif; ?>
-                </div>
-                <div class="col-md-6 text-end">
-                    <?php if (isset($_SESSION['user_id'])): ?>
-                        <?php if ($has_joined || $is_free): ?>
-                            <a href="/student/course/index.php?id=<?php echo $course_id; ?>" class="btn btn-success btn-lg">
-                                <?php echo $is_free ? 'Tham gia ngay' : 'Truy cập khóa học'; ?>
-                            </a>
-                        <?php else: ?>
-                            <a href="join_course.php?course_id=<?php echo $course_id; ?>" class="btn btn-warning btn-lg">
-                                Đăng ký tham gia
-                            </a>
-                        <?php endif; ?>
-                    <?php else: ?>
-                        <?php if ($is_free): ?>
-                            <a href="login.php" class="btn btn-success btn-lg">Tham gia</a>
-                        <?php else: ?>
-                            <a href="login.php?redirect=join_course&course_id=<?php echo $course_id; ?>" class="btn btn-warning btn-lg">Đăng ký tham gia</a>
-                        <?php endif; ?>
-                    <?php endif; ?>
-                </div>
-            </div>
+        <!-- Phần giá và tham gia -->
+<div class="price-section">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h4 class="mb-3">Chi phí khóa học</h4>
+            <?php if ($is_free): ?>
+                <span class="free-badge">KHÓA HỌC MIỄN PHÍ</span>
+            <?php else: ?>
+                <div class="price-tag"><?php echo number_format($course['price'], 0, ',', '.'); ?> VNĐ</div>
+            <?php endif; ?>
         </div>
+        <div class="col-md-6 text-end">
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <?php if ($has_joined): ?>
+                    <!-- Đã tham gia khóa học -->
+                    <a href="/student/course/index.php?id=<?php echo $course_id; ?>" class="btn btn-success btn-lg">
+                        Truy cập khóa học
+                    </a>
+                <?php else: ?>
+                    <!-- Chưa tham gia khóa học -->
+                    <?php if ($is_free): ?>
+                        <!-- Khóa học miễn phí -->
+                        <a href="join_free_course.php?course_id=<?php echo $course_id; ?>" class="btn btn-success btn-lg">
+                            Tham gia ngay
+                        </a>
+                    <?php else: ?>
+                        <!-- Khóa học có phí -->
+                        <a href="/payment/payment.php?course_id=<?php echo $course_id; ?>" class="btn btn-warning btn-lg">
+                            Thanh toán ngay
+                        </a>
+                    <?php endif; ?>
+                <?php endif; ?>
+            <?php else: ?>
+                <!-- Chưa đăng nhập -->
+                <?php if ($is_free): ?>
+                    <a href="login.php?redirect=course_preview&course_id=<?php echo $course_id; ?>" class="btn btn-success btn-lg">Đăng nhập để tham gia</a>
+                <?php else: ?>
+                    <a href="login.php?redirect=course_preview&course_id=<?php echo $course_id; ?>" class="btn btn-warning btn-lg">Đăng nhập để đăng ký</a>
+                <?php endif; ?>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>
 
         <div class="row">
             <!-- Thông tin chi tiết -->
@@ -368,7 +380,7 @@ function getDayOfWeek($day) {
         </div>
     </div>
 
-    <?php include("footer.php"); ?>
+    <?php include("../footer.php"); ?>
     
     <script>
         // Thêm hiệu ứng cho accordion

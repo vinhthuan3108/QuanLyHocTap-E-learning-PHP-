@@ -65,14 +65,15 @@ if (isset($_SESSION['full_name'])) {
                                 <span>
                                     <?php echo $username_now; ?>
                                 </span>
-                                <img src="../assets/images/<?php echo $row_la['image']; ?>" alt="Avatar" class="rounded-circle" width="30" height="30">
+                                <img src="../assets/images/<?php echo (!empty($row_la['image'])) ? $row_la['image'] : 'default.jpg'; ?>" 
+     alt="Avatar" class="rounded-circle" width="30" height="30">
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <?php if ($username_now !="Quản trị viên" && $username_now != "User not logged in") : ?>
                                 <a class="dropdown-item" href="my.php">Trang cá nhân</a>
                             <?php endif; ?>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="../logout.php">Đăng xuất</a>
+                                <a class="dropdown-item" href="../account/logout.php">Đăng xuất</a>
                             </div>
                         <?php endif; ?>
                     </li>

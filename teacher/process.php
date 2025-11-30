@@ -13,6 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_course"])) {
     $course_description = $_POST["course_description"];
     $start_date = $_POST["start_date"];
     $end_date = $_POST["end_date"];
+    $price = $_POST["price"]; // Thêm dòng này để lấy giá từ form
 
     // Xử lý tệp tin ảnh
     if (isset($_FILES["course_image"])) {
@@ -31,8 +32,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_course"])) {
         }
     }
 
-    $sql_create_course = "INSERT INTO course (course_background, course_code, course_name, course_description, teacher_id, start_date, end_date, status)
-    VALUES ('$fileName', '$course_code', '$course_name', '$course_description', '$teacher_id', '$start_date', '$end_date', 'N')";
+    // Cập nhật câu lệnh SQL để thêm trường price
+    $sql_create_course = "INSERT INTO course (course_background, course_code, course_name, course_description, teacher_id, start_date, end_date, status, price)
+    VALUES ('$fileName', '$course_code', '$course_name', '$course_description', '$teacher_id', '$start_date', '$end_date', 'N', '$price')";
 
     if (mysqli_query($dbconnect, $sql_create_course)) {
         $sql_course_id = "SELECT course_id FROM course WHERE course_code = '$course_code'";

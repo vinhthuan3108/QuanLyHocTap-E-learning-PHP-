@@ -69,6 +69,16 @@ include("layout.php");
                     <input type="date" class="form-control" id="end_date" name="end_date" required>
                 </div>
             </div>
+            <!-- Thêm trường nhập giá -->
+            <div class="mb-3 row">
+                <label for="price" class="col-sm-2 col-form-label">Giá khóa học</label>
+                <div class="col-sm-4">
+                    <input type="number" class="form-control" id="price" name="price" placeholder="Nhập giá khóa học" step="0.01" min="0" required>
+                    <div class="invalid-feedback">
+                        Vui lòng nhập giá khóa học (số không âm, có thể nhập phần thập phân 2 chữ số).
+                    </div>
+                </div>
+            </div>
             <div class="mb-3 row">
                 <div class="col-sm-12 text-end">
                     <button type="submit" class="btn btn-primary" name="add_course">Tạo khóa học</button>

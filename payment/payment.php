@@ -78,8 +78,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['pay_now'])) {
             'orderCode' => $orderCode,
             'amount' => intval($course['price']),
             'description' => $course['course_name'],
-            'returnUrl' => $base_url . '/payment-success.php',
-            'cancelUrl' => $base_url . '/payment-cancel.php'
+            'returnUrl' => $base_url . '/payment/payment-success.php',
+            'cancelUrl' => $base_url . '/payment/payment-cancel.php'
         ];
 
         $paymentLink = $payOS->createPaymentLink($orderData);
@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['pay_now'])) {
                         </form>
 
                         <div class="mt-3 text-center">
-                            <a href="index.php" class="btn btn-outline-secondary">Quay lại</a>
+                            <a href="../student/index.php" class="btn btn-outline-secondary">Quay lại</a>
                         </div>
                     </div>
                 </div>
