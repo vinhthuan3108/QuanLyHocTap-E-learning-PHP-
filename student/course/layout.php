@@ -99,7 +99,7 @@ $row_profile = mysqli_fetch_assoc($result_profile);
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link text-dark" href="/student/course/exam.php">Bài tập và kiểm tra</a>
+                    <a class="nav-link text-dark" href="/student/course/exam/index.php">Bài tập và kiểm tra</a>
                 </li>
 
                 <li class="nav-item">
@@ -119,7 +119,7 @@ $row_profile = mysqli_fetch_assoc($result_profile);
                         <a class="dropdown-item" href="/student/my.php">Trang cá nhân</a>
                         <a class="dropdown-item" href="/student/index.php">Trang chủ</a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="../../account/logout.php">Đăng xuất</a>
+                        <a class="dropdown-item" href="../../../account/logout.php">Đăng xuất</a>
                     </div>
                 </li>
 
