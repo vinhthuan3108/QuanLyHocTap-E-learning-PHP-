@@ -8,6 +8,7 @@ Khi người học truy cập khóa học có thể xem thông tin khóa học (
 Đối với người dạy cũng tương tự người học nhưng có thể thêm khóa học mới, tạo bài kiểm tra (nội dung), thêm bài tập (upload file), thông báo cho người học (tự động gửi email)
 Đối với admin có thể duyệt khóa học thêm bởi giảng viên, tạo tài khoản giảng viên, sinh viên mới."
 
-TK: vinhthuan, pass: 1234a$
-TK: huynhxuannam, pass: 1234a$
-TK: nguyenminhtai, pass: 1234a$
+Mẫu:
+TK người học : vinhthuan, pass: 1234a$
+TK người dạy: huynhxuannam, pass: 1234a$
+TK quản trị: nguyenminhtai, pass: 1234a$
