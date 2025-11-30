@@ -47,15 +47,15 @@
                 <ul class="navbar-nav ms-auto">
 
                     <li class="nav-item">
-                        <a class="nav-link" href="index.php">Trang chủ</a>
+                        <a class="nav-link" href="../index.php">Trang chủ</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="login.php">Đăng nhập</a>
+                        <a class="nav-link" href="../account/login.php">Đăng nhập</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="register.php">Tạo tài khoản mới</a>
+                        <a class="nav-link" href="../account/register.php">Đăng ký</a>
                     </li>
 
                 </ul>

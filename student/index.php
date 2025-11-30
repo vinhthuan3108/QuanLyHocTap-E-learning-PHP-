@@ -151,7 +151,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
                                     
                                     <div class="btn-group-custom">
                                         <!-- Luôn hiển thị nút Xem khóa học -->
-                                        <a class="btn btn-outline-primary" href="../course_preview.php?id=<?php echo $row['course_id']; ?>">
+                                        <a class="btn btn-outline-primary" href="course_preview.php?id=<?php echo $row['course_id']; ?>">
                                             Xem khóa học
                                         </a>
                                         

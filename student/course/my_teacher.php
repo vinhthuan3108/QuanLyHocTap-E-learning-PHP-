@@ -91,10 +91,6 @@ else
                             <b>Số điện thoại</b>
                             <br> <?php echo $row['phone'];?>
                         </p>
-                        <p>
-                            <b>Mã số CCCD/CMND</b>
-                            <br> <?php echo $row['citizen_id'];?>
-                        </p>
                     </div>
                 </div>
             </div>

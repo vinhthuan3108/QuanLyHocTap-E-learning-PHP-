@@ -8,8 +8,8 @@
 
     <?php
 session_start();
-include_once('layout.php');
-include_once('./config/connect.php');
+include_once('../layout.php');
+include_once('../config/connect.php');
 $error = '';
 $success = '';
 $email = isset($_GET['email']) ? trim($_GET['email']) : '';

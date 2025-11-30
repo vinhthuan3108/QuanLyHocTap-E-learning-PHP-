@@ -91,7 +91,7 @@ $row_profile = mysqli_fetch_assoc($result_profile);
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="my.php">Trang cá nhân</a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="../logout.php">Đăng xuất</a></li>
+                            <li><a class="dropdown-item" href="../account/logout.php">Đăng xuất</a></li>
                         </ul>
                     </li>
                 </ul>
