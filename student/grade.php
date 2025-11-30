@@ -119,7 +119,7 @@ $result_course = mysqli_query($dbconnect, $sql_course);
                                                 <tr>
                                                     <th scope="row"><?php echo $i; ?></th>
                                                     <td><?php echo $row_grade['grade_column_name']; ?></td>
-                                                    <td><?php echo ($proportion_temp * 100); ?>%</td>
+                                                    <td><?php echo ($proportion_temp); ?>%</td>
                                                     <td><?php echo $score_temp; ?></td>
                                                 </tr>
                                             <?php } ?>

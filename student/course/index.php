@@ -17,6 +17,10 @@ if ($result_user) {
 $sql_count_member = "SELECT COUNT(*) AS member_count FROM course_member WHERE course_id = $course_id";
 $result_count_member = mysqli_query($dbconnect, $sql_count_member);
 $row_count_member = mysqli_fetch_assoc($result_count_member);
+
+// Thêm truy vấn lấy bài đăng - QUAN TRỌNG
+$sql_post = "SELECT * FROM post WHERE course_id = $course_id ORDER BY created_at DESC LIMIT 5";
+$result_post = mysqli_query($dbconnect, $sql_post);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -25,6 +29,13 @@ $row_count_member = mysqli_fetch_assoc($result_count_member);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trang chủ khóa học</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .info-divider {
+            border-top: 1px solid #dee2e6;
+            margin: 10px 0 15px 0;
+        }
+    </style>
 </head>
 
 <body>
@@ -38,6 +49,7 @@ $row_count_member = mysqli_fetch_assoc($result_count_member);
             </div>
         </div>
     </div>
+    
     <!-- Body Section -->
     <div class="container mt-4">
         <div class="row">
@@ -72,7 +84,6 @@ $row_count_member = mysqli_fetch_assoc($result_count_member);
                                     <td><b>Ngày kết thúc</b></td>
                                     <td><?php echo date('d/m/Y', strtotime($row_layout['end_date'])) ?></td>
                                 </tr>
-                                <!-- Add more rows as needed -->
                             </tbody>
                         </table>
                     </div>
@@ -100,26 +111,37 @@ $row_count_member = mysqli_fetch_assoc($result_count_member);
                             <?php
                             }
                             ?>
-
                         </table>
                     </div>
                 </div>
             </div>
 
+            <!-- Phần thông báo đã sửa -->
             <div class="col-md-6">
                 <div class="card mb-3">
                     <div class="card-body">
-                        <h5>Thông báo</h5>
+                        <h5>Thông báo mới</h5>
                         <hr class="info-divider">
-                        <h6>Thông báo mới</h6>
-                        <p>Không có thông báo!</p>
-                        <h6>Tin nhắn mới</h6>
-                        <p>Không có tin nhắn chưa đọc!</p>
+                        <?php if(mysqli_num_rows($result_post) == 0): ?>
+                            <p>Chưa có thông báo nào.</p>
+                        <?php else: ?>
+                            <ul class="list-group list-group-flush">
+                                <?php while($row_post = mysqli_fetch_array($result_post)): ?>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <?php echo $row_post['title']; ?>
+                                        <a href="view_post.php?post_id=<?php echo $row_post['post_id']; ?>" class="btn btn-sm btn-outline-primary">Xem</a>
+                                    </li>
+                                <?php endwhile; ?>
+                            </ul>
+                        <?php endif; ?>
+                        
+
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</body>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
 </html>

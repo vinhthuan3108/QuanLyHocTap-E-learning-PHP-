@@ -1,24 +1,24 @@
 <?php
-include("../layout.php"); // Kết nối DB
+include("../layout.php"); 
 $exam_id = $_GET['exam_id'];
 
-// 1. Lấy thông tin bài kiểm tra
+
 $sql_exam = "SELECT * FROM exam WHERE exam_id = $exam_id";
 $exam = mysqli_fetch_assoc(mysqli_query($dbconnect, $sql_exam));
 
-// 2. Xử lý thêm câu hỏi
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_question'])) {
     $q_text = mysqli_real_escape_string($dbconnect, $_POST['question_text']);
     $q_type = $_POST['question_type'];
     $q_points = $_POST['points'];
     
-    // Thêm câu hỏi vào bảng question
+
     $sql_q = "INSERT INTO question (exam_id, question_type, question_text, points) VALUES ($exam_id, '$q_type', '$q_text', $q_points)";
     
     if(mysqli_query($dbconnect, $sql_q)){
         $question_id = mysqli_insert_id($dbconnect);
         
-        // --- XỬ LÝ TRẮC NGHIỆM ---
+
         if(in_array($q_type, ['multiple_choice_single', 'multiple_choice_multiple']) && isset($_POST['answers'])){
             foreach($_POST['answers'] as $key => $ans_text){
                 $is_correct = isset($_POST['correct_answer'][$key]) ? 1 : 0;
@@ -30,20 +30,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_question'])) {
             }
         }
         
-        // --- XỬ LÝ TỰ LUẬN NGẮN ---
+
         if($q_type == 'essay' && !empty($_POST['essay_correct_answer'])){
             $essay_ans = mysqli_real_escape_string($dbconnect, $_POST['essay_correct_answer']);
             mysqli_query($dbconnect, "INSERT INTO answer (question_id, answer_text, is_correct) VALUES ($question_id, '$essay_ans', 1)");
         }
 
-        // --- THAY ĐỔI Ở ĐÂY: Thay alert bằng chuyển hướng ---
-        // Load lại chính trang này để xóa dữ liệu form cũ và cập nhật danh sách câu hỏi mới
+
         header("Location: edit_exam_questions.php?exam_id=$exam_id");
         exit(); 
     }
 }
 
-// 3. Lấy danh sách câu hỏi hiện có
 $sql_questions = "SELECT * FROM question WHERE exam_id = $exam_id ORDER BY order_num ASC, question_id ASC";
 $result_questions = mysqli_query($dbconnect, $sql_questions);
 ?>

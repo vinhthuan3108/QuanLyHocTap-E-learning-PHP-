@@ -53,7 +53,7 @@ include("../layout.php");
                     [{
                         'header': [1, 2, false]
                     }],
-                    ['bold', 'italic', 'underline', 'strike'], // in đậm, in nghiêng, gạch ngang, gạch chân
+                    ['bold', 'italic', 'underline', 'strike'], 
                     ['blockquote', 'code-block'],
                     [{
                         'list': 'ordered'
@@ -83,19 +83,18 @@ include("../layout.php");
                         'color': []
                     }, {
                         'background': []
-                    }], // chọn màu chữ, chọn màu nền
+                    }], 
                     [{
                         'font': []
                     }],
                     [{
                         'align': []
                     }],
-                    ['clean'] // xóa định dạng
+                    ['clean'] 
                 ],
             },
         });
 
-        // Update hidden textarea on editor change
         quill.on('text-change', function() {
             const content = quill.root.innerHTML;
             document.getElementById('postContent').value = content;

@@ -1,18 +1,14 @@
 <?php
-// Lưu ý: Nếu file này nằm ở thư mục gốc thì include layout.php bình thường
-// Nếu layout.php nằm trong thư mục includes thì sửa đường dẫn lại cho đúng
 include('layout.php');
 include_once('config/connect.php');
 
-// Vẫn start session để header có thể hiển thị nút Login/Register nếu cần
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// --- XỬ LÝ TÌM KIẾM ---
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
     $tukhoa = $_POST['tukhoa'];
-    // Xử lý chuỗi tìm kiếm để tìm chính xác hơn (giữ nguyên logic của bạn)
+
     $keyword = strtolower(trim($tukhoa));
     $keyword = str_replace(' ', '', $keyword);
     $sql = "SELECT * FROM course 
@@ -37,9 +33,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
         .custom-card {
             width: 100%;
             height: 0;
-            padding-top: 56.25%; /* Tỉ lệ 16:9 chuẩn hơn 50% */
+            padding-top: 56.25%; 
             position: relative;
-            background-color: #f0f0f0; /* Màu nền chờ ảnh */
+            background-color: #f0f0f0; 
             overflow: hidden;
             border-radius: 4px;
         }
@@ -54,7 +50,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
             transition: transform 0.3s ease;
         }
         
-        /* Hiệu ứng zoom nhẹ khi di chuột */
         .card:hover .custom-card img {
             transform: scale(1.05);
         }
@@ -112,9 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
                 while ($row = mysqli_fetch_array($result)) {
                     $is_free = $row['price'] == 0;
                     
-                    // Xử lý đường dẫn ảnh:
-                    // Nếu file index.php ở root, thì đường dẫn là "assets/..." chứ không phải "../assets/..."
-                    // Tôi đã sửa lại thành "assets/...", bạn kiểm tra lại cấu trúc folder nhé
+
                     $img_path = "assets/file/course_background/" . $row['course_background'];
             ?>
                     <div class="col-md-4 mb-4">

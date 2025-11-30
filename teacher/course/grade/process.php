@@ -6,50 +6,43 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_grade_column"])) {
-    // Sanitize and validate input
+
     $columnId = mysqli_real_escape_string($dbconnect, $_POST["editColumnId"]);
     $columnName = mysqli_real_escape_string($dbconnect, $_POST["editColumnName"]);
     $proportion = mysqli_real_escape_string($dbconnect, $_POST["editProportion"]);
 
-    // Update the database using prepared statement
     $sql_update_column = "UPDATE grade_column SET grade_column_name = ?, proportion = ? WHERE column_id = ?";
     $stmt = mysqli_prepare($dbconnect, $sql_update_column);
 
     mysqli_stmt_bind_param($stmt, "ssi", $columnName, $proportion, $columnId);
 
     if (mysqli_stmt_execute($stmt)) {
-        // Success: Redirect to grade_column.php
         mysqli_stmt_close($stmt);
         header("Location: grade_column.php");
         exit();
     } else {
-        // Error: Output the error message
+
         echo "Error updating column: " . mysqli_stmt_error($stmt);
     }
 
-    // Close the statement outside the if-else block
     mysqli_stmt_close($stmt);
 }
 
 if (isset($_POST['submit_grade_member'])) {
-    // Make sure the necessary data is provided in the POST request
     if (isset($_POST['member_id']) && isset($_POST['score'])) {
-        // Sanitize and validate data to prevent SQL injection
         $member_ids = array_map('intval', $_POST['member_id']);
         $scores = array_map('floatval', $_POST['score']);
         $column_id = $_SESSION['column_id'];
 
-        // Loop through the arrays and update the scores in the database
         for ($i = 0; $i < count($member_ids); $i++) {
             $member_id = $member_ids[$i];
             $score = $scores[$i];
 
-            // Update the score in the database (Assuming your database table structure)
+
             $update_query = "UPDATE grade SET score = $score WHERE member_id = $member_id AND column_id = $column_id";
             mysqli_query($dbconnect, $update_query);
         }
 
-        // You might want to redirect the user after the update
         header("Location: insert_grade_column.php");
         exit();
     } else {
@@ -61,12 +54,10 @@ if (isset($_POST['delete_grade_column'])) {
     if (isset($_POST['column_id'])) {
         $column_id = $_POST['column_id'];
 
-        // Assuming you have a valid delete query
         $delete_query = "DELETE FROM grade_column WHERE column_id = $column_id";
 
         mysqli_query($dbconnect, $delete_query);
 
-        // Redirect the user after the deletion
         header("Location: grade_column.php");
         exit();
     } else {

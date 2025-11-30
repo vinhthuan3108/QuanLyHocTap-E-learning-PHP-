@@ -38,15 +38,14 @@ else
         .info-divider {
             border: 0;
             height: 1px;
-            background-color: #ccc; /* Màu của đường kẻ */
-            margin: 10px 0; /* Khoảng cách trên và dưới đường kẻ */
+            background-color: #ccc; 
+            margin: 10px 0; 
         }
     </style>
 </head>
 
 <body>
     <?php
-        // Đặt con trỏ kết quả về đầu để có thể duyệt lại từ đầu
         mysqli_data_seek($result, 0);
 
         $row = mysqli_fetch_assoc($result)

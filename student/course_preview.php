@@ -6,14 +6,13 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Lấy ID khóa học từ URL
+
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     die("Không tìm thấy khóa học");
 }
 
 $course_id = intval($_GET['id']);
 
-// Lấy thông tin khóa học
 $course_sql = "SELECT c.*, u.full_name as teacher_name 
                FROM course c 
                LEFT JOIN user u ON c.teacher_id = u.user_id 
@@ -51,11 +50,11 @@ if (isset($_SESSION['user_id'])) {
     }
 }
 
-// Lấy lịch học
+
 $schedule_sql = "SELECT * FROM course_schedule WHERE course_id = $course_id";
 $schedule_result = mysqli_query($dbconnect, $schedule_sql);
 
-// Lấy danh sách chủ đề và nội dung
+
 $topics_sql = "SELECT ct.*, 
                (SELECT COUNT(*) FROM course_contents cc WHERE cc.topic_id = ct.topic_id) as content_count
                FROM topics ct 
@@ -63,7 +62,6 @@ $topics_sql = "SELECT ct.*,
                ORDER BY ct.created_at";
 $topics_result = mysqli_query($dbconnect, $topics_sql);
 
-// Hàm chuyển đổi thứ trong tuần
 function getDayOfWeek($day) {
     $days = [
         '2' => 'Thứ 2',
@@ -160,7 +158,6 @@ function getDayOfWeek($day) {
 </head>
 
 <body>
-    <!-- Header khóa học -->
     <div class="course-header">
         <div class="container">
             <div class="row align-items-center">
@@ -181,7 +178,6 @@ function getDayOfWeek($day) {
     </div>
 
     <div class="container">
-        <!-- Phần giá và tham gia -->
         <!-- Phần giá và tham gia -->
 <div class="price-section">
     <div class="row align-items-center">

@@ -6,7 +6,6 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-// Function to escape HTML for preventing XSS attacks
 function escapeHTML($value)
 {
     if (is_array($value)) {

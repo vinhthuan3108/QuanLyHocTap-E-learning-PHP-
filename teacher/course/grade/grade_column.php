@@ -16,7 +16,6 @@ if (isset($_SESSION['course_id'])) {
         (LOWER(REPLACE(REPLACE(REPLACE(REPLACE(grade_column_name, ' ', ''), 'Đ', 'D'),'đ','d'), ' ', '')) LIKE '%$keyword%' OR grade_column_name LIKE '%$tukhoa%')";
         $result = mysqli_query($dbconnect, $sql);
         if (!$result) {
-            // Query execution failed
             die('Query failed: ' . mysqli_error($dbconnect));
         }
     } else {
@@ -89,7 +88,6 @@ if (isset($_SESSION['course_id'])) {
                             <label for="editProportion" class="col-form-label">Tỉ lệ tích lũy</label>
                             <input type="text" class="form-control" id="editProportion" name="editProportion">
                         </div>
-                        <!-- Add a hidden input for column id -->
                         <input type="hidden" id="editColumnId" name="editColumnId">
                     </div>
                     <div class="modal-footer">
@@ -164,7 +162,6 @@ if (isset($_SESSION['course_id'])) {
                 </thead>
                 <tbody>
                     <?php
-                    // Đặt con trỏ kết quả về đầu để có thể duyệt lại từ đầu
                     mysqli_data_seek($result, 0);
 
                     $index = 0;

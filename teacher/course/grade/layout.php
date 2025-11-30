@@ -104,7 +104,7 @@ if (isset($_SESSION['course_id'])) {
                                 <a class="dropdown-item" href="../../index.php">Trang chủ</a>
                                 <a class="dropdown-item" href="../index.php">Trang khóa học</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="../../../logout.php">Đăng xuất</a>
+                                <a class="dropdown-item" href="../../../account/logout.php">Đăng xuất</a>
                             </div>
                         <?php endif; ?>
                     </li>
