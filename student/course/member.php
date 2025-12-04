@@ -160,6 +160,8 @@ $result = mysqli_query($dbconnect, $sql);
             </div>
         </div>
     </div>
+        <?php include("../../footer.php"); ?>
+
 
     <!-- Script Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

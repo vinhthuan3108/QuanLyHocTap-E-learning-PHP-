@@ -6,7 +6,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-if (isset($_SESSION['full_name'])) 
+if (isset($_SESSION['full_name']))
 {
     $user_id = $_SESSION['user_id'];
 
@@ -14,8 +14,8 @@ if (isset($_SESSION['full_name']))
     INNER JOIN course_member cm ON co.course_id = cm.course_id
     INNER JOIN course_schedule cs ON co.course_id = cs.course_id
     WHERE student_id = $user_id
-    ORDER BY 
-        CASE 
+    ORDER BY
+        CASE
             WHEN cs.day_of_week = '2' THEN 1
             WHEN cs.day_of_week = '3' THEN 2
             WHEN cs.day_of_week = '4' THEN 3
@@ -66,5 +66,7 @@ if (isset($_SESSION['full_name']))
             </tbody>
         </table>
     </div>
+        <?php include("../footer.php"); ?>
+
 </body>
 </html>

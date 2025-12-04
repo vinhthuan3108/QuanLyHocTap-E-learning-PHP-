@@ -25,10 +25,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bài đăng</title>
+  <style>
+    html, body {
+        height: 100%;
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    .content {
+        flex: 1;
+    }
+</style>
+
 </head>
 
 <body>
-  <div class="container mt-4"> 
+    <div class="content">
+  <div class="container mt-4">
     <header>
       <div class="row">
         <div class="col-md-6">
@@ -52,7 +67,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
         </div>
       </div>
     </header>
-    
+
     <div class="mt-4">
       <table class="table">
         <thead>
@@ -77,9 +92,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
               <td><?php echo $row_post['title']; ?></td>
               <td>
                 <span><?php echo $full_name; ?></span>
-                <img src="../../../assets/images/<?php echo $image ?>" 
-                  alt="Avatar" 
-                  class="img-fluid rounded-circle" 
+                <img src="../../../assets/images/<?php echo $image ?>"
+                  alt="Avatar"
+                  class="img-fluid rounded-circle"
                   style="width: 30px; height: 30px; object-fit: cover;">
               </td>
               <td><?php echo $row_post['created_at']; ?></td>
@@ -92,7 +107,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
       </table>
     </div>
   </div>
-  
-  </main> 
+    </div>
+    <?php include("../../footer.php"); ?>
 </body>
 </html>

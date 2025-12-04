@@ -105,7 +105,7 @@ if ($search_mode) {
     </style>
 </head>
 <body>
-<header class="container mt-4">
+<div class="container mt-4">
     <div class="row">
         <div class="col-md-6">
             <h3>Nội dung khóa học</h3>
@@ -197,8 +197,8 @@ if ($search_mode) {
                                     <div class="card h-100 shadow-sm position-relative">
                                         <div class="card-body d-flex flex-column">
                                             <!-- Badge hiển thị loại nội dung -->
-                                            <span class="content-badge badge 
-                                                <?php 
+                                            <span class="content-badge badge
+                                                <?php
                                                 switch ($row['content_type']) {
                                                     case 'video': echo 'bg-danger'; break;
                                                     case 'embed': echo 'bg-warning'; break;
@@ -209,31 +209,31 @@ if ($search_mode) {
                                                 ?>">
                                                 <?php echo htmlspecialchars($row['content_type']); ?>
                                             </span>
-                                            
+
                                             <h6 class="card-title">
                                                 <?php
                                                 $icon = "";
                                                 switch ($row['content_type']) {
-                                                    case 'video': 
-                                                        $icon = "<i class='bi bi-camera-video-fill text-danger content-icon'></i>"; 
+                                                    case 'video':
+                                                        $icon = "<i class='bi bi-camera-video-fill text-danger content-icon'></i>";
                                                         break;
-                                                    case 'embed': 
-                                                        $icon = "<i class='bi bi-play-btn-fill text-warning content-icon'></i>"; 
+                                                    case 'embed':
+                                                        $icon = "<i class='bi bi-play-btn-fill text-warning content-icon'></i>";
                                                         break;
-                                                    case 'text': 
-                                                        $icon = "<i class='bi bi-file-text-fill text-primary content-icon'></i>"; 
+                                                    case 'text':
+                                                        $icon = "<i class='bi bi-file-text-fill text-primary content-icon'></i>";
                                                         break;
-                                                    case 'file': 
-                                                        $icon = "<i class='bi bi-file-earmark-fill text-success content-icon'></i>"; 
+                                                    case 'file':
+                                                        $icon = "<i class='bi bi-file-earmark-fill text-success content-icon'></i>";
                                                         break;
-                                                    default: 
-                                                        $icon = "<i class='bi bi-question-circle-fill content-icon'></i>"; 
+                                                    default:
+                                                        $icon = "<i class='bi bi-question-circle-fill content-icon'></i>";
                                                         break;
                                                 }
                                                 echo $icon . htmlspecialchars($row['title_content']);
                                                 ?>
                                             </h6>
-                                            
+
                                             <?php if (!empty($row['duration'])): ?>
                                                 <small class="text-muted mb-2">
                                                     <i class="bi bi-clock me-1"></i>
@@ -246,20 +246,20 @@ if ($search_mode) {
                                                 $url = "";
                                                 $button_text = "Xem nội dung";
                                                 switch ($row['content_type']) {
-                                                    case 'embed': 
-                                                        $url = !empty($row['embedded_id']) ? 'view_content_video.php?content_id=' . urlencode($row['embedded_id']) : ''; 
+                                                    case 'embed':
+                                                        $url = !empty($row['embedded_id']) ? 'view_content_video.php?content_id=' . urlencode($row['embedded_id']) : '';
                                                         $button_text = "Xem video";
                                                         break;
-                                                    case 'video': 
-                                                        $url = !empty($row['video_id']) ? 'view_content_file_vd.php?content_id=' . urlencode($row['video_id']) : ''; 
+                                                    case 'video':
+                                                        $url = !empty($row['video_id']) ? 'view_content_file_vd.php?content_id=' . urlencode($row['video_id']) : '';
                                                         $button_text = "Xem video";
                                                         break;
-                                                    case 'text': 
-                                                        $url = !empty($row['text_id']) ? 'view_content_text.php?content_id=' . urlencode($row['text_id']) : ''; 
+                                                    case 'text':
+                                                        $url = !empty($row['text_id']) ? 'view_content_text.php?content_id=' . urlencode($row['text_id']) : '';
                                                         $button_text = "Đọc tài liệu";
                                                         break;
-                                                    case 'file': 
-                                                        $url = !empty($row['file_id']) ? 'view_content_file.php?content_id=' . urlencode($row['file_id']) : ''; 
+                                                    case 'file':
+                                                        $url = !empty($row['file_id']) ? 'view_content_file.php?content_id=' . urlencode($row['file_id']) : '';
                                                         $button_text = "Tải xuống";
                                                         break;
                                                 }

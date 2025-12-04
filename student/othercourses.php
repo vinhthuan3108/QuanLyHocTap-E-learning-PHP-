@@ -151,5 +151,7 @@ if ($keyword_sql) {
     </nav>
     <?php endif; ?>
 </div>
+    <?php include("../footer.php"); ?>
+
 </body>
 </html>
