@@ -68,10 +68,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['timkiem'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bài đăng</title>
+    <style>
+    html, body {
+        height: 100%;
+    }
+    body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    .content {
+        flex: 1;
+    }
+</style>
+
 </head>
 
 <body>
-    <header class="container mt-4">
+    <header class="container mt-4 content">
         <div class="row">
             <div class="col-md-6">
                 <h3>Bài đăng</h3>

@@ -15,11 +15,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $close_time = $_POST['close_time'];
     $time_limit = $_POST['time_limit'];
     $max_score = $_POST['max_score'];
-    
 
-    $sql_insert_exam = "INSERT INTO exam (course_id, column_id, title, description, open_time, close_time, time_limit, max_score) 
+
+    $sql_insert_exam = "INSERT INTO exam (course_id, column_id, title, description, open_time, close_time, time_limit, max_score)
                         VALUES ($course_id, $column_id, '$title', '$description', '$open_time', '$close_time', $time_limit, $max_score)";
-    
+
     if (mysqli_query($dbconnect, $sql_insert_exam)) {
         $exam_id = mysqli_insert_id($dbconnect);
         $_SESSION['success_message'] = "Tạo bài kiểm tra thành công!";
@@ -77,17 +77,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Thông tin bài kiểm tra</h5>
-                            
+
                             <div class="mb-3">
                                 <label for="title" class="form-label">Tiêu đề bài kiểm tra</label>
                                 <input type="text" class="form-control" id="title" name="title" required>
                             </div>
-                            
+
                             <div class="mb-3">
                                 <label for="description" class="form-label">Mô tả</label>
                                 <textarea class="form-control" id="description" name="description" rows="3"></textarea>
                             </div>
-                            
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <label for="column_id" class="form-label">Loại điểm</label>
@@ -105,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     <input type="number" class="form-control" id="max_score" name="max_score" step="0.01" min="0" value="10" required>
                                 </div>
                             </div>
-                            
+
                             <div class="row mt-3">
                                 <div class="col-md-4">
                                     <label for="open_time" class="form-label">Thời gian mở</label>
@@ -123,19 +123,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="col-md-4">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">Tùy chọn</h5>
-                            
+
                             <div class="mb-3">
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" id="show_results" name="show_results" checked>
                                     <label class="form-check-label" for="show_results">Hiển thị kết quả sau khi làm bài</label>
                                 </div>
                             </div>
-                            
+
                             <div class="d-grid gap-2">
                                 <button type="submit" class="btn btn-primary">Tạo bài kiểm tra</button>
                                 <a href="exam.php" class="btn btn-secondary">Hủy</a>
@@ -147,16 +147,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </form>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> -->
     <script>
         document.getElementById('open_time').value = new Date().toISOString().slice(0, 16);
-        
+
 
         const closeTime = new Date();
         closeTime.setDate(closeTime.getDate() + 7);
         document.getElementById('close_time').value = closeTime.toISOString().slice(0, 16);
     </script>
-    
+
     <?php include("../../../footer.php"); ?>
 </body>
 </html>

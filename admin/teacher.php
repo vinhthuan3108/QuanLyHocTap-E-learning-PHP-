@@ -8,36 +8,73 @@ $limit_options = [5,10,15];
 $limit = isset($_GET['limit']) ? intval($_GET['limit']) : 10;
 if(!in_array($limit, $limit_options)) $limit = 10;
 
-// Trang hiện tại
 $page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 $offset = ($page - 1) * $limit;
 
 // Tìm kiếm
 $tukhoa = isset($_GET['tukhoa']) ? trim($_GET['tukhoa']) : '';
 $keyword_sql = '';
-if($tukhoa != '') {
-    $keyword_sql = " AND (LOWER(REPLACE(us.full_name,' ','')) LIKE '%".strtolower(str_replace(' ','',$tukhoa))."%'
-                     OR LOWER(ua.username) LIKE '%".strtolower($tukhoa)."%')";
+if($tukhoa != ''){
+    $keyword_sql = " AND (
+        LOWER(REPLACE(us.full_name,' ','')) LIKE '%".strtolower(str_replace(' ','',$tukhoa))."%'
+        OR LOWER(ua.username) LIKE '%".strtolower($tukhoa)."%'
+    )";
 }
 
-// Tổng số bản ghi giáo viên
+// ==============================
+// XỬ LÝ SẮP XẾP
+// ==============================
+$sort = isset($_GET['sort']) ? $_GET['sort'] : 'user_id';
+$order = isset($_GET['order']) ? $_GET['order'] : 'desc';
+
+$allowed_sort = ['user_id','full_name','date_of_birth','username'];
+$allowed_order = ['asc','desc'];
+
+if(!in_array($sort, $allowed_sort)) $sort = 'user_id';
+if(!in_array($order, $allowed_order)) $order = 'desc';
+
+$order_sql = " ORDER BY $sort $order ";
+
+// Hàm tạo link sắp xếp
+function sort_link($field, $current_sort, $current_order, $limit, $tukhoa, $page){
+    $next_order = ($current_sort == $field && $current_order == 'asc') ? 'desc' : 'asc';
+    $icon = "";
+
+    if($current_sort == $field){
+        $icon = $current_order == 'asc'
+            ? '<i class="fa-solid fa-arrow-up-short-wide"></i>'
+            : '<i class="fa-solid fa-arrow-down-short-wide"></i>';
+    } else {
+        $icon = '<i class="fa-solid fa-sort"></i>';
+    }
+
+    return "<a href='?sort=$field&order=$next_order&limit=$limit&tukhoa=$tukhoa&page=$page' style='color:white; text-decoration:none'>$icon</a>";
+}
+
+// ==============================
+// TỔNG SỐ BẢN GHI GIÁO VIÊN
+// ==============================
 $total_result = $dbconnect->query("SELECT COUNT(*) AS total
     FROM user us
     INNER JOIN user_role ur ON us.user_id=ur.user_id
     INNER JOIN user_account ua ON us.user_id=ua.user_id
     WHERE ur.role_id=2 $keyword_sql");
+
 $total_row = $total_result->fetch_assoc();
 $total_records = $total_row['total'];
 $total_pages = max(1, ceil($total_records / $limit));
 
-// Lấy dữ liệu giáo viên
-$sql_teacher = "SELECT us.*, ua.username, ua.password
+// ==============================
+// LẤY DỮ LIỆU
+// ==============================
+$sql_teacher = "SELECT us.*, ua.username
     FROM user us
     INNER JOIN user_role ur ON us.user_id=ur.user_id
     INNER JOIN user_account ua ON us.user_id=ua.user_id
     WHERE ur.role_id=2 $keyword_sql
-    ORDER BY us.user_id DESC
+    $order_sql
     LIMIT $limit OFFSET $offset";
+
 $result_teacher = $dbconnect->query($sql_teacher);
 ?>
 <!DOCTYPE html>
@@ -46,13 +83,15 @@ $result_teacher = $dbconnect->query($sql_teacher);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Danh sách Giáo viên</title>
+
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet">
+
 <style>
 .table-hover tbody tr:hover { background-color: #f1f1f1; }
-.btn i { margin-right: 4px; }
-.pagination li a { color: #0d6efd; }
+th a { padding-left: 6px; }
 </style>
+
 </head>
 <body>
 <?php include "sidebar.php"; ?>
@@ -65,7 +104,7 @@ $result_teacher = $dbconnect->query($sql_teacher);
         </a>
     </div>
 
-    <!-- Tìm kiếm + limit -->
+    <!-- FORM TÌM KIẾM -->
     <form class="row g-2 align-items-center mb-4" action="teacher.php" method="GET">
         <div class="col-auto">
             <select name="limit" class="form-select" onchange="this.form.submit()">
@@ -74,123 +113,135 @@ $result_teacher = $dbconnect->query($sql_teacher);
                 <?php endforeach; ?>
             </select>
         </div>
+
         <div class="col-auto flex-grow-1">
-            <input class="form-control" type="search" placeholder="Tìm kiếm tên hoặc username" name="tukhoa" value="<?= htmlspecialchars($tukhoa) ?>">
+            <input class="form-control" type="search" placeholder="Tìm kiếm tên hoặc username"
+                   name="tukhoa" value="<?= htmlspecialchars($tukhoa) ?>">
         </div>
+
         <div class="col-auto">
-            <button class="btn btn-outline-primary" type="submit"><i class="fa-solid fa-magnifying-glass"></i> Tìm</button>
+            <button class="btn btn-outline-primary" type="submit">
+                <i class="fa-solid fa-magnifying-glass"></i> Tìm
+            </button>
         </div>
     </form>
 
     <?php if($total_records == 0): ?>
-        <div class="alert alert-warning text-center">
-            Không có dữ liệu <?= $tukhoa ? "tìm kiếm với từ khóa '<strong>".htmlspecialchars($tukhoa)."</strong>'" : "" ?>.
-        </div>
+        <div class="alert alert-warning text-center">Không có dữ liệu.</div>
     <?php else: ?>
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>STT</th>
-                        <th>Họ và tên</th>
-                        <th>Ngày sinh</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    $i = $offset + 1;
-                    while($row = $result_teacher->fetch_assoc()): ?>
-                        <tr>
-                            <td><?= $i++ ?></td>
-                            <td><?= htmlspecialchars($row['full_name']) ?></td>
-                            <td><?= date('d/m/Y', strtotime($row['date_of_birth'])) ?></td>
-                            <td><?= htmlspecialchars($row['username']) ?></td>
-                            <td><?= htmlspecialchars($row['email']) ?></td>
-                            <td>
-                                <a class="btn btn-info btn-sm mb-1" href="account_view.php?user_id=<?= $row['user_id'] ?>&role_id=2&role_name=teacher"><i class="fa-solid fa-eye"></i> Xem</a>
-                                <a class="btn btn-warning btn-sm mb-1" href="account_edit.php?user_id=<?= $row['user_id'] ?>&role_id=2&role_name=teacher"><i class="fa-solid fa-pen"></i> Sửa</a>
-                                <button type="button" class="btn btn-danger btn-sm mb-1" data-bs-toggle="modal" data-bs-target="#deleteModal" data-id="<?= $row['user_id'] ?>"><i class="fa-solid fa-trash"></i> Xóa</button>
-                            </td>
-                        </tr>
-                    <?php endwhile; ?>
-                </tbody>
-            </table>
-        </div>
 
-        <!-- Phân trang -->
-        <?php
-        $max_links = 5;
-        $start = max(1, $page - 2);
-        $end = min($total_pages, $start + $max_links - 1);
-        $start = max(1, $end - $max_links + 1);
-        ?>
-        <nav aria-label="Page navigation">
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>STT</th>
+
+                    <th>
+                        Họ và tên
+                        <?= sort_link("full_name", $sort, $order, $limit, $tukhoa, $page) ?>
+                    </th>
+
+                    <th>
+                        Ngày sinh
+                        <?= sort_link("date_of_birth", $sort, $order, $limit, $tukhoa, $page) ?>
+                    </th>
+
+                    <th>
+                        Username
+                        <?= sort_link("username", $sort, $order, $limit, $tukhoa, $page) ?>
+                    </th>
+
+                    <th>Email</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            <?php
+            $i = $offset + 1;
+            while($row = $result_teacher->fetch_assoc()):
+            ?>
+                <tr>
+                    <td><?= $i++ ?></td>
+                    <td><?= htmlspecialchars($row['full_name']) ?></td>
+                    <td><?= date('d/m/Y', strtotime($row['date_of_birth'])) ?></td>
+                    <td><?= htmlspecialchars($row['username']) ?></td>
+                    <td><?= htmlspecialchars($row['email']) ?></td>
+                    <!-- <td><?= $row['user_id'] ?></td> -->
+
+                    <td>
+                        <a class="btn btn-info btn-sm" href="account_view.php?user_id=<?= $row['user_id'] ?>&role_id=2&role_name=teacher">
+                            <i class="fa-solid fa-eye"></i> Xem
+                        </a>
+                        <a class="btn btn-warning btn-sm" href="account_edit.php?user_id=<?= $row['user_id'] ?>&role_id=2&role_name=teacher">
+                            <i class="fa-solid fa-pen"></i> Sửa
+                        </a>
+                        <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                data-id="<?= $row['user_id'] ?>">
+                            <i class="fa-solid fa-trash"></i> Xóa
+                        </button>
+                    </td>
+                </tr>
+            <?php endwhile; ?>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PHÂN TRANG GIỮ SORT -->
+    <nav>
         <ul class="pagination justify-content-center">
             <li class="page-item <?= $page<=1?'disabled':'' ?>">
-                <a class="page-link" href="?page=<?= $page-1 ?>&limit=<?= $limit ?>">&laquo; Trước</a>
+                <a class="page-link" href="?page=<?= $page-1 ?>&limit=<?= $limit ?>&sort=<?= $sort ?>&order=<?= $order ?>&tukhoa=<?= $tukhoa ?>">&laquo;</a>
             </li>
-            <?php if($start > 1): ?>
-                <li class="page-item"><span class="page-link">1</span></li>
-                <?php if($start > 2): ?>
-                    <li class="page-item disabled"><span class="page-link">…</span></li>
-                <?php endif; ?>
-            <?php endif; ?>
 
-            <?php for($p=$start; $p<=$end; $p++): ?>
-                <li class="page-item <?= ($p==$page)?'active':'' ?>">
-                    <a class="page-link" href="?page=<?= $p ?>&limit=<?= $limit ?>"><?= $p ?></a>
+            <?php for($p=1;$p<=$total_pages;$p++): ?>
+                <li class="page-item <?= $p==$page?'active':'' ?>">
+                    <a class="page-link" href="?page=<?= $p ?>&limit=<?= $limit ?>&sort=<?= $sort ?>&order=<?= $order ?>&tukhoa=<?= $tukhoa ?>">
+                        <?= $p ?>
+                    </a>
                 </li>
             <?php endfor; ?>
 
-            <?php if($end < $total_pages): ?>
-                <?php if($end < $total_pages - 1): ?>
-                    <li class="page-item disabled"><span class="page-link">…</span></li>
-                <?php endif; ?>
-                <li class="page-item"><a class="page-link" href="?page=<?= $total_pages ?>&limit=<?= $limit ?>"><?= $total_pages ?></a></li>
-            <?php endif; ?>
-
             <li class="page-item <?= $page>=$total_pages?'disabled':'' ?>">
-                <a class="page-link" href="?page=<?= $page+1 ?>&limit=<?= $limit ?>">Tiếp &raquo;</a>
+                <a class="page-link" href="?page=<?= $page+1 ?>&limit=<?= $limit ?>&sort=<?= $sort ?>&order=<?= $order ?>&tukhoa=<?= $tukhoa ?>">&raquo;</a>
             </li>
         </ul>
-        </nav>
+    </nav>
+
     <?php endif; ?>
-        <?php include("../footer.php"); ?>
 
 </div>
 
-<!-- Modal Xóa -->
+<!-- MODAL XÓA -->
 <div class="modal fade" id="deleteModal" tabindex="-1">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title">Xác nhận xóa</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5>Xác nhận xóa</h5>
+        <button class="btn-close" data-bs-dismiss="modal"></button>
       </div>
-      <div class="modal-body">
-        Bạn có chắc chắn muốn xóa tài khoản này?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-        <form id="deleteForm" method="post" action="process.php">
-            <input type="hidden" name="user_id" id="deleteUserId">
-            <button type="submit" class="btn btn-danger" name="delete_teacher">Xóa</button>
-        </form>
-      </div>
+
+      <div class="modal-body">Bạn có chắc chắn muốn xóa?</div>
+
+      <form id="deleteForm" method="post" action="process.php">
+          <input type="hidden" name="user_id" id="deleteUserId">
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+              <button type="submit" name="delete_teacher" class="btn btn-danger">Xóa</button>
+          </div>
+      </form>
+
     </div>
   </div>
 </div>
 
 <script>
-const deleteModal = document.getElementById('deleteModal');
-deleteModal.addEventListener('show.bs.modal', event => {
+const deleteModal = document.getElementById("deleteModal");
+deleteModal.addEventListener("show.bs.modal", event => {
     const button = event.relatedTarget;
-    const userId = button.getAttribute('data-id');
-    document.getElementById('deleteUserId').value = userId;
+    document.getElementById("deleteUserId").value = button.getAttribute("data-id");
 });
 </script>
+
 </body>
 </html>
