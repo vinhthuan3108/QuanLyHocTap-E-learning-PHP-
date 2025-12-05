@@ -236,7 +236,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_schedule"])) {
         exit();
     }
 
-    // Lấy thông tin khóa học từ session
+    // Lấy thông tin khóa học từ session an toàn
+    if (!isset($_SESSION["course_name"], $_SESSION["course_code"], $_SESSION["course_description"], $_SESSION["start_date"], $_SESSION["end_date"], $_SESSION['teacher_course'], $_SESSION['course_image'])) {
+        $_SESSION['error_schedule'] = "Thông tin khóa học không đầy đủ!";
+        header("Location: course_edit.php?id=$course_id");
+        exit();
+    }
+
     $course_name = $_SESSION["course_name"];
     $course_code = $_SESSION["course_code"];
     $course_description = $_SESSION["course_description"];
@@ -244,22 +250,31 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_schedule"])) {
     $end_date = $_SESSION["end_date"];
     $teacher_id = $_SESSION['teacher_course'];
     $fileName = $_SESSION['course_image'];
-    unset($_SESSION["course_name"], $_SESSION["course_code"], $_SESSION["course_description"], $_SESSION["start_date"], $_SESSION["end_date"], $_SESSION['teacher_course'], $_SESSION['course_image']);
 
-    // Cập nhật khóa học
+    // Không unset session tại đây, chỉ unset khi update thành công
+
+    // Cập nhật background nếu rỗng
     if (empty($fileName)) {
         $sql_bg = mysqli_query($dbconnect,"SELECT course_background FROM course WHERE course_id=$course_id");
         $row_bg = mysqli_fetch_assoc($sql_bg);
         $fileName = $row_bg['course_background'];
     }
-    $sql_update_course = "UPDATE course SET course_background='$fileName', course_name='$course_name', course_code='$course_code',
-        course_description='$course_description', teacher_id='$teacher_id', start_date='$start_date', end_date='$end_date'
+
+    // Cập nhật khóa học
+    $sql_update_course = "UPDATE course SET
+        course_background='$fileName',
+        course_name='$course_name',
+        course_code='$course_code',
+        course_description='$course_description',
+        teacher_id='$teacher_id',
+        start_date='$start_date',
+        end_date='$end_date'
         WHERE course_id=$course_id";
     mysqli_query($dbconnect, $sql_update_course);
 
+    // Cập nhật lịch
     $idsToKeep = array();
     for ($i=0; $i<count($dayOfWeeks); $i++) {
-        // map ngày
         switch($dayOfWeeks[$i]) {
             case "monday": $dayVal=2; break;
             case "tuesday": $dayVal=3; break;
@@ -272,9 +287,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_schedule"])) {
         $start = $startTimes[$i];
         $end = $endTimes[$i];
 
-        // Kiểm tra thời gian hợp lệ
         if ($start >= $end) {
-            $_SESSION['error_schedule'] = "Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc!";
+            $_SESSION['error_schedule'] = "Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc ở dòng ".($i+1)."!";
             header("Location: schedule_edit.php?id=$course_id");
             exit();
         }
@@ -297,15 +311,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["update_schedule"])) {
         mysqli_query($dbconnect,"DELETE FROM course_schedule WHERE course_id=$course_id AND course_schedule_id NOT IN ($idList)");
     }
 
+    // Unset session sau khi update thành công
+    unset($_SESSION["course_name"], $_SESSION["course_code"], $_SESSION["course_description"], $_SESSION["start_date"], $_SESSION["end_date"], $_SESSION['teacher_course'], $_SESSION['course_image']);
+
     header("Location: success_course.php?course_id=$course_id&teacher_id=$teacher_id");
     exit();
 }
+
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_schedule"])) {
     if (session_status() == PHP_SESSION_NONE) {
         session_start();
     }
 
+    // Kiểm tra các trường form có trống không
     if (empty($_POST["dayOfWeek"]) || empty($_POST["startTime"]) || empty($_POST["endTime"])) {
         $_SESSION['error_schedule'] = "Thời khóa biểu chưa đầy đủ hoặc còn trống";
         header("Location: schedule_add.php");
@@ -313,6 +332,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_schedule"])) {
     }
 
     // Lấy thông tin khóa học từ session
+    if (!isset($_SESSION["course_name"], $_SESSION["course_code"], $_SESSION["course_description"], $_SESSION["start_date"], $_SESSION["end_date"], $_SESSION['teacher_course'], $_SESSION['course_image'])) {
+        $_SESSION['error_schedule'] = "Thông tin khóa học không đầy đủ!";
+        header("Location: schedule_add.php");
+        exit();
+    }
+
     $course_name = $_SESSION["course_name"];
     $course_code = $_SESSION["course_code"];
     $course_description = $_SESSION["course_description"];
@@ -321,23 +346,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_schedule"])) {
     $teacher_id = $_SESSION['teacher_course'];
     $fileName = $_SESSION['course_image'];
 
-    unset($_SESSION["course_name"], $_SESSION["course_code"], $_SESSION["course_description"], $_SESSION["start_date"], $_SESSION["end_date"], $_SESSION['teacher_course'], $_SESSION['course_image']);
+    // Không unset session tại đây, chỉ unset khi thêm thành công
 
-    // Escape dữ liệu để tránh lỗi SQL
-    $course_name = mysqli_real_escape_string($dbconnect, $course_name);
-    $course_code = mysqli_real_escape_string($dbconnect, $course_code);
-    $course_description = mysqli_real_escape_string($dbconnect, $course_description);
-    $start_date = mysqli_real_escape_string($dbconnect, $start_date);
-    $end_date = mysqli_real_escape_string($dbconnect, $end_date);
-    $fileName = mysqli_real_escape_string($dbconnect, $fileName);
-
-    // Tạo khóa học
+    // Tạo khóa học mới
     $sql_create_course = "INSERT INTO course (course_background, course_code, course_name, teacher_id, course_description, start_date, end_date, status)
                           VALUES ('$fileName', '$course_code', '$course_name', $teacher_id, '$course_description', '$start_date', '$end_date', 'N')";
     if (mysqli_query($dbconnect, $sql_create_course)) {
         $course_id = mysqli_insert_id($dbconnect);
     } else {
-        die("Something went wrong. Error: " . mysqli_error($dbconnect));
+        die("Có lỗi xảy ra: " . mysqli_error($dbconnect));
     }
 
     // Thêm lịch học
@@ -346,6 +363,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_schedule"])) {
     $endTimes = $_POST["endTime"];
 
     for ($i = 0; $i < count($dayOfWeeks); $i++) {
+        // Chuyển tên ngày sang số
         switch ($dayOfWeeks[$i]) {
             case "monday": $day = 2; break;
             case "tuesday": $day = 3; break;
@@ -357,13 +375,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["add_schedule"])) {
             default: $day = 0; break;
         }
 
-        $startTime = mysqli_real_escape_string($dbconnect, $startTimes[$i]);
-        $endTime = mysqli_real_escape_string($dbconnect, $endTimes[$i]);
+        $startTime = $startTimes[$i];
+        $endTime = $endTimes[$i];
 
+        // Kiểm tra giờ bắt đầu < giờ kết thúc
+        if ($startTime >= $endTime) {
+            $_SESSION['error_schedule'] = "Thời gian bắt đầu phải nhỏ hơn thời gian kết thúc ở dòng " . ($i+1);
+            header("Location: schedule_add.php");
+            exit();
+        }
+
+        // Thêm vào database
         $sql_schedule = "INSERT INTO course_schedule (course_id, day_of_week, start_time, end_time)
                          VALUES ($course_id, '$day', '$startTime', '$endTime')";
         mysqli_query($dbconnect, $sql_schedule);
     }
+
+    // Unset session sau khi thêm thành công
+    unset($_SESSION["course_name"], $_SESSION["course_code"], $_SESSION["course_description"], $_SESSION["start_date"], $_SESSION["end_date"], $_SESSION['teacher_course'], $_SESSION['course_image']);
 
     header("Location: success_course.php?course_id=$course_id&teacher_id=$teacher_id");
     exit();
